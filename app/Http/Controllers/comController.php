@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use Pusher\Pusher;
 use App\Models\comment;
 use Illuminate\Http\Request;
 use App\Http\Resources\AngResource;
+use Illuminate\Support\Facades\Validator;
 
 class comController extends Controller
 {
@@ -25,6 +27,15 @@ class comController extends Controller
         return new AngResource(true,'data comment', $comment);
     }
     public function store(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id_forum' => 'required',
+            'user_id' => 'required', 
+            'content' => 'required', 
+        ]);
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
         comment::create([
             'id_forum'=> $request->id_forum,
             'user_id'=> $request->user_id,
@@ -40,11 +51,33 @@ class comController extends Controller
 
         $comment->formatted_created_at=Carbon::parse($comment->created_at)->diffForHumans();
 
+        $pusher = new Pusher(
+            env('PUSHER_APP_KEY','71d8b7362ac9e3875667'),
+            env('PUSHER_APP_SECRET','95d19ff4b7689fd7ea49'),
+            env('PUSHER_APP_ID','1772919'),
+            [
+                'cluster' => env('PUSHER_APP_CLUSTER','ap1'),
+                'useTLS' => true
+            ]
+        );
+        $pusher->trigger('discuss', 'sent-comment', ['data' => $comment]);
+        
         return new AngResource(true,"comment send successfully", $comment);
     }
     public function destroy($id){
         $data = comment::find($id);
         $data-> delete();
+
+        $pusher = new Pusher(
+            env('PUSHER_APP_KEY','71d8b7362ac9e3875667'),
+            env('PUSHER_APP_SECRET','95d19ff4b7689fd7ea49'),
+            env('PUSHER_APP_ID','1772919'),
+            [
+                'cluster' => env('PUSHER_APP_CLUSTER','ap1'),
+                'useTLS' => true
+            ]
+        );
+        $pusher->trigger('discuss', 'delete-comment', ['data' => $data]);
         
         return new AngResource(true,'Data berhasil dihapus', $data);
     }
