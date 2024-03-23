@@ -74,14 +74,12 @@
             method: "GET", // First change type to method here
             success: function(response) {
               var data_user = response.data
-              // console.log(data_user);
               if (data_user['avatar']!=null) {
                 var img = "{{asset('storage/images/users-images/')}}"+'/'+data_user['avatar']
               }
               else{
                 var img = "{{asset('storage/images/default/default-user-icon.jpg')}}"
               }
-              console.log(data_announcement);
               $('#announcement-content').append(
 
                 '<div class="card p-3" id = "card-announcement-'+data_announcement[index]['id']+'">'+
@@ -119,7 +117,6 @@
                   
                   success: function(response) {
                     var data = response.data;
-                    console.log(response);
                     $('#card-announcement-'+ann+'').remove();
                   },
                   error: function(error){
@@ -147,7 +144,6 @@
               $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
               $('#profile-avatar').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
             }
-        //   console.log(data);
           $(".d-block").text(data.nama);
           $(".c-block").text('divisi '+data.nama_divisi);
           // $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
@@ -164,7 +160,6 @@
       function AnnouncementkeyPress(event){
         if (event.keyCode === 13) {
             var input = $('#new-announcement').val();
-            // console.log(input);
             $.ajax({
                 url: "/api/announcement",
                 method: "POST", // First change type to method here
@@ -174,14 +169,12 @@
                 },
                 success: function(response) {
                     $('#new-announcement').val("");
-                    // console.log(response);
                     if (response.data['avatar']!=null) {
                         var img = "{{asset('storage/images/users-images/')}}"+'/'+response.data['avatar']
                     }
                     else{
                         var img = "{{asset('storage/images/default/default-user-icon.jpg')}}"
                     }
-                    console.log(response);
                     $('#new-announcement').val("");
                     $('#announcement-content').prepend(
                         '<div class="card p-3">'+

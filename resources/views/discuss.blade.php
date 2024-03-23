@@ -26,7 +26,6 @@
           <!-- Left col -->
           <div class="col">
           {{-- <div class="col-md-8"> --}}
-            <!-- annnouncement PANEL -->
             <div class="card mb-3">
               <div class="card-header bg-primary">
                 <h3 class="card-title"><i class="nav-icon fas fa-bolt"></i> Mari Bersuara!</h3>
@@ -73,7 +72,6 @@
 
       var channel = pusher.subscribe('discuss');
       channel.bind('sent-discuss', function(data) {
-        $('#send-post').val("");
         if (data.data['avatar']!=null) {
           var img = "{{asset('storage/images/users-images/')}}"+'/'+data.data['avatar']
         }
@@ -179,9 +177,18 @@
 
       channel.bind('delete-comment', function(data) {
         $('#card-comment-' + data.data['id']).remove();
-        if ($('#forum-comment-' + data.data['forum_id'] + ' .card-comment').length == 0) {
-          $('#forum-comment-' + data.data['forum_id']).removeClass().addClass("card-footer card-comments collapse d-none");
-        };
+        if ($('#forum-comment-' + data.data['id_forum'] + ' .card-comment').length == 0) {
+          $('#forum-comment-' + data.data['id_forum']).removeClass().addClass("card-footer card-comments d-none");
+          $('#count-comment-' + data.data['id_forum']).html('');
+        }else{
+          $('#count-comment-' + data.data['id_forum']).html(
+            '<div class="card-tools">' +
+              '<button type="button" class="btn btn-tool" data-card-widget="collapse" aria-expanded="false">' +
+                '<i class="far fa-comments mr-1"></i> Comments (' + $('#forum-comment-' + data.data['id_forum'] + ' .card-comment').length + ')' +
+              '</button>' +
+            '</div>'
+          );
+        }
       });
 
       // Fetch forum data
@@ -256,18 +263,20 @@
           console.error('Error fetching forum data:', error);
         }
       });
-      
+
+      var progress = false;
       $('#sent-post').on('click', function() {
+        if (progress) {
+          return;
+        };
+
+        progress = true;
         var input = $('#send-post').val();
-          $.ajax({
-              url: "/api/forum",
-              method:'POST', // First change type to method here
-              data: {
-                  "user_id": sessionStorage.getItem('login'),
-                  "content": input
-              }
-          })
+        if (input != null || input != " ") {
+          submitForum(input);
+        }
       });
+
       $.ajax({
           url: "/api/data/"+sessionStorage.getItem('login'),
           method: "GET", // First change type to method here
@@ -288,6 +297,9 @@
           window.location = '../login';
         });
     });
+
+    var progres_comment = false;
+    var progres_forum = false;
 
     // Function to fetch comments for a forum
     function fetchComments(forumId) {
@@ -324,13 +336,12 @@
     }
 
     // Function to submit a comment for a forum
-    var progress = false;
     function submitComment(forumId, content) {
-      if (progress) {
+      if (progres_comment) {
         return;
       };
 
-      progress = true;
+      progres_comment = true;
       $.ajax({
         url: "/api/comment",
         method: 'POST',
@@ -352,7 +363,32 @@
           console.error('Error submitting comment:', error);
         },
         complete: function(){
-          progress = false;
+          progres_comment = false;
+        }
+      });
+    }
+
+    function submitForum(content) {
+      if (progres_forum) {
+        return;
+      };
+
+      progres_forum = true;
+      $.ajax({
+        url: "/api/forum",
+        method: 'POST',
+        data: {
+          "user_id": sessionStorage.getItem('login'),
+          "content": content
+        },
+        success: function(response) {
+          $('#send-post').val("");
+        },
+        error: function(error) {
+          console.error('Error submitting forum:', error);
+        },
+        complete: function(){
+          progres_forum = false;
         }
       });
     }
@@ -439,6 +475,8 @@
           // If all comments are deleted, hide the comment section
           if ($('#forum-comment-' + forumId + ' .card-comment').length === 0) {
             $('#forum-comment-' + forumId).removeClass().addClass("card-footer card-comments d-none");
+            
+            $('#count-comment-' + forumId).html('');
           }
         },
         error: function(error) {
@@ -446,6 +484,7 @@
         }
       });
     }
+
     function keyPress(event,id){
       if (event.keyCode === 13) {
         var input = $('#send-comment-'+id).val();
@@ -457,14 +496,9 @@
     function PostkeyPress(event,id){
       if (event.keyCode === 13) {
         var input = $('#send-post').val();
-        $.ajax({
-            url: "/api/forum",
-            method: "POST", // First change type to method here
-            data: {
-                "user_id": sessionStorage.getItem('login'),
-                "content": input
-            }
-        })
+        if (input != null || input != " ") {
+          submitForum(input);
+        }
       }
     }
   </script>

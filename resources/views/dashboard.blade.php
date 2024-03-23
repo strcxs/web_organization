@@ -286,7 +286,7 @@
         var words = inputString.split(' ');
         var limitedWords = words.slice(0, maxWords);
         var resultString = limitedWords.join(' ');
-        return resultString+"<a href='dashboard/discuss'>...read more</a>";
+        return resultString+" <a href='dashboard/discuss'>...read more</a>";
     }
     $.ajax({
         url: "/api/forum",
@@ -330,7 +330,7 @@
       success: function(response) {
         var data_announcement = response.data
 
-        for (let index = 0; index < 2; index++) {
+        for (let index = 0; index < 3; index++) {
           $.ajax({
             url: "/api/data/"+data_announcement[index]['user_id'],
             method: "GET", // First change type to method here
@@ -357,9 +357,6 @@
                   '</p>'+
                 '</div>'
               );
-            },
-            error: function(error) {
-
             }
           });
         }
