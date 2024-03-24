@@ -10,6 +10,14 @@
         box-shadow: none !important;
         margin-bottom: 0px;
     }
+    /* .btn-container{
+      refresh
+      z-index: 1;
+      position: fixed;
+      top: 17%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    } */
   </style>
 </head>
 <body class="hold-transition light-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
@@ -18,6 +26,13 @@
   @include('include/navbar')
   @include('include/sidebar')
   <div class="content-wrapper">
+    
+    {{-- refresh
+    <div class="btn-container">
+      <button id="refreshButton" class="btn btn-warning rounded-pill shadow" onclick="#">
+        new post <i class="fas fa-sync-alt"></i>
+      </button>
+    </div> --}}
     <!-- Content Header (Page header) -->
     <section class="content py-3">
       <div class="container-fluid">
@@ -41,8 +56,7 @@
                   </button>
                 </div>
               </div>
-              {{-- <div id="forum-content"> --}}
-
+              
             </div>
               <!-- /.card-header -->
             <div class="card">
@@ -191,78 +205,109 @@
         }
       });
 
-      // Fetch forum data
-      $.ajax({
-        url: "/api/forum",
-        method: "GET",
-        success: function(response) {
-          var forums = response.data;
-          $('#post-count').text(forums.length);
+      //fetch data forum
+      let page = 1;
+      const itemsPerPage = 10; 
+      let isLoading = false;
 
-          forums.forEach(function(forum) {
-            var img = forum.avatar ? "{{asset('storage/images/users-images/')}}" + '/' + forum.avatar : "{{asset('storage/images/default/default-user-icon.jpg')}}";
+      // Fungsi untuk memuat data dari server
+      function loadData() {
+        if (!isLoading) {
+          isLoading = true;
+          $.ajax({
+            url: "/api/forum",
+            method: "GET",
+            data: {
+              pagination : true,
+              page: page,
+              perPage: itemsPerPage 
+            },
+            success: function(response) {
+              var forums = response.data.data;
+              $('#post-count').text(forums.length);
 
-            $('#forum-content').append(
-              '<div class="card p-3" id="card-content-' + forum.id + '">' +
-                '<div class="post p-2">' +
-                  '<div class="user-block">' +
-                    '<div id="delete" class="card-tools float-right">' +
-                      '<button id="btnDelete-' + forum.id + '" type="button" class="btn btn-tool">' +
-                        '<i class="fa-solid fa-x">X</i>' +
-                      '</button>' +
+              forums.forEach(function(forum) {
+                var img = forum.avatar ? "{{asset('storage/images/users-images/')}}" + '/' + forum.avatar : "{{asset('storage/images/default/default-user-icon.jpg')}}";
+
+                $('#forum-content').append(
+                  '<div class="card p-3" id="card-content-' + forum.id + '">' +
+                    '<div class="post p-2">' +
+                      '<div class="user-block">' +
+                        '<div id="delete" class="card-tools float-right">' +
+                          '<button id="btnDelete-' + forum.id + '" type="button" class="btn btn-tool">' +
+                            '<i class="fa-solid fa-x">X</i>' +
+                          '</button>' +
+                        '</div>' +
+                        '<img class="img-circle img-bordered-sm" src=' + img + ' alt="user image" style="width: 43px; height: 43px; object-fit: cover; border-radius: 50%;" >' +
+                        '<span class="username">' +
+                          '<a href="profile/detail?id=' + forum.no_user + '">' + forum.nama + '</a>' +
+                        '</span>' +
+                        '<span class="description">' + forum.formatted_created_at + '</span>' +
+                      '</div>' +
+                      '<p>' + forum.content + '</p>' +
+                      '<p>' +
+                        '<span>' +
+                          '<a id="count-comment-' + forum.id + '" class="link-black text-sm"></a>' +
+                        '</span>' +
+                      '</p>' +
+                      '<div class="row">' +
+                        '<input id="send-comment-' + forum.id + '" class="form-control col-10" type="text" placeholder="Type a comment" onkeydown="keyPress(event,' + forum.id + ')">' +
+                        '<button id="sent-comment-' + forum.id + '" class="btn btn-primary form-control col-2">' +
+                          '<i class="nav-icon fas fa-paper-plane"></i>' +
+                        '</button>' +
+                      '</div>' +
                     '</div>' +
-                    '<img class="img-circle img-bordered-sm" src=' + img + ' alt="user image" style="width: 43px; height: 43px; object-fit: cover; border-radius: 50%;" >' +
-                    '<span class="username">' +
-                      '<a href="profile/detail?id=' + forum.no_user + '">' + forum.nama + '</a>' +
-                    '</span>' +
-                    '<span class="description">' + forum.formatted_created_at + '</span>' +
-                  '</div>' +
-                  '<p>' + forum.content + '</p>' +
-                  '<p>' +
-                    '<span>' +
-                      '<a id="count-comment-' + forum.id + '" class="link-black text-sm"></a>' +
-                    '</span>' +
-                  '</p>' +
-                  '<div class="row">' +
-                    '<input id="send-comment-' + forum.id + '" class="form-control col-10" type="text" placeholder="Type a comment" onkeydown="keyPress(event,' + forum.id + ')">' +
-                    '<button id="sent-comment-' + forum.id + '" class="btn btn-primary form-control col-2">' +
-                      '<i class="nav-icon fas fa-paper-plane"></i>' +
-                    '</button>' +
-                  '</div>' +
-                '</div>' +
-                '<div id="forum-comment-' + forum.id + '" class="card-footer card-comments d-none">' +
-                '</div>' +
-              '</div>'
-            );
-            
-            //admin only
-            if (sessionStorage.getItem('login') == 64) {
-                document.getElementById('btnDelete-'+ forum.id).style.display = "block";
-            } else {
-                document.getElementById('btnDelete-'+ forum.id).style.display = "none";
+                    '<div id="forum-comment-' + forum.id + '" class="card-footer card-comments d-none">' +
+                    '</div>' +
+                  '</div>'
+                );
+                
+                //admin only
+                if (sessionStorage.getItem('login') == 64) {
+                    document.getElementById('btnDelete-'+ forum.id).style.display = "block";
+                } else {
+                    document.getElementById('btnDelete-'+ forum.id).style.display = "none";
+                }
+
+                // Delete forum
+                $('#btnDelete-' + forum.id).on('click', function() {
+                  deleteForum(forum.id);
+                });
+
+                // Fetch comments for the forum
+                fetchComments(forum.id);
+
+                // Handle comment submission
+                $('#sent-comment-' + forum.id).on('click', function() {
+                  var input = $('#send-comment-' + forum.id).val();
+                  if (input.trim() !== "") {
+                    submitComment(forum.id, input);
+                  }
+                });
+              });
+              page++;
+              isLoading = false;
+            },
+            error: function(error) {
+              console.error('Error fetching forum data:', error);
+              isLoading = false;
             }
-
-            // Delete forum
-            $('#btnDelete-' + forum.id).on('click', function() {
-              deleteForum(forum.id);
-            });
-
-            // Fetch comments for the forum
-            fetchComments(forum.id);
-
-            // Handle comment submission
-            $('#sent-comment-' + forum.id).on('click', function() {
-              var input = $('#send-comment-' + forum.id).val();
-              if (input.trim() !== "") {
-                submitComment(forum.id, input);
-              }
-            });
           });
-        },
-        error: function(error) {
-          console.error('Error fetching forum data:', error);
         }
-      });
+      }
+
+      // Fungsi untuk memeriksa apakah telah mencapai akhir halaman dan memuat data jika ya
+      function checkEndOfPage() {
+        const scrollPosition = $(window).scrollTop() + $(window).height();
+        const totalHeight = $(document).height();
+        if (scrollPosition >= totalHeight) {
+          loadData();
+        }
+      }
+
+      $(window).scroll(checkEndOfPage);
+
+      loadData();
 
       var progress = false;
       $('#sent-post').on('click', function() {

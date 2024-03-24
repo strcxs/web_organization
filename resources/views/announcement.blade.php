@@ -111,58 +111,138 @@
       });
 
       channel.bind('delete-announcement', function(data){
-        console.log(data.data);
         $('#card-announcement-'+data.data['id']+'').remove();
       })
 
     });
-    $.ajax({
-      url: "/api/announcement",
-      method: "GET", // First change type to method here
-      success: function(response) {
-        var data_announcement = response.data
-        data_announcement.forEach(function(announcement){
-          if (announcement['avatar']!=null) {
-            var img = "{{asset('storage/images/users-images/')}}"+'/'+announcement['avatar']
-          }
-          else{
-            var img = "{{asset('storage/images/default/default-user-icon.jpg')}}"
-          }
-          $('#announcement-content').append(
 
-            '<div class="card p-3" id = "card-announcement-'+announcement['id']+'">'+
-              '<div class="post p-2">'+
-                '<div class="user-block">'+
-                  
-                  '<div id="delete" class="card-tools float-right">'+
-                    '<button id="btnDelete-'+announcement['id']+'" type="button" class="btn btn-tool">'+
-                      '<i class="fa-solid fa-x">X</i>'+
-                    '</button>'+
+    //line
+    let page = 1; // Nomor halaman saat ini
+    const itemsPerPage = 10; 
+    let isLoading = false;
+
+    // Fungsi untuk memuat data dari server
+    function loadData() {
+      if (!isLoading) {
+        isLoading = true;
+        $.ajax({
+          url: "/api/announcement",
+          method: "GET", // First change type to method here
+          data: {
+            pagination : true,
+            page: page,
+            perPage: itemsPerPage 
+          },
+          success: function(response) {
+            var data_announcement = response.data.data
+            data_announcement.forEach(function(announcement){
+              if (announcement['avatar']!=null) {
+                var img = "{{asset('storage/images/users-images/')}}"+'/'+announcement['avatar']
+              }
+              else{
+                var img = "{{asset('storage/images/default/default-user-icon.jpg')}}"
+              }
+              $('#announcement-content').append(
+
+                '<div class="card p-3" id = "card-announcement-'+announcement['id']+'">'+
+                  '<div class="post p-2">'+
+                    '<div class="user-block">'+
+                      
+                      '<div id="delete" class="card-tools float-right">'+
+                        '<button id="btnDelete-'+announcement['id']+'" type="button" class="btn btn-tool">'+
+                          '<i class="fa-solid fa-x">X</i>'+
+                        '</button>'+
+                      '</div>'+
+
+                      '<img class="img-circle img-bordered-sm" src='+img+' alt="user image">'+
+                      '<span class="username">'+
+                        '<a href="#">'+announcement['nama']+'</a>'+
+                      '</span>'+
+                      '<span class="description">'+announcement['formatted_created_at']+'</span>'+
+                    '</div>'+
+                    '<p>'+
+                        announcement['title']+
+                    '</p>'+
                   '</div>'+
-
-                  '<img class="img-circle img-bordered-sm" src='+img+' alt="user image">'+
-                  '<span class="username">'+
-                    '<a href="#">'+announcement['nama']+'</a>'+
-                  '</span>'+
-                  '<span class="description">'+announcement['formatted_created_at']+'</span>'+
-                '</div>'+
-                '<p>'+
-                    announcement['title']+
-                '</p>'+
-              '</div>'+
-            '</div>'
-          );
-          if (sessionStorage.getItem('login') == 64) {
-              document.getElementById('btnDelete-'+ announcement['id']).style.display = "block";
-          } else {
-              document.getElementById('btnDelete-'+ announcement['id']).style.display = "none";
+                '</div>'
+              );
+              if (sessionStorage.getItem('login') == 64) {
+                  document.getElementById('btnDelete-'+ announcement['id']).style.display = "block";
+              } else {
+                  document.getElementById('btnDelete-'+ announcement['id']).style.display = "none";
+              }
+              $('#btnDelete-' + announcement['id']).on('click', function() {
+                deleteAnnouncement(announcement['id'])
+              });
+            });
+            page++;
+            isLoading = false;
           }
-          $('#btnDelete-' + announcement['id']).on('click', function() {
-            deleteAnnouncement(announcement['id'])
-          });
         });
       }
-    });
+    }
+
+    // Fungsi untuk memeriksa apakah telah mencapai akhir halaman dan memuat data jika ya
+    function checkEndOfPage() {
+      const scrollPosition = $(window).scrollTop() + $(window).height();
+      const totalHeight = $(document).height();
+      if (scrollPosition >= totalHeight-1) {
+        loadData();
+      }
+    }
+
+    $(window).scroll(checkEndOfPage);
+    loadData();
+
+    // $.ajax({
+    //   url: "/api/announcement",
+    //   method: "GET", // First change type to method here
+    //   success: function(response) {
+    //     var data_announcement = response.data
+    //     data_announcement.forEach(function(announcement){
+    //       if (announcement['avatar']!=null) {
+    //         var img = "{{asset('storage/images/users-images/')}}"+'/'+announcement['avatar']
+    //       }
+    //       else{
+    //         var img = "{{asset('storage/images/default/default-user-icon.jpg')}}"
+    //       }
+    //       $('#announcement-content').append(
+
+    //         '<div class="card p-3" id = "card-announcement-'+announcement['id']+'">'+
+    //           '<div class="post p-2">'+
+    //             '<div class="user-block">'+
+                  
+    //               '<div id="delete" class="card-tools float-right">'+
+    //                 '<button id="btnDelete-'+announcement['id']+'" type="button" class="btn btn-tool">'+
+    //                   '<i class="fa-solid fa-x">X</i>'+
+    //                 '</button>'+
+    //               '</div>'+
+
+    //               '<img class="img-circle img-bordered-sm" src='+img+' alt="user image">'+
+    //               '<span class="username">'+
+    //                 '<a href="#">'+announcement['nama']+'</a>'+
+    //               '</span>'+
+    //               '<span class="description">'+announcement['formatted_created_at']+'</span>'+
+    //             '</div>'+
+    //             '<p>'+
+    //                 announcement['title']+
+    //             '</p>'+
+    //           '</div>'+
+    //         '</div>'
+    //       );
+    //       if (sessionStorage.getItem('login') == 64) {
+    //           document.getElementById('btnDelete-'+ announcement['id']).style.display = "block";
+    //       } else {
+    //           document.getElementById('btnDelete-'+ announcement['id']).style.display = "none";
+    //       }
+    //       $('#btnDelete-' + announcement['id']).on('click', function() {
+    //         deleteAnnouncement(announcement['id'])
+    //       });
+    //     });
+    //   }
+    // });
+
+    //line
     $.ajax({
         url: "/api/data/"+sessionStorage.getItem('login'),
         method: "GET", // First change type to method here

@@ -266,7 +266,7 @@
 </body>
 <!-- REQUIRED SCRIPTS -->
 @include('include/script')
-
+<script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 <script>
   $(document).ready(function(){
     if (sessionStorage.getItem('login')==null) {
@@ -286,6 +286,15 @@
     loginCheck(sessionStorage.getItem('login'));
     fetchDiscuss(3);
     fetchAnnouncement(3);
+
+    var pusher = new Pusher('71d8b7362ac9e3875667', {
+        cluster: 'ap1'
+    });
+
+    var channel = pusher.subscribe('announcement');
+    channel.bind('sent-announcement', function(data) {
+      fetchAnnouncement(3);
+    });
   });
 
   function limitWords(inputString, maxWords) {

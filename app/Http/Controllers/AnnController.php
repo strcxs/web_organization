@@ -10,11 +10,21 @@ use App\Http\Resources\AngResource;
 
 class AnnController extends Controller
 {
-    public function index(){
-        $ann = Announcement::orderBy('created_at','desc')
-        ->join('data_anggota','data_anggota.user_id','=','announcement.user_id')
-        ->select('announcement.id','data_anggota.avatar','announcement.user_id','data_anggota.nama','announcement.title','announcement.created_at')
-        ->get();
+    public function index(Request $request){
+        $pagination = $request->input('pagination',false);
+        if ($pagination) {
+            $perpage =$request->input('perPage',10);
+            $ann = Announcement::orderBy('created_at','desc')
+            ->join('data_anggota','data_anggota.user_id','=','announcement.user_id')
+            ->select('announcement.id','data_anggota.avatar','announcement.user_id','data_anggota.nama','announcement.title','announcement.created_at')
+            ->paginate($perpage);
+        }else{
+            $perpage =$request->input('perPage',10);
+            $ann = Announcement::orderBy('created_at','desc')
+            ->join('data_anggota','data_anggota.user_id','=','announcement.user_id')
+            ->select('announcement.id','data_anggota.avatar','announcement.user_id','data_anggota.nama','announcement.title','announcement.created_at')
+            ->get();
+        }
         
         foreach ($ann as $anns) {
             $anns->formatted_created_at=Carbon::parse($anns->created_at)->diffForHumans();
