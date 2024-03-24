@@ -307,9 +307,6 @@
         $(".d-block").text(data.nama);
         $(".c-block").text('divisi '+data.nama_divisi);
       },
-      error: function(error){
-
-      }
     });
     $("#btnLogOut").click(function(){
       sessionStorage.clear();
