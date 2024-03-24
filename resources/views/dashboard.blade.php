@@ -306,7 +306,6 @@
           }
         $(".d-block").text(data.nama);
         $(".c-block").text('divisi '+data.nama_divisi);
-        // $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
       },
       error: function(error){
 
