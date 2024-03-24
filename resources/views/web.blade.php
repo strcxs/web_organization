@@ -37,23 +37,12 @@
         <link rel="stylesheet" href="{{asset('/css/dash/responsive.css')}}">
 		<link rel="stylesheet" href="{{asset('template/plugins/fontawesome-free/css/all.min.css')}}">
 		<style>
-			/* CSS untuk perangkat dengan lebar layar kurang dari 993px */
-			@media (max-width: 993px) {
-				.navbar-brand {
-					/* display: block; */
-					/* text-align: center; */
+			@media (min-width: 768px) {
+				.hide-on-desktop {
+					display: none !important;
 				}
-		
-				/* .navbar-brand img {
-					float: left;
-					margin: 0 auto;
-					margin-top: -25px ;
-				} */
-				/* .navbar-brand b {
-					float: left;
-					margin: 0 auto;
-					margin-top: -14px ;
-				} */
+			}
+			@media (max-width: 993px) {
 				.header-text h2 {
 					color: #fff;
 					font-size: 30px;
@@ -61,71 +50,74 @@
 					text-transform: uppercase;
 					line-height: 1.5;
 				}
-				/* .header-text p {
-					color: #fff;
-					font-size: 20px;
-					font-weight: 300;
-					text-transform: uppercase;
-					margin: 30px 0 60px;
-					letter-spacing: 1px;
-				} */
 			}
 		</style>
     </head>
 	
 	<body>
-		<!--[if lte IE 9]>
-            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
-        <![endif]-->
-		
 		<!-- top-area Start -->
 		<header class="top-area">
-			<div class="header-area" >
+			<div class="header-area">
 				<!-- Start Navigation -->
-			    <nav class="navbar navbar-default bootsnav navbar-fixed dark no-background">
-
-			        <div class="container-fluid">
-
-			            <!-- Start Header Navigation -->
+				<nav class="navbar navbar-default bootsnav navbar-fixed dark no-background">
+					<div class="container-fluid">
 						<div class="row">
-							<div class="col-4 d-flex align-items-center">
-								<button type="button" data-toggle="collapse" data-target="#navbar-menu">
-									<i class="fas fa-bars"></i>
-								</button>
+							<div class="col-12 col-sm-3 col-md-4 col-10">
+								<div class="container-fluid" id="company">
+									<div class="navbar">
+										<div class="row">
+											<div class="col">
+												<a class="navbar-brand d-flex justify-content-center align-items-center" href="/">
+													<img src="{{asset('storage/images/icon_himaif.png')}}" alt="profile_image" style="width: 55px;">
+												</a>
+											</div>
+											<div class="col">
+												<a class="navbar-brand" href="/">
+													<h1 style="margin-top:21px;">HMIF Nurtanio Bandung</h1>
+												</a>
+											</div>
+											<div class="col">
+												<br>
+												<button class="navbar-brand d-flex align-items-center justify-content-center hide-on-desktop" type="button" data-toggle="collapse" data-target="#navbar-menu" style="border: 2px solid #43485c;border-radius: 10px; box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);">
+													<i class="fas fa-bars"></i>
+												</button>
+											</div>											
+										</div>
+									</div>
+								</div>
 							</div>
-							<div class="col-4 d-flex align-items-center">
-								<a class="navbar-brand" href="/" >
-									<img src="{{asset('storage/images/icon_himaif.png')}}" alt="profile_image" style="width: 40px; margin-right: 10px">
-								</a>
+							<div class="col-12 col-sm-9 col-md-8 col-2">
+								<div class="row">
+									<!-- Collect the nav links, forms, and other content for toggling -->
+									<div class="collapse navbar-collapse menu-ui-design" id="navbar-menu">
+										<ul class="nav navbar-nav navbar-right" data-in="fadeInDown" data-out="fadeOutUp">
+											<li class="nav-item">
+												<a class="nav-link" href="#about">Tentang kami</a>
+											</li>
+											<li class="nav-item">
+												<a class="nav-link" href="#portfolio">proker</a>
+											</li>
+											<li class="nav-item">
+												<a class="nav-link" href="#contact">kontak</a>
+											</li>
+											<li class="nav-item">
+												<a class="nav-link" href="/login">login</a>
+											</li>
+										</ul>
+									</div>
+								</div>
 							</div>
-							<div class="col-4 d-flex align-items-center">
-								<b>HMIF Nurtanio Bandung</b>
-							</div>
-						</div>
-						<!--/.navbar-header-->
-			            <!-- End Header Navigation -->
-
-			            <!-- Collect the nav links, forms, and other content for toggling -->
-			            <div class="collapse navbar-collapse menu-ui-design" id="navbar-menu">
-			                <ul class="nav navbar-nav navbar-right" data-in="fadeInDown" data-out="fadeOutUp">
-								<li class="smooth-menu active"></li>
-			                    {{-- <li><a href="/dashboard/member">member</a></li> --}}
-			                    <li class=" smooth-menu"><a href="#about">Tentang kami</a></li>
-			                    {{-- <li class=" smooth-menu"><a href="#education">education</a></li> --}}
-			                    {{-- <li class="smooth-menu"><a href="#profiles">profile</a></li>	 --}}
-			                    <li class="smooth-menu"><a href="#portfolio">proker</a></li>
-			                    <li class="smooth-menu"><a href="#contact">kontak</a></li>
-			                    <li><a href="/login">login</a></li>
-			                </ul><!--/.nav -->
-			            </div><!-- /.navbar-collapse -->
-			        </div><!--/.container-->
-			    </nav><!--/nav-->
-			    <!-- End Navigation -->
+						</div>						
+						<!-- /.navbar-collapse -->
+					</div><!--/.container-->
+				</nav><!--/nav-->
+				<!-- End Navigation -->
 			</div><!--/.header-area-->
-
-		    <div class="clearfix"></div>
-
-		</header><!-- /.top-area-->
+		
+			<div class="clearfix"></div>
+		
+		</header>		
+		<!-- /.top-area-->
 		<!-- top-area End -->
 	
 		<!--welcome-hero start -->
@@ -229,227 +221,7 @@
 			</div>
 		</section><!--/.about-->
 		<!--about end -->
-		
-{{-- 		
-		<!--education start -->
-		<section id="education" class="education">
-			<div class="section-heading text-center">
-				<h2>education</h2>
-			</div>
-			<div class="container">
-				<div class="education-horizontal-timeline">
-					<div class="row">
-						<div class="col-sm-4">
-							<div class="single-horizontal-timeline">
-								<div class="experience-time">
-									<h2>2008 - 2010</h2>
-									<h3>master <span>of </span> computer science</h3>
-								</div><!--/.experience-time-->
-								<div class="timeline-horizontal-border">
-									<i class="fa fa-circle" aria-hidden="true"></i>
-									<span class="single-timeline-horizontal"></span>
-								</div>
-								<div class="timeline">
-									<div class="timeline-content">
-										<h4 class="title">
-											university of north carolina
-										</h4>
-										<h5>north carolina, USA</h5>
-										<p class="description">
-											Duis aute irure dolor in reprehenderit in vol patate velit esse cillum dolore eu fugiat nulla pari. Excepteur sint occana inna tecat cupidatat non proident. 
-										</p>
-									</div><!--/.timeline-content-->
-								</div><!--/.timeline-->
-							</div>
-						</div>
-						<div class="col-sm-4">
-							<div class="single-horizontal-timeline">
-								<div class="experience-time">
-									<h2>2004 - 2008</h2>
-									<h3>bachelor <span>of </span> computer science</h3>
-								</div><!--/.experience-time-->
-								<div class="timeline-horizontal-border">
-									<i class="fa fa-circle" aria-hidden="true"></i>
-									<span class="single-timeline-horizontal"></span>
-								</div>
-								<div class="timeline">
-									<div class="timeline-content">
-										<h4 class="title">
-											university of north carolina
-										</h4>
-										<h5>north carolina, USA</h5>
-										<p class="description">
-											Duis aute irure dolor in reprehenderit in vol patate velit esse cillum dolore eu fugiat nulla pari. Excepteur sint occana inna tecat cupidatat non proident. 
-										</p>
-									</div><!--/.timeline-content-->
-								</div><!--/.timeline-->
-							</div>
-						</div>
-						<div class="col-sm-4">
-							<div class="single-horizontal-timeline">
-								<div class="experience-time">
-									<h2>2004 - 2008</h2>
-									<h3>bachelor <span>of </span> creative design</h3>
-								</div><!--/.experience-time-->
-								<div class="timeline-horizontal-border">
-									<i class="fa fa-circle" aria-hidden="true"></i>
-									<span class="single-timeline-horizontal spacial-horizontal-line
-									"></span>
-								</div>
-								<div class="timeline">
-									<div class="timeline-content">
-										<h4 class="title">
-											university of bolton
-										</h4>
-										<h5>bolton, united kingdome</h5>
-										<p class="description">
-											Duis aute irure dolor in reprehenderit in vol patate velit esse cillum dolore eu fugiat nulla pari. Excepteur sint occana inna tecat cupidatat non proident. 
-										</p>
-									</div><!--/.timeline-content-->
-								</div><!--/.timeline-->
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-
-		</section><!--/.education-->
-		<!--education end --> --}}
-
-		{{-- <!--profiles start -->
-		<section id="profiles" class="profiles">
-			<div class="profiles-details">
-				<div class="section-heading text-center">
-					<h2>profiles</h2>
-				</div>
-				<div class="container">
-					<div class="profiles-content">
-						<div class="row">
-
-							<div class="col-sm-3">
-								<div class="single-profile">
-									<div class="profile-txt">
-										<a href=""><i class="flaticon-themeforest"></i></a>
-										<div class="profile-icon-name">themeforest</div>
-									</div>
-									<div class="single-profile-overlay">
-										<div class="profile-txt">
-											<a href=""><i class="flaticon-themeforest"></i></a>
-											<div class="profile-icon-name">themeforest</div>
-										</div>
-									</div>
-								</div>
-							</div> 
-
-							<div class="col-sm-3">
-								<div class="single-profile">
-									<div class="profile-txt">
-										<a href=""><i class="flaticon-dribbble"></i></a>
-										<div class="profile-icon-name">dribbble</div>
-									</div>
-									<div class="single-profile-overlay">
-										<div class="profile-txt">
-											<a href=""><i class="flaticon-dribbble"></i></a>
-											<div class="profile-icon-name">dribbble</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="col-sm-3">
-								<div class="single-profile">
-									<div class="profile-txt">
-										<a href=""><i class="flaticon-behance-logo"></i></a>
-										<div class="profile-icon-name">behance</div>
-									</div>
-									<div class="single-profile-overlay">
-										<div class="profile-txt">
-											<a href=""><i class="flaticon-behance-logo"></i></a>
-											<div class="profile-icon-name">behance</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="col-sm-3">
-								<div class="single-profile profile-no-border">
-									<div class="profile-txt">
-										<a href=""><i class="flaticon-github-logo"></i></a>
-										<div class="profile-icon-name">github</div>
-									</div>
-									<div class="single-profile-overlay">
-										<div class="profile-txt">
-											<a href=""><i class="flaticon-github-logo"></i></a>
-											<div class="profile-icon-name">github</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="profile-border"></div>
-						<div class="row">
-							<div class="col-sm-3">
-								<div class="single-profile">
-									<div class="profile-txt">
-										<a href=""><i class="flaticon-flickr-website-logo-silhouette"></i></a>
-										<div class="profile-icon-name">flickR</div>
-									</div>
-									<div class="single-profile-overlay">
-										<div class="profile-txt">
-											<a href=""><i class="flaticon-flickr-website-logo-silhouette"></i></a>
-											<div class="profile-icon-name">flickR</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="col-sm-3">
-								<div class="single-profile">
-									<div class="profile-txt">
-										<a href=""><i class="flaticon-smug"></i></a>
-										<div class="profile-icon-name">smungMung</div>
-									</div>
-									<div class="single-profile-overlay">
-										<div class="profile-txt">
-											<a href=""><i class="flaticon-smug"></i></a>
-											<div class="profile-icon-name">smungMung</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="col-sm-3">
-								<div class="single-profile">
-									<div class="profile-txt">
-										<a href=""><i class="flaticon-squarespace-logo"></i></a>
-										<div class="profile-icon-name">squareSpace</div>
-									</div>
-									<div class="single-profile-overlay">
-										<div class="profile-txt">
-											<a href=""><i class="flaticon-squarespace-logo"></i></a>
-											<div class="profile-icon-name">squareSpace</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="col-sm-3">
-								<div class="single-profile profile-no-border">
-									<div class="profile-txt">
-										<a href=""><i class="flaticon-bitbucket-logotype-camera-lens-in-perspective"></i></a>
-										<div class="profile-icon-name">bitBucket</div>
-									</div>
-									<div class="single-profile-overlay">
-										<div class="profile-txt">
-											<a href=""><i class="flaticon-bitbucket-logotype-camera-lens-in-perspective"></i></a>
-											<div class="profile-icon-name">bitBucket</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-
-		</section><!--/.profiles--> --}}
-		<!--profiles end -->
-
+	
 		<!--portfolio start -->
 		<section id="portfolio" class="portfolio">
 			<div class="portfolio-details">
@@ -646,39 +418,22 @@
 		<!-- Include all js compiled plugins (below), or include individual files as needed -->
 
 		<script src="{{asset('/js//jquery.js')}}"></script>
-        
-        <!--modernizr.min.js-->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
-		
-		<!--bootstrap.min.js-->
         <script src="{{asset('/js//bootstrap.min.js')}}"></script>
-		
-		<!-- bootsnav js -->
 		<script src="{{asset('/js//bootsnav.js')}}"></script>
-		
-		<!-- jquery.sticky.js -->
 		<script src="{{asset('/js//jquery.sticky.js')}}"></script>
 		
 		<!-- for progress bar start-->
-
-		<!-- progressbar js -->
 		<script src="{{asset('/js//progressbar.js')}}"></script>
-
-		<!-- appear js -->
 		<script src="{{asset('/js//jquery.appear.js')}}"></script>
-
 		<!-- for progress bar end -->
 
 		<!--owl.carousel.js-->
         <script src="{{asset('/js//owl.carousel.min.js')}}"></script>
-
-
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
-		
         
         <!--Custom JS-->
         <script src="{{asset('/js//custom.js')}}"></script>
-        
     </body>
 	
 </html>
