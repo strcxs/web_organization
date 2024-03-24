@@ -282,112 +282,103 @@
 
       }
     });
-    function limitWords(inputString, maxWords) {
-        var words = inputString.split(' ');
-        var limitedWords = words.slice(0, maxWords);
-        var resultString = limitedWords.join(' ');
-        return resultString+" <a href='dashboard/discuss'>...read more</a>";
-    }
+
+    loginCheck(sessionStorage.getItem('login'));
+    fetchDiscuss(3);
+    fetchAnnouncement(3);
+  });
+
+  function limitWords(inputString, maxWords) {
+      var words = inputString.split(' ');
+      var limitedWords = words.slice(0, maxWords);
+      var resultString = limitedWords.join(' ');
+      return resultString+" <a href='dashboard/discuss'>...read more</a>";
+  }
+  function loginCheck(user){
     $.ajax({
-        url: "/api/forum",
-        method: "GET", // First change type to method here
-        success: function(response) {
-          var data = response.data
-          var ajaxPromises = [];
-          $('#post-count').text(response.data.length)
-
-          for (let index = 0; index < 2; index++) {
-            if (data[index]['avatar']!=null) {
-              var img = "{{asset('storage/images/users-images/')}}"+'/'+data[index]['avatar']
-            }
-            else{
-              var img = "{{asset('storage/images/default/default-user-icon.jpg')}}"
-            }
-            $('#forum-content').append(
-              '<div class="post p-3">'
-                +'<div class="user-block">'+
-                  '<img class="img-circle img-bordered-sm" src='+img+' alt="user image" style="width: 43px; height: 43px; object-fit: cover; border-radius: 50%;">'+
-                  '<span class="username">'+
-                    '<a href="dashboard/profile/detail?id='+data[index]['no_user']+'">'+data[index]['nama']+'</a>'+
-                  '</span>'+
-                  '<span class="description">'+data[index]['formatted_created_at']+'</span>'+
-                '</div>'+
-                '<p>'+
-                  limitWords(data[index]['content'],7)+
-                '</p>'+
-              '</div>'
-            );
+      url: "/api/data/"+user,
+      method: "GET", // First change type to method here
+      success: function(response) {
+        var data = response.data;
+        if (data.avatar != null) {
+            $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
+            $('#profile-avatar').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
           }
-        },
-        error: function(error) {
+        $(".d-block").text(data.nama);
+        $(".c-block").text('divisi '+data.nama_divisi);
+        // $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
+      },
+      error: function(error){
 
-        }
+      }
     });
-
+    $("#btnLogOut").click(function(){
+      sessionStorage.clear();
+      window.location = '../login';
+    });
+  }
+  function fetchDiscuss(page){
+    $.ajax({
+      url: "/api/forum",
+      method: "GET", // First change type to method here
+      success: function(response) {
+        var data = response.data
+        $('#post-count').text(response.data.length)
+        for (let index = 0; index < page; index++) {
+          if (data[index]['avatar']!=null) {
+            var img = "{{asset('storage/images/users-images/')}}"+'/'+data[index]['avatar']
+          }
+          else{
+            var img = "{{asset('storage/images/default/default-user-icon.jpg')}}"
+          }
+          $('#forum-content').append(
+            '<div class="post p-3">'
+              +'<div class="user-block">'+
+                '<img class="img-circle img-bordered-sm" src='+img+' alt="user image" style="width: 43px; height: 43px; object-fit: cover; border-radius: 50%;">'+
+                '<span class="username">'+
+                  '<a href="dashboard/profile/detail?id='+data[index]['no_user']+'">'+data[index]['nama']+'</a>'+
+                '</span>'+
+                '<span class="description">'+data[index]['formatted_created_at']+'</span>'+
+              '</div>'+
+              '<p>'+
+                limitWords(data[index]['content'],7)+
+              '</p>'+
+            '</div>'
+          );
+        }
+      },
+  });
+  }
+  function fetchAnnouncement(page){
     $.ajax({
       url: "/api/announcement",
       method: "GET", // First change type to method here
       success: function(response) {
-        var data_announcement = response.data
-
-        for (let index = 0; index < 3; index++) {
-          $.ajax({
-            url: "/api/data/"+data_announcement[index]['user_id'],
-            method: "GET", // First change type to method here
-            success: function(response) {
-              var data_user = response.data
-              if (data_user['avatar']!=null) {
-                var img = "{{asset('storage/images/users-images/')}}"+'/'+data_user['avatar']
-              }
-              else{
-                var img = "{{asset('storage/images/default/default-user-icon.jpg')}}"
-              }
-              console.log(data_user);
-              $('#announcement-content').append(
-                '<div class="post p-3">'
-                  +'<div class="user-block">'+
-                    '<img class="img-circle img-bordered-sm" src='+img+' alt="user image style="width: 43px; height: 43px; object-fit: cover; border-radius: 50%;"">'+
-                    '<span class="username">'+
-                      '<a href="dashboard/profile/detail?id='+data_user['user_id']+'">'+data_user['nama']+'</a>'+
-                    '</span>'+
-                    '<span class="description">'+data_announcement[index]['formatted_created_at']+'</span>'+
-                  '</div>'+
-                  '<p>'+
-                    data_announcement[index]['title']+
-                  '</p>'+
-                '</div>'
-              );
-            }
-          });
+        var data_user = response.data
+        for (let index = 0; index < page; index++) {
+          if (data_user[index]['avatar']!=null) {
+            var img = "{{asset('storage/images/users-images/')}}"+'/'+data_user[index]['avatar']
+          }
+          else{
+            var img = "{{asset('storage/images/default/default-user-icon.jpg')}}"
+          }
+          $('#announcement-content').append(
+            '<div class="post p-3">'
+              +'<div class="user-block">'+
+                '<img class="img-circle img-bordered-sm" src='+img+' alt="user image style="width: 43px; height: 43px; object-fit: cover; border-radius: 50%;"">'+
+                '<span class="username">'+
+                  '<a href="dashboard/profile/detail?id='+data_user[index]['user_id']+'">'+data_user[index]['nama']+'</a>'+
+                '</span>'+
+                '<span class="description">'+data_user[index]['formatted_created_at']+'</span>'+
+              '</div>'+
+              '<p>'+
+                data_user[index]['title']+
+              '</p>'+
+            '</div>'
+          );
         }
       },
-      error:function(error) {
-
-      }
     });
-
-    $.ajax({
-        url: "/api/data/"+sessionStorage.getItem('login'),
-        method: "GET", // First change type to method here
-        success: function(response) {
-          var data = response.data;
-          if (data.avatar != null) {
-              $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
-              $('#profile-avatar').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
-            }
-          console.log(data);
-          $(".d-block").text(data.nama);
-          $(".c-block").text('divisi '+data.nama_divisi);
-          // $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
-        },
-        error: function(error){
-
-        }
-      });
-      $("#btnLogOut").click(function(){
-        sessionStorage.clear();
-        window.location = '../login';
-      });
-  });
+  }
 </script>
 </html>
