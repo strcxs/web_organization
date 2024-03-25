@@ -116,7 +116,7 @@
 <script>
   $(document).ready(function(){
     if (sessionStorage.getItem('login')==null) {
-      return window.location = '../../login';
+      return window.location = '../login';
     }
     var urlParams = new URLSearchParams(window.location.search);
     var user_detail = urlParams.get('id');
