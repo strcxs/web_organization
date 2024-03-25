@@ -10,7 +10,6 @@
 </head>
 <body class="hold-transition light-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
 <div class="wrapper">
-  <!-- Navbar -->
   @include('include/navbar')
   @include('include/sidebar')
   <div class="content-wrapper">
@@ -18,7 +17,6 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-md-3">
-            <!-- Profile Image -->
             <div class="card card-primary card-outline">
               <div class="card-body box-profile">
                 <div class="text-center">
@@ -29,11 +27,8 @@
                        style="width: 90px; height: 90px; object-fit: cover; border-radius: 50%;" 
                        class="img-circle elevation-2" alt="User Image" id="user_image"> 
                 </div>
-
                 <h3 class="profile-username text-center" id="profile-name"></h3>
-
                 <p class="text-muted text-center" id="profile-nim"></p>
-
                 <ul class="list-group list-group-unbordered mb-3">
                   <li class="list-group-item">
                     <b>Angkatan</b> <b class="float-right" id="profile-angkatan"></b>
@@ -49,16 +44,14 @@
               </div>
             </div>
           </div>
-          <!-- /.col -->
           <div class="col-md-9">
             <div class="card">
               <div class="card-header p-2">
                 <ul class="nav nav-pills">
-                  {{-- <li class="nav-item"><a class="nav-link" href="#timeline" data-toggle="tab">Timeline</a></li> --}}
                   <li class="nav-item"><a class="nav-link active" href="#profile" data-toggle="tab">profile</a></li>
                   <li class="nav-item"><a class="nav-link" href="#profile-edit" data-toggle="tab">profile edit</a></li>
                 </ul>
-              </div><!-- /.card-header -->
+              </div>
               <div class="card-body">
                 <div class="tab-content">
                   <div class="tab-pane active" id="profile">
@@ -139,22 +132,16 @@
                       </div>
                     </form>
                   </div>
-                  <!-- /.tab-pane -->
                 </div>
-                <!-- /.tab-content -->
-              </div><!-- /.card-body -->
+              </div>
             </div>
-            <!-- /.card -->
           </div>
-          <!-- /.col -->
         </div>
-        <!-- /.row -->
-      </div><!-- /.container-fluid -->
+      </div>
     </section>
   </div>
   @include('include/footer')
 </div>
-<!-- jQuery -->
 @include('include/script')
 <script>
   $(document).ready(function(){
@@ -194,9 +181,6 @@
             $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
             $('#profile-avatar').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
           }
-        },
-        error: function(error){
-
         }
       });
       $("#btnLogOut").click(function(){
@@ -219,9 +203,6 @@
             $('#user_image').attr('src', `{{asset('storage/images/default/default-user-icon.jpg')}}`);
             $('#profile-avatar').attr('src', `{{asset('storage/images/default/default-user-icon.jpg')}}`);
             
-          },
-          error: function(error){
-
           }
         });
       });
@@ -244,10 +225,6 @@
               $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
               $('#profile-avatar').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
             }
-            // window.location = 'profile';
-          },
-          error: function(error) {
-              alert("error" + error);
           }
         });  
       });
@@ -267,12 +244,7 @@
               "no_telp": telp,
           },
           success: function(response) {
-            // window.location = 'profile';
-            // console.log(response.message);
             alert(response.message);
-          },
-          error: function(error) {
-              // alert("error" + error);
           }
         });    
       });

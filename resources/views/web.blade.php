@@ -2,40 +2,23 @@
 <html class="no-js" lang="en">
 
     <head>
-        <!-- meta data -->
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
-        <!--font-family-->
-		<link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&amp;subset=devanagari,latin-ext" rel="stylesheet">
-        
-        <!-- title of site -->
         <title>Teknik Informatika</title>
 
-        <!-- For favicon png -->
+		<link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&amp;subset=devanagari,latin-ext" rel="stylesheet">
 		<link rel="shortcut icon" type="image/icon" href="{{asset('storage/images/icon_himaif.png')}}"/>
-
-		<!--animate.css-->
         <link rel="stylesheet" href="{{asset('/css/dash/animate.css')}}">
-
-        <!--owl.carousel.css-->
         <link rel="stylesheet" href="{{asset('/css/dash/owl.carousel.min.css')}}">
 		<link rel="stylesheet" href="{{asset('/css/dash/owl.theme.default.min.css')}}">
-		
-        <!--bootstrap.min.css-->
         <link rel="stylesheet" href="{{asset('/css/dash/bootstrap.min.css')}}">
-		
-		<!-- bootsnav -->
-		<link rel="stylesheet" href="{{asset('/css/dash/bootsnav.css')}}">	
-        
-        <!--style.css-->
+		<link rel="stylesheet" href="{{asset('/css/dash/bootsnav.css')}}">
         <link rel="stylesheet" href="{{asset('/css/dash/style.css')}}">
-        
-        <!--responsive.css-->
         <link rel="stylesheet" href="{{asset('/css/dash/responsive.css')}}">
 		<link rel="stylesheet" href="{{asset('template/plugins/fontawesome-free/css/all.min.css')}}">
+
 		<style>
 			@media (min-width: 768px) {
 				.hide-on-desktop {
@@ -55,10 +38,8 @@
     </head>
 	
 	<body>
-		<!-- top-area Start -->
 		<header class="top-area">
 			<div class="header-area">
-				<!-- Start Navigation -->
 				<nav class="navbar navbar-default bootsnav navbar-fixed dark no-background">
 					<div class="container-fluid">
 						<div class="row">
@@ -88,7 +69,6 @@
 							</div>
 							<div class="col-12 col-sm-9 col-md-8 col-2">
 								<div class="row">
-									<!-- Collect the nav links, forms, and other content for toggling -->
 									<div class="collapse navbar-collapse menu-ui-design" id="navbar-menu">
 										<ul class="nav navbar-nav navbar-right" data-in="fadeInDown" data-out="fadeOutUp">
 											<li class="nav-item">
@@ -108,19 +88,11 @@
 								</div>
 							</div>
 						</div>						
-						<!-- /.navbar-collapse -->
-					</div><!--/.container-->
-				</nav><!--/nav-->
-				<!-- End Navigation -->
-			</div><!--/.header-area-->
-		
+					</div>
+				</nav>
+			</div>
 			<div class="clearfix"></div>
-		
 		</header>		
-		<!-- /.top-area-->
-		<!-- top-area End -->
-	
-		<!--welcome-hero start -->
 		<section id="welcome-hero" class="welcome-hero">
 			<div class="container">
 				<div class="row">
@@ -128,17 +100,12 @@
 						<div class="header-text">
 							<h2>Welcome to Our Website! <br><span>Kabinet Adhisti Nawasena</span></h2>
 							<p>Himpunan Mahasiswa Teknik Informatika</p>
-							{{-- <h2>Welcome to Our Website! <br><span>Himpunan Mahasiswa</span>  <br> Teknik Informatika </h2>
-							<p>Kabinet Adhisti Nawasena</p> --}}
-						</div><!--/.header-text-->
-					</div><!--/.col-->
-				</div><!-- /.row-->
-			</div><!-- /.container-->
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
 
-		</section><!--/.welcome-hero-->
-		<!--welcome-hero end -->
-
-		<!--about start -->
 		<section id="about" class="about">
 			<div class="section-heading text-center">
 				<h2>Tentang kami</h2>
@@ -185,44 +152,41 @@
 											<a href="#">
 												<i  class="fa fa-facebook" aria-hidden="true"></i>
 											</a>
-										</li><!-- / li -->
+										</li>
 										<li>
 											<a href="#">
 												<i  class="fa fa-dribbble" aria-hidden="true"></i>
 											</a>
 											
-										</li><!-- / li -->
+										</li>
 										<li>
 											<a href="#">
 												<i  class="fa fa-twitter" aria-hidden="true"></i>
 											</a>
 											
-										</li><!-- / li -->
+										</li>
 										<li>
 											<a href="#">
 												<i  class="fa fa-linkedin" aria-hidden="true"></i>
 											</a>
-										</li><!-- / li -->
+										</li>
 										<li>
 											<a href="#">
 												<i  class="fa fa-instagram" aria-hidden="true"></i>
 											</a>
-										</li><!-- / li -->
+										</li>
 										
 										
-									</ul><!-- / ul -->
-								</div><!-- /.about-list-icon -->
-
+									</ul>
+								</div>
 							</div>
 
 						</div>
 					</div>
 				</div>
 			</div>
-		</section><!--/.about-->
-		<!--about end -->
+		</section>
 	
-		<!--portfolio start -->
 		<section id="portfolio" class="portfolio">
 			<div class="portfolio-details">
 				<div class="section-heading text-center">
@@ -240,8 +204,8 @@
 											<a href="#">
 												ui/ux design
 											</a>
-										</div><!-- /.isotope-overlay -->
-									</div><!-- /.item -->
+										</div>
+									</div>
 
 									<div class="item">
 										<img src="{{asset('storage/images/adhisti.jpg')}}" alt="profile_image"/>
@@ -249,40 +213,38 @@
 											<a href="#">
 												ui/ux design
 											</a>
-										</div><!-- /.isotope-overlay -->
-									</div><!-- /.item -->
-								</div><!-- /.col -->
+										</div>
+									</div>
+								</div>
 
 								<div class="col-sm-4">
 									<div class="item">
 										<img src="{{asset('storage/images/adhisti.jpg')}}" alt="profile_image"/> 
-										{{-- <img src="assets/images/portfolio/p3.jpg" alt="portfolio image"/> --}}
 										<div class="isotope-overlay">
 											<a href="#">
 												web design
 											</a>
-										</div><!-- /.isotope-overlay -->
-									</div><!-- /.item -->
+										</div>
+									</div>
 									<div class="item">
 										<img src="{{asset('storage/images/adhisti.jpg')}}" alt="profile_image"/>
 										<div class="isotope-overlay">
 											<a href="#">
 												ui/ux design
 											</a>
-										</div><!-- /.isotope-overlay -->
-									</div><!-- /.item -->
-								</div><!-- /.col -->
+										</div>
+									</div>
+								</div>
 								
 								<div class="col-sm-4">
 									<div class="item">
-										{{-- <img src="assets/images/portfolio/p4.jpg" alt="portfolio image"/> --}}
 										<img src="{{asset('storage/images/adhisti.jpg')}}" alt="profile_image"/> 
 										<div class="isotope-overlay">
 											<a href="#">
 												web development
 											</a>
-										</div><!-- /.isotope-overlay -->
-									</div><!-- /.item -->
+										</div>
+									</div>
 									<div class="item">
 										<img src="{{asset('storage/images/adhisti.jpg')}}" alt="profile_image"/>
 										{{-- <img src="assets/images/portfolio/p5.jpg" alt="portfolio image"/> --}}
@@ -290,21 +252,15 @@
 											<a href="#">
 												web development
 											</a>
-										</div><!-- /.isotope-overlay -->
-									</div><!-- /.item -->
-								</div><!-- /.col -->
-
-								
-							</div><!-- /.row -->
-						</div><!--/.isotope-->
-					</div><!--/.gallery-content-->
-				</div><!--/.container-->
-			</div><!--/.portfolio-details-->
-
-		</section><!--/.portfolio-->
-		<!--portfolio end -->
-		
-		<!--contact start -->
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
 		<section id="contact" class="contact">
 			<div class="section-heading text-center">
 				<h2>kontak</h2>
@@ -320,45 +276,44 @@
 											<div class="col-sm-6 col-xs-12">
 												<div class="form-group">
 												  <input type="text" class="form-control" id="name" placeholder="Name*" name="name">
-												</div><!--/.form-group-->
-											</div><!--/.col-->
+												</div>
+											</div>
 											<div class="col-sm-6 col-xs-12">
 												<div class="form-group">
 													<input type="email" class="form-control" id="email" placeholder="Email*" name="email">
-												</div><!--/.form-group-->
-											</div><!--/.col-->
-										</div><!--/.row-->
+												</div>
+											</div>
+										</div>
 										<div class="row">
 											<div class="col-sm-12">
 												<div class="form-group">
 													<input type="text" class="form-control" id="subject" placeholder="Subject" name="subject">
-												</div><!--/.form-group-->
-											</div><!--/.col-->
-										</div><!--/.row-->
+												</div>
+											</div>
+										</div>
 										<div class="row">
 											<div class="col-sm-12">
 												<div class="form-group">
 													<textarea class="form-control" rows="8" id="comment" placeholder="Message" ></textarea>
-												</div><!--/.form-group-->
-											</div><!--/.col-->
-										</div><!--/.row-->
+												</div>
+											</div>
+										</div>
 										<div class="row">
 											<div class="col-sm-12">
 												<div class="single-contact-btn">
 													<a class="contact-btn" href="#" role="button">submit</a>
-												</div><!--/.single-single-contact-btn-->
-											</div><!--/.col-->
-										</div><!--/.row-->
-									</form><!--/form-->
-								</div><!--/.contact-form-->
-							</div><!--/.single-contact-box-->
-						</div><!--/.col-->
+												</div>
+											</div>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
 						<div class="col-md-offset-1 col-md-5 col-sm-6">
 							<div class="single-contact-box">
 								<div class="contact-adress">
 									<div class="contact-add-head">
 										<h3>HMIF Nurtanio Bandung</h3>
-										{{-- <p>uI/uX designer</p> --}}
 									</div>
 									<div class="contact-add-info">
 										<div class="single-contact-add-info">
@@ -374,49 +329,39 @@
 											<p>hmifunnur.com</p>
 										</div>
 									</div>
-								</div><!--/.contact-adress-->
+								</div>
 								<div class="hm-foot-icon">
 									<ul>
-										<li><a href="#"><i class="fa fa-facebook"></i></a></li><!--/li-->
-										<li><a href="#"><i class="fa fa-dribbble"></i></a></li><!--/li-->
-										<li><a href="#"><i class="fa fa-twitter"></i></a></li><!--/li-->
-										<li><a href="#"><i class="fa fa-linkedin"></i></a></li><!--/li-->
-										<li><a href="#"><i class="fa fa-instagram"></i></a></li><!--/li-->
-									</ul><!--/ul-->
-								</div><!--/.hm-foot-icon-->
-							</div><!--/.single-contact-box-->
-						</div><!--/.col-->
-					</div><!--/.row-->
-				</div><!--/.contact-content-->
-			</div><!--/.container-->
+										<li><a href="#"><i class="fa fa-facebook"></i></a></li>
+										<li><a href="#"><i class="fa fa-dribbble"></i></a></li>
+										<li><a href="#"><i class="fa fa-twitter"></i></a></li>
+										<li><a href="#"><i class="fa fa-linkedin"></i></a></li>
+										<li><a href="#"><i class="fa fa-instagram"></i></a></li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
 
-		</section><!--/.contact-->
-		<!--contact end -->
-
-		<!--footer-copyright start-->
 		<footer id="footer-copyright" class="footer-copyright">
 			<div class="container">
 				<div class="hm-footer-copyright text-center">
 					<p>
-						{{-- &copy; copyright HMIF Nurtanio Bandung. design and developed by <a href="https://www.themesine.com/">themesine</a> --}}
 						HMIF Nurtanio Bandung</a>
 						{{-- &copy; copyright HMIF Nurtanio Bandung</a> --}}
-					</p><!--/p-->
-				</div><!--/.text-center-->
-			</div><!--/.container-->
-
+					</p>
+				</div>
+			</div>
 			<div id="scroll-Top">
 				<div class="return-to-top">
 					<i class="fa fa-angle-up " id="scroll-top" ></i>
 				</div>
-				
-			</div><!--/.scroll-Top-->
-			
-        </footer><!--/.footer-copyright-->
-		<!--footer-copyright end-->
+			</div>
+        </footer>
 		
-		<!-- Include all js compiled plugins (below), or include individual files as needed -->
-
 		<script src="{{asset('/js//jquery.js')}}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
         <script src="{{asset('/js//bootstrap.min.js')}}"></script>
@@ -435,5 +380,4 @@
         <!--Custom JS-->
         <script src="{{asset('/js//custom.js')}}"></script>
     </body>
-	
 </html>

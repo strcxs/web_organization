@@ -8,19 +8,13 @@
 </head>
 <body class="hold-transition light-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
 <div class="wrapper">
-  <!-- Navbar -->
   @include('include/navbar')
   @include('include/sidebar')
   <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
     <section class="content py-3">
       <div class="container-fluid">
-        <!-- Main row -->
         <div class="row">
-          <!-- Left col -->
           <div class="col">
-          {{-- <div class="col-md-8"> --}}
-            <!-- annnouncement PANEL -->
             <div class="card">
               <div class="card-header">
                 <h3 class="card-title text-primary"><i class="nav-icon fas fa-bullhorn"></i> Announcement</h3>
@@ -32,15 +26,9 @@
                 <input id="new-announcement" class="form-control form-control-sm" type="text" placeholder="write new announcement" onkeydown=AnnouncementkeyPress(event)>
               </div>
             </div>
-              <!-- /.card-header -->
             <div>
               <div id="announcement-content">
-                {{-- <div>
-
-                </div>
-                <div id="forum-comment" class="card-body p-3">
-    
-                </div> --}}
+                {{-- announcement-content --}}
               </div>
             </div>
           </div>
@@ -50,7 +38,6 @@
   </div>
   @include('include/footer')
 </div>
-<!-- ./wrapper -->
 @include('include/script')
 <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 <script>
@@ -141,17 +128,14 @@
                 var img = "{{asset('storage/images/default/default-user-icon.jpg')}}"
               }
               $('#announcement-content').append(
-
                 '<div class="card p-3" id = "card-announcement-'+announcement['id']+'">'+
                   '<div class="post p-2">'+
                     '<div class="user-block">'+
-                      
                       '<div id="delete" class="card-tools float-right">'+
                         '<button id="btnDelete-'+announcement['id']+'" type="button" class="btn btn-tool">'+
                           '<i class="fa-solid fa-x">X</i>'+
                         '</button>'+
                       '</div>'+
-
                       '<img class="img-circle img-bordered-sm" src='+img+' alt="user image">'+
                       '<span class="username">'+
                         '<a href="#">'+announcement['nama']+'</a>'+
@@ -202,9 +186,6 @@
             }
           $(".d-block").text(data.nama);
           $(".c-block").text('divisi '+data.nama_divisi);
-        },
-        error: function(error){
-
         }
       });
       $("#btnLogOut").click(function(){
@@ -218,6 +199,7 @@
             submitAnnouncement(input)
         }
       }
+      
       function deleteAnnouncement(id) {
         $.ajax({
           url: "/api/announcement/"+id,

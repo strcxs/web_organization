@@ -18,10 +18,7 @@ class ResultController extends Controller
         ->orderBy('voting.number','asc')
         ->get();
 
-        // $vote = array_column($data,'result');
-
         foreach ($vote as $votes) {
-            // Mengganti format created_at menjadi waktu yang lebih ramah
             $votes->formatted_created_at=Carbon::parse($votes->created_at)->diffForHumans();
         }
         return new AngResource(true,'result', $vote);

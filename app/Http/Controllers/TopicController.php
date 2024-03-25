@@ -13,10 +13,8 @@ class TopicController extends Controller
         $topic = VoteTopic::select('*')
         ->orderBy('created_at','asc')
         ->get();
-        // $topic = Voting::orderBy('created_at','desc')->get();
         
         foreach ($topic as $topics) {
-            // Mengganti format created_at menjadi waktu yang lebih ramah
             $topics->formatted_created_at=Carbon::parse($topics->created_at)->diffForHumans();
         }
 
@@ -41,10 +39,8 @@ class TopicController extends Controller
         $topic = VoteTopic::select('*')
         ->orderBy('created_at','asc')
         ->get();
-        // $topic = Voting::orderBy('created_at','desc')->get();
         
         foreach ($topic as $topics) {
-            // Mengganti format created_at menjadi waktu yang lebih ramah
             $topics->formatted_created_at=Carbon::parse($topics->created_at)->diffForHumans();
         }
 
@@ -54,7 +50,6 @@ class TopicController extends Controller
     {
         $topic = VoteTopic::find($id);
 
-        // Memeriksa apakah ada perubahan pada data
         if ($request->topic_name != null && $request->topic_name != $topic->topic_name) {
             $topic->topic_name = $request->topic_name;
         }
