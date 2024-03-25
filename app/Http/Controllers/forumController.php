@@ -55,33 +55,33 @@ class forumController extends Controller
         $forum->formatted_created_at=Carbon::parse($forum->created_at)->diffForHumans();
 
         $pusher = new Pusher(
-            env('PUSHER_APP_KEY'),
-            env('PUSHER_APP_SECRET'),
-            env('PUSHER_APP_ID'),
+            env('PUSHER_APP_KEY','71d8b7362ac9e3875667'),
+            env('PUSHER_APP_SECRET','95d19ff4b7689fd7ea49'),
+            env('PUSHER_APP_ID','1772919'),
             [
-                'cluster' => env('PUSHER_APP_CLUSTER'),
+                'cluster' => env('PUSHER_APP_CLUSTER','ap1'),
                 'useTLS' => true
             ]
         );
         $pusher->trigger('discuss', 'sent-discuss', ['data' => $forum]);
-        
-        return new AngResource(true,'message sent successfully', $forum);
+
+        return new AngResource(true,"post send successfully", $forum);
     }
     public function destroy($id){
         $data = Forum::find($id);
         $data-> delete();
 
         $pusher = new Pusher(
-            env('PUSHER_APP_KEY'),
-            env('PUSHER_APP_SECRET'),
-            env('PUSHER_APP_ID'),
+            env('PUSHER_APP_KEY','71d8b7362ac9e3875667'),
+            env('PUSHER_APP_SECRET','95d19ff4b7689fd7ea49'),
+            env('PUSHER_APP_ID','1772919'),
             [
-                'cluster' => env('PUSHER_APP_CLUSTER'),
+                'cluster' => env('PUSHER_APP_CLUSTER','ap1'),
                 'useTLS' => true
             ]
         );
         $pusher->trigger('discuss', 'delete-discuss', ['data' => $data]);
         
-        return new AngResource(true,'message delete successfully', $data);
+        return new AngResource(true,'Data berhasil dihapus', $data);
     }
 }
