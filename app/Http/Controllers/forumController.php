@@ -11,20 +11,24 @@ use Illuminate\Support\Facades\Validator;
 
 class forumController extends Controller
 {
-    public function index(){
-        // $forum = Forum::orderBy('created_at','desc')->get();
-
-        $forum = Forum::join('data_anggota','forum.user_id','=','data_anggota.user_id')
-        ->select('forum.id','forum.content','forum.created_at','data_anggota.nama','data_anggota.avatar','data_anggota.user_id as no_user')
-        ->orderBy('created_at','desc')
-        ->get();
+    public function index(Request $request){
+        $pagination = $request->input('pagination',false);
+        if ($pagination) {
+            $perpage =$request->input('perPage',10);
+            $forum = Forum::join('data_anggota','forum.user_id','=','data_anggota.user_id')
+            ->select('forum.id','forum.content','forum.created_at','data_anggota.nama','data_anggota.avatar','data_anggota.user_id as no_user')
+            ->orderBy('created_at','desc')
+            ->paginate($perpage);
+        }else{
+            $forum = Forum::join('data_anggota','forum.user_id','=','data_anggota.user_id')
+            ->select('forum.id','forum.content','forum.created_at','data_anggota.nama','data_anggota.avatar','data_anggota.user_id as no_user')
+            ->orderBy('created_at','desc')
+            ->get();
+        }
 
         
         foreach ($forum as $forums) {
-            // Mengganti format created_at menjadi waktu yang lebih ramah
-            // $forums->formatted_created_at = Carbon::parse($forums->created_at)->diffForHumans();
             $forums->formatted_created_at=Carbon::parse($forums->created_at)->diffForHumans();
-            // $forums->comment_created_at=Carbon::parse($forums->comment_created_at)->diffForHumans();
         }
 
         return new AngResource(true,'data forum', $forum);

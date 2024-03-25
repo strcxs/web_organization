@@ -10,6 +10,14 @@
         box-shadow: none !important;
         margin-bottom: 0px;
     }
+    /* .btn-container{
+      refresh
+      z-index: 1;
+      position: fixed;
+      top: 17%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    } */
   </style>
 </head>
 <body class="hold-transition light-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
@@ -18,6 +26,13 @@
   @include('include/navbar')
   @include('include/sidebar')
   <div class="content-wrapper">
+    
+    {{-- refresh
+    <div class="btn-container">
+      <button id="refreshButton" class="btn btn-warning rounded-pill shadow" onclick="#">
+        new post <i class="fas fa-sync-alt"></i>
+      </button>
+    </div> --}}
     <!-- Content Header (Page header) -->
     <section class="content py-3">
       <div class="container-fluid">
@@ -26,7 +41,6 @@
           <!-- Left col -->
           <div class="col">
           {{-- <div class="col-md-8"> --}}
-            <!-- annnouncement PANEL -->
             <div class="card mb-3">
               <div class="card-header bg-primary">
                 <h3 class="card-title"><i class="nav-icon fas fa-bolt"></i> Mari Bersuara!</h3>
@@ -42,8 +56,7 @@
                   </button>
                 </div>
               </div>
-              {{-- <div id="forum-content"> --}}
-
+              
             </div>
               <!-- /.card-header -->
             <div class="card">
@@ -73,7 +86,6 @@
 
       var channel = pusher.subscribe('discuss');
       channel.bind('sent-discuss', function(data) {
-        $('#send-post').val("");
         if (data.data['avatar']!=null) {
           var img = "{{asset('storage/images/users-images/')}}"+'/'+data.data['avatar']
         }
@@ -179,95 +191,137 @@
 
       channel.bind('delete-comment', function(data) {
         $('#card-comment-' + data.data['id']).remove();
-        if ($('#forum-comment-' + data.data['forum_id'] + ' .card-comment').length == 0) {
-          $('#forum-comment-' + data.data['forum_id']).removeClass().addClass("card-footer card-comments collapse d-none");
-        };
-      });
-
-      // Fetch forum data
-      $.ajax({
-        url: "/api/forum",
-        method: "GET",
-        success: function(response) {
-          var forums = response.data;
-          $('#post-count').text(forums.length);
-
-          forums.forEach(function(forum) {
-            var img = forum.avatar ? "{{asset('storage/images/users-images/')}}" + '/' + forum.avatar : "{{asset('storage/images/default/default-user-icon.jpg')}}";
-
-            $('#forum-content').append(
-              '<div class="card p-3" id="card-content-' + forum.id + '">' +
-                '<div class="post p-2">' +
-                  '<div class="user-block">' +
-                    '<div id="delete" class="card-tools float-right">' +
-                      '<button id="btnDelete-' + forum.id + '" type="button" class="btn btn-tool">' +
-                        '<i class="fa-solid fa-x">X</i>' +
-                      '</button>' +
-                    '</div>' +
-                    '<img class="img-circle img-bordered-sm" src=' + img + ' alt="user image" style="width: 43px; height: 43px; object-fit: cover; border-radius: 50%;" >' +
-                    '<span class="username">' +
-                      '<a href="profile/detail?id=' + forum.no_user + '">' + forum.nama + '</a>' +
-                    '</span>' +
-                    '<span class="description">' + forum.formatted_created_at + '</span>' +
-                  '</div>' +
-                  '<p>' + forum.content + '</p>' +
-                  '<p>' +
-                    '<span>' +
-                      '<a id="count-comment-' + forum.id + '" class="link-black text-sm"></a>' +
-                    '</span>' +
-                  '</p>' +
-                  '<div class="row">' +
-                    '<input id="send-comment-' + forum.id + '" class="form-control col-10" type="text" placeholder="Type a comment" onkeydown="keyPress(event,' + forum.id + ')">' +
-                    '<button id="sent-comment-' + forum.id + '" class="btn btn-primary form-control col-2">' +
-                      '<i class="nav-icon fas fa-paper-plane"></i>' +
-                    '</button>' +
-                  '</div>' +
-                '</div>' +
-                '<div id="forum-comment-' + forum.id + '" class="card-footer card-comments d-none">' +
-                '</div>' +
-              '</div>'
-            );
-            
-            //admin only
-            if (sessionStorage.getItem('login') == 64) {
-                document.getElementById('btnDelete-'+ forum.id).style.display = "block";
-            } else {
-                document.getElementById('btnDelete-'+ forum.id).style.display = "none";
-            }
-
-            // Delete forum
-            $('#btnDelete-' + forum.id).on('click', function() {
-              deleteForum(forum.id);
-            });
-
-            // Fetch comments for the forum
-            fetchComments(forum.id);
-
-            // Handle comment submission
-            $('#sent-comment-' + forum.id).on('click', function() {
-              var input = $('#send-comment-' + forum.id).val();
-              if (input.trim() !== "") {
-                submitComment(forum.id, input);
-              }
-            });
-          });
-        },
-        error: function(error) {
-          console.error('Error fetching forum data:', error);
+        if ($('#forum-comment-' + data.data['id_forum'] + ' .card-comment').length == 0) {
+          $('#forum-comment-' + data.data['id_forum']).removeClass().addClass("card-footer card-comments d-none");
+          $('#count-comment-' + data.data['id_forum']).html('');
+        }else{
+          $('#count-comment-' + data.data['id_forum']).html(
+            '<div class="card-tools">' +
+              '<button type="button" class="btn btn-tool" data-card-widget="collapse" aria-expanded="false">' +
+                '<i class="far fa-comments mr-1"></i> Comments (' + $('#forum-comment-' + data.data['id_forum'] + ' .card-comment').length + ')' +
+              '</button>' +
+            '</div>'
+          );
         }
       });
-      
-      $('#sent-post').on('click', function() {
-        var input = $('#send-post').val();
+
+      //fetch data forum
+      let page = 1;
+      const itemsPerPage = 10; 
+      let isLoading = false;
+
+      // Fungsi untuk memuat data dari server
+      function loadData() {
+        if (!isLoading) {
+          isLoading = true;
           $.ajax({
-              url: "/api/forum",
-              method:'POST', // First change type to method here
-              data: {
-                  "user_id": sessionStorage.getItem('login'),
-                  "content": input
-              }
-          })
+            url: "/api/forum",
+            method: "GET",
+            data: {
+              pagination : true,
+              page: page,
+              perPage: itemsPerPage 
+            },
+            success: function(response) {
+              var forums = response.data.data;
+              $('#post-count').text(forums.length);
+
+              forums.forEach(function(forum) {
+                var img = forum.avatar ? "{{asset('storage/images/users-images/')}}" + '/' + forum.avatar : "{{asset('storage/images/default/default-user-icon.jpg')}}";
+
+                $('#forum-content').append(
+                  '<div class="card p-3" id="card-content-' + forum.id + '">' +
+                    '<div class="post p-2">' +
+                      '<div class="user-block">' +
+                        '<div id="delete" class="card-tools float-right">' +
+                          '<button id="btnDelete-' + forum.id + '" type="button" class="btn btn-tool">' +
+                            '<i class="fa-solid fa-x">X</i>' +
+                          '</button>' +
+                        '</div>' +
+                        '<img class="img-circle img-bordered-sm" src=' + img + ' alt="user image" style="width: 43px; height: 43px; object-fit: cover; border-radius: 50%;" >' +
+                        '<span class="username">' +
+                          '<a href="profile/detail?id=' + forum.no_user + '">' + forum.nama + '</a>' +
+                        '</span>' +
+                        '<span class="description">' + forum.formatted_created_at + '</span>' +
+                      '</div>' +
+                      '<p>' + forum.content + '</p>' +
+                      '<p>' +
+                        '<span>' +
+                          '<a id="count-comment-' + forum.id + '" class="link-black text-sm"></a>' +
+                        '</span>' +
+                      '</p>' +
+                      '<div class="row">' +
+                        '<input id="send-comment-' + forum.id + '" class="form-control col-10" type="text" placeholder="Type a comment" onkeydown="keyPress(event,' + forum.id + ')">' +
+                        '<button id="sent-comment-' + forum.id + '" class="btn btn-primary form-control col-2">' +
+                          '<i class="nav-icon fas fa-paper-plane"></i>' +
+                        '</button>' +
+                      '</div>' +
+                    '</div>' +
+                    '<div id="forum-comment-' + forum.id + '" class="card-footer card-comments d-none">' +
+                    '</div>' +
+                  '</div>'
+                );
+                
+                //admin only
+                if (sessionStorage.getItem('login') == 64) {
+                    document.getElementById('btnDelete-'+ forum.id).style.display = "block";
+                } else {
+                    document.getElementById('btnDelete-'+ forum.id).style.display = "none";
+                }
+
+                // Delete forum
+                $('#btnDelete-' + forum.id).on('click', function() {
+                  deleteForum(forum.id);
+                });
+
+                // Fetch comments for the forum
+                fetchComments(forum.id);
+
+                // Handle comment submission
+                $('#sent-comment-' + forum.id).on('click', function() {
+                  var input = $('#send-comment-' + forum.id).val();
+                  if (input.trim() !== "") {
+                    submitComment(forum.id, input);
+                  }
+                });
+              });
+              page++;
+              isLoading = false;
+            },
+            error: function(error) {
+              console.error('Error fetching forum data:', error);
+              isLoading = false;
+            }
+          });
+        }
+      }
+
+      // Fungsi untuk memeriksa apakah telah mencapai akhir halaman dan memuat data jika ya
+      function checkEndOfPage() {
+        const scrollPosition = $(window).scrollTop() + $(window).height();
+        const totalHeight = $(document).height();
+        if (scrollPosition >= totalHeight) {
+          loadData();
+        }
+      }
+
+      $(window).scroll(checkEndOfPage);
+
+      loadData();
+
+      var progress = false;
+      $('#sent-post').on('click', function() {
+        if (progress) {
+          return;
+        };
+
+        progress = true;
+        var input = $('#send-post').val();
+        if (input != null || input != " ") {
+          submitForum(input);
+        }
       });
+
       $.ajax({
           url: "/api/data/"+sessionStorage.getItem('login'),
           method: "GET", // First change type to method here
@@ -288,6 +342,9 @@
           window.location = '../login';
         });
     });
+
+    var progres_comment = false;
+    var progres_forum = false;
 
     // Function to fetch comments for a forum
     function fetchComments(forumId) {
@@ -324,13 +381,12 @@
     }
 
     // Function to submit a comment for a forum
-    var progress = false;
     function submitComment(forumId, content) {
-      if (progress) {
+      if (progres_comment) {
         return;
       };
 
-      progress = true;
+      progres_comment = true;
       $.ajax({
         url: "/api/comment",
         method: 'POST',
@@ -352,7 +408,32 @@
           console.error('Error submitting comment:', error);
         },
         complete: function(){
-          progress = false;
+          progres_comment = false;
+        }
+      });
+    }
+
+    function submitForum(content) {
+      if (progres_forum) {
+        return;
+      };
+
+      progres_forum = true;
+      $.ajax({
+        url: "/api/forum",
+        method: 'POST',
+        data: {
+          "user_id": sessionStorage.getItem('login'),
+          "content": content
+        },
+        success: function(response) {
+          $('#send-post').val("");
+        },
+        error: function(error) {
+          console.error('Error submitting forum:', error);
+        },
+        complete: function(){
+          progres_forum = false;
         }
       });
     }
@@ -439,6 +520,8 @@
           // If all comments are deleted, hide the comment section
           if ($('#forum-comment-' + forumId + ' .card-comment').length === 0) {
             $('#forum-comment-' + forumId).removeClass().addClass("card-footer card-comments d-none");
+            
+            $('#count-comment-' + forumId).html('');
           }
         },
         error: function(error) {
@@ -446,6 +529,7 @@
         }
       });
     }
+
     function keyPress(event,id){
       if (event.keyCode === 13) {
         var input = $('#send-comment-'+id).val();
@@ -457,14 +541,9 @@
     function PostkeyPress(event,id){
       if (event.keyCode === 13) {
         var input = $('#send-post').val();
-        $.ajax({
-            url: "/api/forum",
-            method: "POST", // First change type to method here
-            data: {
-                "user_id": sessionStorage.getItem('login'),
-                "content": input
-            }
-        })
+        if (input != null || input != " ") {
+          submitForum(input);
+        }
       }
     }
   </script>
