@@ -52,11 +52,11 @@ class comController extends Controller
         $comment->formatted_created_at=Carbon::parse($comment->created_at)->diffForHumans();
 
         $pusher = new Pusher(
-            env('PUSHER_APP_KEY'),
-            env('PUSHER_APP_SECRET'),
-            env('PUSHER_APP_ID'),
+            env('PUSHER_APP_KEY','71d8b7362ac9e3875667'),
+            env('PUSHER_APP_SECRET','95d19ff4b7689fd7ea49'),
+            env('PUSHER_APP_ID','1772919'),
             [
-                'cluster' => env('PUSHER_APP_CLUSTER'),
+                'cluster' => env('PUSHER_APP_CLUSTER','ap1'),
                 'useTLS' => true
             ]
         );
@@ -69,11 +69,11 @@ class comController extends Controller
         $data-> delete();
 
         $pusher = new Pusher(
-            env('PUSHER_APP_KEY'),
-            env('PUSHER_APP_SECRET'),
+            env('PUSHER_APP_KEY','71d8b7362ac9e3875667'),
+            env('PUSHER_APP_SECRET','95d19ff4b7689fd7ea49'),
             env('PUSHER_APP_ID','1772919'),
             [
-                'cluster' => env('PUSHER_APP_CLUSTER'),
+                'cluster' => env('PUSHER_APP_CLUSTER','ap1'),
                 'useTLS' => true
             ]
         );

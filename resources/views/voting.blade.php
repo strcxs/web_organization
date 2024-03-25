@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dashboard • Voting</title>
+  <title>AdminLTE 3 | User Profile</title>
   @include('include/link')
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
