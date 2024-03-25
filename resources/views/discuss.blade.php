@@ -27,22 +27,21 @@
           <div class="col">
           {{-- <div class="col-md-8"> --}}
             <!-- annnouncement PANEL -->
-            <div class="card ">
-              <div class="card-header">
-                <h3 class="card-title text-primary"><i class="nav-icon fas fa-bolt"></i> Mari Bersuara!</h3>
+            <div class="card mb-3">
+              <div class="card-header bg-primary">
+                <h3 class="card-title"><i class="nav-icon fas fa-bolt"></i> Mari Bersuara!</h3>
                 <div class="card-tools">
                 </div>
               </div>
               <div class="post p-3">
-                <p>suarakan pikiranmu disini</p>
+                {{-- <p>suarakan pikiranmu disini</p> --}}
                 <div class="row">
-                  <input id="send-post" class="form-control col-10" type="text" placeholder="luapkan semua.." onkeydown=PostkeyPress(event)>
+                  <input id="send-post" class="form-control col-10" type="text" placeholder="suarakan pikiranmu disini.." onkeydown=PostkeyPress(event)>
                   <button id="sent-post" class="btn btn-primary form-control col-2">
                     <i class="nav-icon fas fa-paper-plane"></i>
                   </button>
                 </div>
               </div>
-              <hr class="border-top">
               {{-- <div id="forum-content"> --}}
 
             </div>
@@ -59,11 +58,132 @@
 </div>
 <!-- ./wrapper -->
 @include('include/script')
+<script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 <script>
+    var datasave = [];
+    var id_comment = [];
     $(document).ready(function(){
       if (sessionStorage.getItem('login')==null) {
         return window.location = '../login';
       }
+
+      var pusher = new Pusher('71d8b7362ac9e3875667', {
+        cluster: 'ap1'
+      });
+
+      var channel = pusher.subscribe('discuss');
+      channel.bind('sent-discuss', function(data) {
+        $('#send-post').val("");
+        if (data.data['avatar']!=null) {
+          var img = "{{asset('storage/images/users-images/')}}"+'/'+data.data['avatar']
+        }
+        else{
+          var img = "{{asset('storage/images/default/default-user-icon.jpg')}}"
+        }
+        $('#forum-content').prepend(
+          '<div class="card p-3" id=card-content-'+data.data['id']+'>'+
+            '<div class="post p-2">'+
+              '<div class="user-block">'+
+
+                '<div id="delete" class="card-tools float-right">'+
+                  '<button id="btnDelete-'+data.data['id']+'" type="button" class="btn btn-tool">'+
+                    '<i class="fa-solid fa-x">X</i>'+
+                  '</button>'+
+                '</div>'+
+
+                '<img class="img-circle img-bordered-sm" src='+img+' alt="user image" style="width: 43px; height: 43px; object-fit: cover; border-radius: 50%;" >'+
+                '<span class="username">'+
+                  '<a href="profile/detail?id='+data.data['no_user']+'">'+data.data['nama']+'</a>'+
+                '</span>'+
+                '<span class="description">'+data.data['formatted_created_at']+'</span>'+
+              '</div>'+
+              '<p>'+
+                data.data['content']+
+              '</p>'+
+              '<p>'+
+                '<span>'+
+                  '<a id="count-comment-'+data.data['id']+'" class="link-black text-sm">'+
+                  '</a>'+
+                '</span>'+
+              '</p>'+
+              '<div class="row">'+
+                '<input id="send-comment-'+data.data['id']+'"  class="form-control col-10" type="text" placeholder="Type a comment" onkeydown=keyPress(event,'+data.data['id']+')>'+
+                '<button id="sent-comment-'+data.data['id']+'" class="btn btn-primary form-control col-2">'+
+                  '<i class="nav-icon fas fa-paper-plane"></i>'+
+                '</button>'+
+              '</div>'+
+            '</div>'+
+              '<div id="forum-comment-'+data.data['id']+'" class="card-footer card-comments d-none">'+
+            '</div>'+
+          '</div>'
+
+        );
+        if (sessionStorage.getItem('login') == 64) {
+                  document.getElementById('btnDelete-'+ data.data['id']).style.display = "block";
+        } else {
+            document.getElementById('btnDelete-'+ data.data['id']).style.display = "none";
+        }
+        $('#btnDelete-' + data.data['id']).on('click', function() {
+          deleteForum(data.data['id'])
+        });
+
+        $('#sent-comment-'+data.data['id']+'').on('click', function() {
+          var input = $('#send-comment-'+data.data['id']+'').val();
+          if (input != null || input != " ") {
+            submitComment(data.data['id'],input)
+          }
+        });
+      });
+
+      channel.bind('delete-discuss', function(data) {
+        $('#card-content-'+data.data['id']+'').remove();
+      });
+
+      channel.bind('sent-comment', function(data) {
+
+        $.ajax({
+          url: "/api/comment/" + data.data['forum_id'],
+          method: "GET",
+          success: function(response) {
+            var comments = response.data;
+            var commentCountElement = $('#count-comment-' + data.data['forum_id']);
+
+            if (comments && comments.length > 0) {
+              commentCountElement.html(
+                '<div class="card-tools">' +
+                  '<button type="button" class="btn btn-tool" data-card-widget="collapse" aria-expanded="false">' +
+                    '<i class="far fa-comments mr-1"></i> Comments (' + comments.length + ')' +
+                  '</button>' +
+                '</div>'
+              );
+              var commentContainer = $('#forum-comment-' + data.data['forum_id']);
+              commentContainer.removeClass().addClass("card-footer card-comments collapse");
+
+              $('#send-comment-'+data.data['forum_id']).val("");
+              if (sessionStorage.getItem('login') == data.data['no_user']) {
+                $('#forum-comment-'+data.data['forum_id']).removeClass().addClass("card-footer card-comments ");
+              }
+              comments.forEach(function(comment) {
+                if (!id_comment.includes(comment.id)){
+                  renderComment(comment, commentContainer, data.data['forum_id'], prepend=false);
+                  id_comment.push(comment.id)
+                }
+              });
+
+              // renderComment(comment, commentContainer, data.data['forum_id'], prepend=false);
+            }
+          }
+        });
+      });
+
+
+      channel.bind('delete-comment', function(data) {
+        $('#card-comment-' + data.data['id']).remove();
+        if ($('#forum-comment-' + data.data['forum_id'] + ' .card-comment').length == 0) {
+          $('#forum-comment-' + data.data['forum_id']).removeClass().addClass("card-footer card-comments collapse d-none");
+        };
+      });
+
       // Fetch forum data
       $.ajax({
         url: "/api/forum",
@@ -136,139 +256,6 @@
           console.error('Error fetching forum data:', error);
         }
       });
-
-      // Function to fetch comments for a forum
-      function fetchComments(forumId) {
-        $.ajax({
-          url: "/api/comment/" + forumId,
-          method: "GET",
-          success: function(response) {
-            var comments = response.data;
-            var commentCountElement = $('#count-comment-' + forumId);
-
-            if (comments && comments.length > 0) {
-              commentCountElement.html(
-                '<div class="card-tools">' +
-                  '<button type="button" class="btn btn-tool" data-card-widget="collapse" aria-expanded="false">' +
-                    '<i class="far fa-comments mr-1"></i> Comments (' + comments.length + ')' +
-                  '</button>' +
-                '</div>'
-              );
-
-              var commentContainer = $('#forum-comment-' + forumId);
-              commentContainer.removeClass().addClass("card-footer card-comments collapse");
-
-              comments.forEach(function(comment) {
-                renderComment(comment, commentContainer, forumId);
-              });
-            } else {
-              commentCountElement.text('');
-            }
-          },
-          error: function(error) {
-            console.error('Error fetching comments:', error);
-          }
-        });
-      }
-
-      // Function to submit a comment for a forum
-      function submitComment(forumId, content) {
-        $.ajax({
-          url: "/api/comment",
-          method: 'POST',
-          data: {
-            "id_forum": forumId,
-            "user_id": sessionStorage.getItem('login'),
-            "content": content
-          },
-          success: function(response) {
-            var comment = response.data;
-            var commentContainer = $('#forum-comment-' + forumId);
-
-            $('#send-comment-' + forumId).val("");
-            commentContainer.removeClass().addClass("card-footer card-comments");
-
-            renderComment(comment, commentContainer, forumId);
-          },
-          error: function(error) {
-            console.error('Error submitting comment:', error);
-          }
-        });
-      }
-
-      // Function to render a comment in the UI
-      function renderComment(comment, container, forumId) {
-        var img = comment.avatar ? "{{asset('storage/images/users-images/')}}" + '/' + comment.avatar : "{{asset('storage/images/default/default-user-icon.jpg')}}";
-
-        container.prepend(
-          '<div class="card-comment" id="card-comment-' + comment.id + '">' +
-            '<div id="delete" class="card-tools float-right">' +
-              '<button id="btnDeletecomment-' + comment.id + '" type="button" class="btn btn-tool">' +
-                '<i class="fa-solid fa-x">X</i>' +
-              '</button>' +
-            '</div>' +
-            '<img class="img-circle img-sm" src=' + img + ' alt="User Image">' +
-            '<div class="comment-text">' +
-              '<span class="username">' +
-                '<a href="profile/detail?id=' + comment.no_user + '">' + comment.nama + '</a>' +
-                '<span class="text-muted float-right">' + comment.formatted_created_at + '</span>' +
-              '</span>' +
-              comment.content +
-            '</div>' +
-          '</div>'
-        );
-
-        //admin only
-        if (sessionStorage.getItem('login') == 64) {
-            document.getElementById('btnDeletecomment-'+ comment.id).style.display = "block";
-        } else {
-            document.getElementById('btnDeletecomment-'+ comment.id).style.display = "none";
-        }
-
-        // Delete comment
-        $('#btnDeletecomment-' + comment.id).on('click', function() {
-          deleteComment(comment.id, forumId);
-        });
-      }
-
-      // Function to delete a forum
-      function deleteForum(forumId) {
-        $.ajax({
-          url: "/api/forum/" + forumId,
-          method: "DELETE",
-          success: function(response) {
-            var data = response.data;
-            console.log(response);
-            $('#card-content-' + forumId).remove();
-          },
-          error: function(error) {
-            console.error('Error deleting forum:', error);
-          }
-        });
-      }
-
-      // Function to delete a comment
-      function deleteComment(commentId, forumId) {
-        $.ajax({
-          url: "/api/comment/" + commentId,
-          method: "DELETE",
-          success: function(response) {
-            var data = response.data;
-            console.log(response);
-            $('#card-comment-' + commentId).remove();
-
-            // If all comments are deleted, hide the comment section
-            if ($('#forum-comment-' + forumId + ' .card-comment').length === 0) {
-              $('#forum-comment-' + forumId).removeClass().addClass("card-footer card-comments d-none");
-            }
-          },
-          error: function(error) {
-            console.error('Error deleting comment:', error);
-          }
-        });
-      }
-
-
       
       $('#sent-post').on('click', function() {
         var input = $('#send-post').val();
@@ -278,146 +265,6 @@
               data: {
                   "user_id": sessionStorage.getItem('login'),
                   "content": input
-              },
-              success: function(response) {
-                $('#send-post').val("");
-                if (response.data['avatar']!=null) {
-                  var img = "{{asset('storage/images/users-images/')}}"+'/'+response.data['avatar']
-                }
-                else{
-                  var img = "{{asset('storage/images/default/default-user-icon.jpg')}}"
-                }
-                $('#forum-content').prepend(
-                  '<div class="card p-3" id=card-content-'+response.data['id']+'>'+
-                    '<div class="post p-2">'+
-                      '<div class="user-block">'+
-
-                        '<div id="delete" class="card-tools float-right">'+
-                          '<button id="btnDelete-'+response.data['id']+'" type="button" class="btn btn-tool">'+
-                            '<i class="fa-solid fa-x">X</i>'+
-                          '</button>'+
-                        '</div>'+
-
-                        '<img class="img-circle img-bordered-sm" src='+img+' alt="user image">'+
-                        '<span class="username">'+
-                          '<a href="profile/detail?id='+response.data['no_user']+'">'+response.data['nama']+'</a>'+
-                        '</span>'+
-                        '<span class="description">'+response.data['formatted_created_at']+'</span>'+
-                      '</div>'+
-                      '<p>'+
-                        response.data['content']+
-                      '</p>'+
-                      '<p>'+
-                        '<span>'+
-                          '<a id="count-comment-'+response.data['id']+'" class="link-black text-sm">'+
-                          '</a>'+
-                        '</span>'+
-                      '</p>'+
-                      '<div class="row">'+
-                        '<input id="send-comment-'+response.data['id']+'"  class="form-control col-10" type="text" placeholder="Type a comment" onkeydown=keyPress(event,'+response.data['id']+')>'+
-                        '<button id="sent-comment-'+response.data['id']+'" class="btn btn-primary form-control col-2">'+
-                          '<i class="nav-icon fas fa-paper-plane"></i>'+
-                        '</button>'+
-                      '</div>'+
-                    '</div>'+
-                      '<div id="forum-comment-'+response.data['id']+'" class="card-footer card-comments d-none">'+
-                    '</div>'+
-                  '</div>'
-
-                );
-                if (sessionStorage.getItem('login') == 64) {
-                          document.getElementById('btnDelete-'+ response.data['id']).style.display = "block";
-                } else {
-                    document.getElementById('btnDelete-'+ response.data['id']).style.display = "none";
-                }
-                $('#btnDelete-' + response.data['id']).on('click', function() {
-                  // alert('Tombol delete di-klik untuk elemen dengan ID ' + response.data['id']);
-                  var forr = response.data['id'];
-                  $.ajax({
-                    url: "/api/forum/"+forr,
-                    method: "delete", // First change type to method here    
-                    
-                    success: function(response) {
-                      var data = response.data;
-                      console.log(response);
-                      $('#card-content-'+forr+'').remove();
-                    },
-                    error: function(error){
-
-                    }
-                  });
-                });
-
-                $('#sent-comment-'+response.data['id']+'').on('click', function() {
-                  var input = $('#send-comment-'+response.data['id']+'').val();
-                  if (input != null || input != " ") {
-                    $.ajax({
-                      url: "/api/comment",
-                      method: "POST", // First change type to method here
-                      data: {
-                          "id_forum": response.data['id'],
-                          "user_id": sessionStorage.getItem('login'),
-                          "content": input
-                      },
-                      success: function(response) {
-                        // console.log(response);
-                        if (response.data['avatar']!=null) {
-                          var img = "{{asset('storage/images/users-images/')}}"+'/'+response.data['avatar']
-                        }
-                        else{
-                          var img = "{{asset('storage/images/default/default-user-icon.jpg')}}"
-                        }
-                        $('#send-comment-'+response.data['forum_id']).val("");
-                        $('#forum-comment-'+response.data['forum_id']).removeClass().addClass("card-footer card-comments ");
-                        $('#forum-comment-'+response.data['forum_id']).prepend(
-                          '<div class="card-comment" id="card-comment-'+response.data['forum_id']+'">'+  
-                            '<div id="delete" class="card-tools float-right">'+
-                              '<button id="btnDeletecomment-'+response.data['forum_id']+'" type="button" class="btn btn-tool">'+
-                                '<i class="fa-solid fa-x">X</i>'+
-                              '</button>'+
-                            '</div>'+
-                            '<img class="img-circle img-sm" src='+img+' alt="User Image">'+
-                            '<div class="comment-text">'+
-                              '<span class="username">'+
-                                '<a href="profile/detail?id='+response.data['no_user']+'">'+response.data['nama']+'</a>'+
-                                '<span class="text-muted float-right">'+response.data['formatted_created_at']+'</span>'+
-                              '</span>'+
-                              response.data['content']+
-                            '</div>'+
-                          '</div>'
-                        );
-                        if (sessionStorage.getItem('login') == 64) {
-                            document.getElementById('btnDeletecomment-'+ response.data['forum_id']).style.display = "block";
-                        } else {
-                            document.getElementById('btnDeletecomment-'+ response.data['forum_id']).style.display = "none";
-                        }
-                        $('#btnDeletecomment-' + response.data['id']).on('click', function() {
-                          // alert('Tombol delete di-klik untuk elemen dengan ID ' + response.data['id']);
-                          var forr = response.data['id'];
-                          $.ajax({
-                            url: "/api/comment/"+forr,
-                            method: "delete", // First change type to method here    
-                            
-                            success: function(response) {
-                              var data = response.data;
-                              console.log(response);
-                              $('#card-content-'+forr+'').remove();
-                            },
-                            error: function(error){
-
-                            }
-                          });
-                        });
-                      },
-                      error:function(error) {
-            
-                      }
-                    });
-                  }
-                });
-              },
-              error:function(error) {
-
               }
           })
       });
@@ -441,71 +288,169 @@
           window.location = '../login';
         });
     });
+
+    // Function to fetch comments for a forum
+    function fetchComments(forumId) {
+      $.ajax({
+        url: "/api/comment/" + forumId,
+        method: "GET",
+        success: function(response) {
+          var comments = response.data;
+          var commentCountElement = $('#count-comment-' + forumId);
+
+          if (comments && comments.length > 0) {
+            commentCountElement.html(
+              '<div class="card-tools">' +
+                '<button type="button" class="btn btn-tool" data-card-widget="collapse" aria-expanded="false">' +
+                  '<i class="far fa-comments mr-1"></i> Comments (' + comments.length + ')' +
+                '</button>' +
+              '</div>'
+            );
+            var commentContainer = $('#forum-comment-' + forumId);
+            commentContainer.removeClass().addClass("card-footer card-comments collapse");
+
+            comments.forEach(function(comment) {
+              id_comment.push(comment['id']);
+              renderComment(comment, commentContainer, forumId);
+            });
+          } else {
+            commentCountElement.html('');
+          }
+        },
+        error: function(error) {
+          console.error('Error fetching comments:', error);
+        }
+      });
+    }
+
+    // Function to submit a comment for a forum
+    var progress = false;
+    function submitComment(forumId, content) {
+      if (progress) {
+        return;
+      };
+
+      progress = true;
+      $.ajax({
+        url: "/api/comment",
+        method: 'POST',
+        data: {
+          "id_forum": forumId,
+          "user_id": sessionStorage.getItem('login'),
+          "content": content
+        },
+        success: function(response) {
+          var comment = response.data;
+          var commentContainer = $('#forum-comment-' + forumId);
+
+          $('#send-comment-' + forumId).val("");
+          commentContainer.removeClass().addClass("card-footer card-comments");
+
+          // renderComment(comment, commentContainer, forumId);
+        },
+        error: function(error) {
+          console.error('Error submitting comment:', error);
+        },
+        complete: function(){
+          progress = false;
+        }
+      });
+    }
+
+    // Function to render a comment in the UI
+    function renderComment(comment, container, forumId,prepend=true) {
+      var img = comment.avatar ? "{{asset('storage/images/users-images/')}}" + '/' + comment.avatar : "{{asset('storage/images/default/default-user-icon.jpg')}}";
+
+      if (prepend) {
+        container.prepend(
+          '<div class="card-comment" id="card-comment-' + comment.id + '">' +
+            '<div id="delete" class="card-tools float-right">' +
+              '<button id="btnDeletecomment-' + comment.id + '" type="button" class="btn btn-tool">' +
+                '<i class="fa-solid fa-x">X</i>' +
+              '</button>' +
+            '</div>' +
+            '<img class="img-circle img-sm" src=' + img + ' alt="User Image" style="width: 27px; height: 27px; object-fit: cover; border-radius: 50%;" >' +
+            '<div class="comment-text">' +
+              '<span class="username">' +
+                '<a href="profile/detail?id=' + comment.no_user + '">' + comment.nama + '</a>' +
+                '<span class="text-muted float-right">' + comment.formatted_created_at + '</span>' +
+              '</span>' +
+              comment.content +
+            '</div>' +
+          '</div>'
+        );
+      }else{
+        container.append(
+          '<div class="card-comment" id="card-comment-' + comment.id + '">' +
+            '<div id="delete" class="card-tools float-right">' +
+              '<button id="btnDeletecomment-' + comment.id + '" type="button" class="btn btn-tool">' +
+                '<i class="fa-solid fa-x">X</i>' +
+              '</button>' +
+            '</div>' +
+            '<img class="img-circle img-sm" src=' + img + ' alt="User Image" style="width: 27px; height: 27px; object-fit: cover; border-radius: 50%;" >' +
+            '<div class="comment-text">' +
+              '<span class="username">' +
+                '<a href="profile/detail?id=' + comment.no_user + '">' + comment.nama + '</a>' +
+                '<span class="text-muted float-right">' + comment.formatted_created_at + '</span>' +
+              '</span>' +
+              comment.content +
+            '</div>' +
+          '</div>'
+        );
+      }
+
+      //admin only
+      if (sessionStorage.getItem('login') == 64) {
+          document.getElementById('btnDeletecomment-'+ comment.id).style.display = "block";
+      } else {
+          document.getElementById('btnDeletecomment-'+ comment.id).style.display = "none";
+      }
+
+      // Delete comment
+      $('#btnDeletecomment-' + comment.id).on('click', function() {
+        deleteComment(comment.id, forumId);
+      });
+    }
+
+    // Function to delete a forum
+    function deleteForum(forumId) {
+      $.ajax({
+        url: "/api/forum/" + forumId,
+        method: "DELETE",
+        success: function(response) {
+          var data = response.data;
+          $('#card-content-' + forumId).remove();
+        },
+        error: function(error) {
+          console.error('Error deleting forum:', error);
+        }
+      });
+    }
+
+    // Function to delete a comment
+    function deleteComment(commentId, forumId) {
+      $.ajax({
+        url: "/api/comment/" + commentId,
+        method: "DELETE",
+        success: function(response) {
+          var data = response.data;
+          $('#card-comment-' + commentId).remove();
+
+          // If all comments are deleted, hide the comment section
+          if ($('#forum-comment-' + forumId + ' .card-comment').length === 0) {
+            $('#forum-comment-' + forumId).removeClass().addClass("card-footer card-comments d-none");
+          }
+        },
+        error: function(error) {
+          console.error('Error deleting comment:', error);
+        }
+      });
+    }
     function keyPress(event,id){
       if (event.keyCode === 13) {
         var input = $('#send-comment-'+id).val();
         if (input != null || input != " ") {
-          $.ajax({
-            url: "/api/comment",
-            method: "POST", // First change type to method here
-            data: {
-                "id_forum": id,
-                "user_id": sessionStorage.getItem('login'),
-                "content": input
-            },
-            success: function(response) {
-              if (response.data['avatar']!=null) {
-                var img = "{{asset('storage/images/users-images/')}}"+'/'+response.data['avatar']
-              }
-              else{
-                var img = "{{asset('storage/images/default/default-user-icon.jpg')}}"
-              }
-              $('#send-comment-'+id).val("");
-              $('#forum-comment-'+id).removeClass().addClass("card-footer card-comments ");
-              $('#forum-comment-'+id).prepend(
-                '<div class="card-comment" id="card-comment-'+id+'">'+  
-                  '<div id="delete" class="card-tools float-right">'+
-                    '<button id="btnDeletecomment-'+id+'" type="button" class="btn btn-tool">'+
-                      '<i class="fa-solid fa-x">X</i>'+
-                    '</button>'+
-                  '</div>'+
-                  '<img class="img-circle img-sm" src='+img+' alt="User Image">'+
-                  '<div class="comment-text">'+
-                    '<span class="username">'+
-                      '<a href="profile/detail?id='+response.data['no_user']+'">'+response.data['nama']+'</a>'+
-                      '<span class="text-muted float-right">'+response.data['formatted_created_at']+'</span>'+
-                    '</span>'+
-                    response.data['content']+
-                  '</div>'+
-                '</div>'
-              );
-              if (sessionStorage.getItem('login') == 64) {
-                  document.getElementById('btnDeletecomment-'+ id).style.display = "block";
-              } else {
-                  document.getElementById('btnDeletecomment-'+ id).style.display = "none";
-              }
-              $('#btnDeletecomment-' + id).on('click', function() {
-                // alert('Tombol delete di-klik untuk elemen dengan ID ' + id);
-                var forr = id;
-                $.ajax({
-                  url: "/api/comment/"+forr,
-                  method: "delete", // First change type to method here    
-                  
-                  success: function(response) {
-                    var data = response.data;
-                    console.log(response);
-                    $('#card-content-'+forr+'').remove();
-                  },
-                  error: function(error){
-
-                  }
-                });
-              });
-            },
-            error:function(error) {
-  
-            }
-          });
+          submitComment(id,input)
         }
       }
     }
@@ -518,77 +463,6 @@
             data: {
                 "user_id": sessionStorage.getItem('login'),
                 "content": input
-            },
-            success: function(response) {
-              $('#send-post').val("");
-              if (response.data['avatar']!=null) {
-                var img = "{{asset('storage/images/users-images/')}}"+'/'+response.data['avatar']
-              }
-              else{
-                var img = "{{asset('storage/images/default/default-user-icon.jpg')}}"
-              }
-              $('#forum-content').prepend(
-                '<div class="card p-3" id=card-content-'+response.data['id']+'>'+
-                  '<div class="post p-2">'+
-                    '<div class="user-block">'+
-
-                      '<div id="delete" class="card-tools float-right">'+
-                        '<button id="btnDelete-'+response.data['id']+'" type="button" class="btn btn-tool">'+
-                          '<i class="fa-solid fa-x">X</i>'+
-                        '</button>'+
-                      '</div>'+
-
-                      '<img class="img-circle img-bordered-sm" src='+img+' alt="user image">'+
-                      '<span class="username">'+
-                        '<a href="profile/detail?id='+response.data['no_user']+'">'+response.data['nama']+'</a>'+
-                      '</span>'+
-                      '<span class="description">'+response.data['formatted_created_at']+'</span>'+
-                    '</div>'+
-                    '<p>'+
-                      response.data['content']+
-                    '</p>'+
-                    '<p>'+
-                      '<span>'+
-                        '<a id="count-comment-'+response.data['id']+'" class="link-black text-sm">'+
-                        '</a>'+
-                      '</span>'+
-                    '</p>'+
-                    '<div class="row">'+
-                      '<input id="send-comment-'+response.data['id']+'"  class="form-control col-10" type="text" placeholder="Type a comment" onkeydown=keyPress(event,'+response.data['id']+')>'+
-                      '<button id="sent-comment-'+response.data['id']+'" class="btn btn-primary form-control col-2">'+
-                        '<i class="nav-icon fas fa-paper-plane"></i>'+
-                      '</button>'+
-                    '</div>'+
-                  '</div>'+
-                    '<div id="forum-comment-'+response.data['id']+'" class="card-footer card-comments d-none">'+
-                  '</div>'+
-                '</div>'
-              );
-              if (sessionStorage.getItem('login') == 64) {
-                  document.getElementById('btnDelete-'+ response.data['id']).style.display = "block";
-              } else {
-                  document.getElementById('btnDelete-'+ response.data['id']).style.display = "none";
-              }
-              $('#btnDelete-' + response.data['id']).on('click', function() {
-                // alert('Tombol delete di-klik untuk elemen dengan ID ' + response.data['id']);
-                var forr = response.data['id'];
-                $.ajax({
-                  url: "/api/forum/"+forr,
-                  method: "delete", // First change type to method here    
-                  
-                  success: function(response) {
-                    var data = response.data;
-                    console.log(response);
-                    $('#card-content-'+forr+'').remove();
-                  },
-                  error: function(error){
-
-                  }
-                });
-              });
-            },
-            error:function(error) {
-
             }
         })
       }
