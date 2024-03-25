@@ -24,8 +24,6 @@
           <div class="back">
             <img class="back_img" src="{{asset('storage/images/icon_himaif.png')}}" alt="">
             <div class="text">
-              {{-- <span class="text-1">Complete miles of journey <br> with one step</span>
-              <span class="text-3">Let's get started</span> --}}
             </div>
           </div>
         </div>
@@ -50,8 +48,6 @@
                   <div class="input-box">
                     <i class="fas fa-lock"></i>
                     <input name="password" id="password" type="password" placeholder="Enter your password" required>
-                  </div>
-                  {{-- <div class="text"><a href="#">Forgot password?</a></div> --}}
                   <div class="button input-box">
                     <input type="button" id="btnSubmit" value="Submit" name="login">
                   </div>
@@ -134,9 +130,6 @@
             $('#username').val("");
             $('#password').val("");
           }
-          },
-          error: function(error) {
-              alert("error" + error);
           }
         });    
       });
@@ -157,26 +150,17 @@
           success: function(response) {
             $("#back_alertt").text(response.password);
             if (response.success === true){
-              // alert('berhasil membuat akun, silahkan login ulang');
-
               $("#sign_alertt").text('success, silahkan login ulang');
-              // $('#front-alert').show();
               $('#sign-alert').slideDown().delay(3000);
               setTimeout(() => {
                 window.location = 'login';
               }, 2000);
-
-
             }
             else{
               $("#back_alertt").text(response.message);
-              // $('#front-alert').show();
               $('#back-alert').slideDown().delay(4000);
               $('#back-alert').slideUp();
             }
-          },
-          error: function(error) {
-              alert("error" + error);
           }
         });    
       });

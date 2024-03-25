@@ -14,25 +14,13 @@
 </head>
 <body class="hold-transition light-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
 <div class="wrapper">
-  <!-- Navbar -->
   @include('include/navbar')
   @include('include/sidebar')
   <div class="content-wrapper">
-    
-    {{-- refresh
-    <div class="btn-container">
-      <button id="refreshButton" class="btn btn-warning rounded-pill shadow" onclick="#">
-        new post <i class="fas fa-sync-alt"></i>
-      </button>
-    </div> --}}
-    <!-- Content Header (Page header) -->
     <section class="content py-3">
       <div class="container-fluid">
-        <!-- Main row -->
         <div class="row">
-          <!-- Left col -->
           <div class="col">
-          {{-- <div class="col-md-8"> --}}
             <div class="card mb-3">
               <div class="card-header bg-primary">
                 <h3 class="card-title"><i class="nav-icon fas fa-bolt"></i> Mari Bersuara!</h3>
@@ -40,7 +28,6 @@
                 </div>
               </div>
               <div class="post p-3">
-                {{-- <p>suarakan pikiranmu disini</p> --}}
                 <div class="row">
                   <input id="send-post" class="form-control col-10" type="text" placeholder="suarakan pikiranmu disini.." onkeydown=PostkeyPress(event)>
                   <button id="sent-post" class="btn btn-primary form-control col-2">
@@ -48,9 +35,7 @@
                   </button>
                 </div>
               </div>
-              
             </div>
-              <!-- /.card-header -->
             <div class="card">
               <div id="forum-content">
             </div>
@@ -86,7 +71,6 @@
                     </button>
                 </div>
                 <div class="modal-body">
-
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
@@ -99,7 +83,6 @@
   </div>
   @include('include/footer')
 </div>
-<!-- ./wrapper -->
 @include('include/script')
 <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 <script>
@@ -126,13 +109,11 @@
           '<div class="card p-3" id=card-content-'+data.data['id']+'>'+
             '<div class="post p-2">'+
               '<div class="user-block">'+
-
                 '<div id="delete" class="card-tools float-right">'+
                   '<button id="btnDelete-'+data.data['id']+'" type="button" class="btn btn-tool">'+
                     '<i class="fa-solid fa-x">X</i>'+
                   '</button>'+
                 '</div>'+
-
                 '<img class="img-circle img-bordered-sm" src='+img+' alt="user image" style="width: 43px; height: 43px; object-fit: cover; border-radius: 50%;" >'+
                 '<span class="username">'+
                   '<a href="profile/detail?id='+data.data['no_user']+'">'+data.data['nama']+'</a>'+
@@ -158,7 +139,6 @@
               '<div id="forum-comment-'+data.data['id']+'" class="card-footer card-comments d-none">'+
             '</div>'+
           '</div>'
-
         );
         if (sessionStorage.getItem('login') == 64) {
                   document.getElementById('btnDelete-'+ data.data['id']).style.display = "block";
@@ -199,9 +179,6 @@
                 '</div>'
               );
               var commentContainer = $('#forum-comment-' + data.data['forum_id']);
-              // commentContainer.removeClass().addClass("card-footer card-comments collapse");
-
-              // $('#send-comment-'+data.data['forum_id']).val("");
               if (sessionStorage.getItem('login') == data.data['no_user']) {
                 $('#forum-comment-'+data.data['forum_id']).removeClass().addClass("card-footer card-comments ");
               }
@@ -211,13 +188,10 @@
                   id_comment.push(comment.id)
                 }
               });
-
-              // renderComment(comment, commentContainer, data.data['forum_id'], prepend=false);
             }
           }
         });
       });
-
 
       channel.bind('delete-comment', function(data) {
         $('#card-comment-' + data.data['id']).remove();
@@ -234,6 +208,7 @@
           );
         }
       });
+
       $(window).scroll(checkEndOfPage);
       loadData();
 
@@ -242,7 +217,6 @@
         if (progress) {
           return;
         };
-
         progress = true;
         var input = $('#send-post').val();
         if (input != null || input != " ") {
@@ -260,9 +234,6 @@
             if (data.avatar != null) {
                 $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
             }
-          },
-          error: function(error){
-  
           }
         });
         $("#btnLogOut").click(function(){
@@ -286,7 +257,6 @@
     const itemsPerPage = 10; 
     let isLoading = false;
 
-    // Fungsi untuk memuat data dari server
     function loadData() {
       if (!isLoading) {
         isLoading = true;
@@ -439,8 +409,6 @@
 
           $('#send-comment-' + forumId).val("");
           commentContainer.removeClass().addClass("card-footer card-comments");
-
-          // renderComment(comment, commentContainer, forumId);
         },
         error: function(error) {
           console.error('Error submitting comment:', error);

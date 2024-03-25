@@ -29,7 +29,6 @@
             <div class="col-12 col-sm-6 col-md-3">
               <div class="info-box">
                 <span class="info-box-icon bg-info elevation-1"><i class="fas fa-briefcase"></i></span>
-
                 <div class="info-box-content">
                   <span class="info-box-text">Course Work</span>
                   <span class="info-box-number">
@@ -41,7 +40,6 @@
             <div class="col-12 col-sm-6 col-md-3">
               <div class="info-box mb-3">
                 <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-users"></i></span>
-
                 <a href="dashboard/members" style="text-decoration: none;color: inherit;">
                   <div class="info-box-content">
                     <span class="info-box-text">Members</span>
@@ -51,7 +49,6 @@
               </div>
             </div>
             <div class="clearfix hidden-md-up"></div>
-
             <div class="col-12 col-sm-6 col-md-3">
               <div class="info-box mb-3">
                 <span class="info-box-icon bg-success elevation-1"><i class="fas fa-reply"></i></span>
@@ -66,7 +63,6 @@
             <div class="col-12 col-sm-6 col-md-3">
               <div class="info-box mb-3">
                 <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-network-wired"></i></span>
-
                 <div class="info-box-content">
                   <span class="info-box-text">Divisi</span>
                   <span class="info-box-number">10</span>
@@ -75,11 +71,8 @@
             </div>
           </div>
 
-          <!-- Main row -->
           <div class="row">
-            <!-- Left col -->
             <div class="col-md-8">
-              <!-- MAP & BOX PANE -->
               <div class="card">
                 <div class="card-header">
                   <h3 class="card-title"><i class="nav-icon fas fa-bullhorn"></i> Announcement</h3>
@@ -90,18 +83,13 @@
                   </div>
                 </div>
                 
-                <!-- /.card-header -->
                 <div class="card-body p-0">
                   <div class="d-md-flex">
                     <div id="announcement-content" class="p-1 flex-fill" style="overflow: hidden">
-                      {{-- Announcement --}}
-                      
-                      {{-- end announcement --}}
-                      
+                      {{-- announcement-content --}}
                     </div>
-                  </div><!-- /.d-md-flex -->
+                  </div>
                 </div>
-                <!-- /.card-body -->
               </div>
 
               <!-- TABLE: LATEST ORDERS -->
@@ -174,10 +162,6 @@
                     </table>
                   </div>
                 </div>
-                {{-- <div class="card-footer clearfix">
-                  <a href="javascript:void(0)" class="btn btn-sm btn-info float-left">Place New Order</a>
-                  <a href="javascript:void(0)" class="btn btn-sm btn-secondary float-right">View All Orders</a>
-                </div> --}}
               </div>
             </div>
 

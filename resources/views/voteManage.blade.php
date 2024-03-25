@@ -9,7 +9,6 @@
 </head>
 <body class="hold-transition light-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
 <div class="wrapper">
-  <!-- Navbar -->
   @include('include/navbar')
   @include('include/sidebar')
   <div class="content-wrapper">
@@ -21,36 +20,15 @@
                         <thead>
                             <tr>
                                 <th>Vote Topic Name</th>
-                                {{-- <th class="text-center">Main Vote</th> --}}
                                 <th class="text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody id="table-content">
-                            {{-- <tr>
-                                <td>Calon Ketua Himpunan</td>
-                                <td class="text-center">
-                                    <button class="btn btn-primary">Public</button>
-                                </td>
-                                <td class="text-center">
-                                    <button class="btn btn-warning">Edit</button>
-                                    <button class="btn btn-danger">Hapus</button>
-                                </td>
-                            </tr> --}}
-                            {{-- <tr>
-                                <td>Studi banding Himpunan</td>
-                                <td class="text-center">
-                                    <button class="btn btn-secondary">Private</button>
-                                </td>
-                                <td class="text-center">
-                                    <button class="btn btn-warning">Edit</button>
-                                    <button class="btn btn-danger">Hapus</button>
-                                </td>
-                            </tr> --}}
+                            {{-- table-content --}}
                         </tbody>
                     </table>
                     <button class="btn btn-success"  data-toggle="modal" data-target="#addTopic"><i class="fas fa-solid fa-plus"></i>  Add new</button>
                 </div>
-                {{-- modal add --}}
                 <div class="modal fade" id="addTopic" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
@@ -60,64 +38,22 @@
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-
                             <div class="card-body">
                                 <form id="topicForm">
                                     <div class="form-group">
                                         <label for="topicName">Topic Name</label>
                                         <input type="text" class="form-control" id="topicName" name="topic_name" required placeholder="input new topic name">
                                     </div>
-                            
                                     <div class="form-group">
                                         <label for="topicInfo">Topic Information:</label>
                                         <input class="form-control" id="topicInfo" name="topic_information" required placeholder="information of topic">
                                     </div>
-                                    
                                     <div id="option-content">
-                                        {{-- <div class="card">
-                                            <div class="card-header">
-                                              <h3 class="card-title">opsi 1</h3>
-                                              <div class="card-tools">
-                                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                                    <i class="fa-solid fas fa-caret-down"></i>
-                                                </button>
-                                              </div>
-                                            </div>
-                                            <div class="card-body collapse">
-                                                <form id="OptionForm">
-                                                    <div class="form-group">
-                                                        <label for="number">List Number</label>
-                                                        <input type="text" class="form-control" id="number" name="number" required placeholder="input new topic name">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="value">Value</label>
-                                                        <input type="text" class="form-control" id="value" name="value" required placeholder="input new topic name">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="visi">visi</label>
-                                                        <textarea type="text" class="form-control" id="visi" name="visi" required placeholder="input new topic name"></textarea>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="misi">Misi</label>
-                                                        <textarea type="text" class="form-control" id="misi" name="misi" required placeholder="input new topic name"></textarea>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="misi">Upload Image (.PNG)</label><br>
-                                                        <input type="file" id="value" name="value" required accept=".png">
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div> --}}
+                                        {{-- option-content --}}
                                     </div>
                                 </form>
-                                {{-- <div>
-                                    <button id="form-add-option" class="btn btn-success rounded-circle btn-sm float-left mb-2"><i class="fas fa-solid fa-plus"></i></button>
-                                </div> --}}
                                 <button id="form-topic" class="btn btn-primary float-right mb-2">Submit</button>
                             </div>
-                            {{-- <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            </div> --}}
                         </div>
                     </div>
                 </div>
@@ -128,7 +64,6 @@
   </div>
   @include('include/footer')
 </div>
-<!-- ./wrapper -->
 @include('include/script')
 <script>
     $(document).ready(function(){
@@ -194,8 +129,6 @@
                             '</div>'+
                         '</div>'
                     );
-                    // var value = topic[index]['id'];
-                    // console.log(value);
                     $.ajax({
                         url: "/api/voting/"+topic[index]['id'],
                         method: "GET", // First change type to method here   
@@ -331,13 +264,11 @@
                     });
                     $('#edit-topic-'+response.data[index]['id']).on('click', function() {
                         var edit = response.data[index]['id'];
-                        // console.log($("#edit-topicForm-"+edit).serialize());
                         $.ajax({
                             url: "/api/topic/"+edit,
                             method: "post", // First change type to method here   
                             data:$("#edit-topicForm-"+edit).serialize(), 
                             success: function(response) {
-                                // console.log(response);
                                 window.location.reload();
                             }
                         });
@@ -346,7 +277,6 @@
             }
         });      
         $('#form-topic').on('click', function() {
-            // console.log($("#topicForm").serialize());
             $.ajax({
                 url: "/api/topic/",
                 method: "post", // First change type to method here   

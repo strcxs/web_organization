@@ -14,7 +14,6 @@ class VoteController extends Controller
         ->get();
         
         foreach ($vote as $votes) {
-            // Mengganti format created_at menjadi waktu yang lebih ramah
             $votes->formatted_created_at=Carbon::parse($votes->created_at)->diffForHumans();
         }
 
@@ -26,7 +25,6 @@ class VoteController extends Controller
         ->get();
         
         foreach ($vote as $votes) {
-            // Mengganti format created_at menjadi waktu yang lebih ramah
             $votes->formatted_created_at=Carbon::parse($votes->created_at)->diffForHumans();
         }
         return new AngResource(true,'data vote', $vote);

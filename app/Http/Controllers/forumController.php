@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
-use Pusher\Pusher;
 use App\Models\Forum;
 use Illuminate\Http\Request;
 use App\Http\Resources\AngResource;
@@ -25,7 +24,6 @@ class forumController extends Controller
             ->orderBy('created_at','desc')
             ->get();
         }
-
         
         foreach ($forum as $forums) {
             $forums->formatted_created_at=Carbon::parse($forums->created_at)->diffForHumans();
@@ -54,16 +52,7 @@ class forumController extends Controller
 
         $forum->formatted_created_at=Carbon::parse($forum->created_at)->diffForHumans();
 
-        $pusher = new Pusher(
-            env('PUSHER_APP_KEY'),
-            env('PUSHER_APP_SECRET'),
-            env('PUSHER_APP_ID'),
-            [
-                'cluster' => env('PUSHER_APP_CLUSTER'),
-                'useTLS' => true
-            ]
-        );
-        $pusher->trigger('discuss', 'sent-discuss', ['data' => $forum]);
+        $this->push('discuss', 'sent-discuss', ['data' => $forum]);
         
         return new AngResource(true,'message sent successfully', $forum);
     }
@@ -71,16 +60,7 @@ class forumController extends Controller
         $data = Forum::find($id);
         $data-> delete();
 
-        $pusher = new Pusher(
-            env('PUSHER_APP_KEY'),
-            env('PUSHER_APP_SECRET'),
-            env('PUSHER_APP_ID'),
-            [
-                'cluster' => env('PUSHER_APP_CLUSTER'),
-                'useTLS' => true
-            ]
-        );
-        $pusher->trigger('discuss', 'delete-discuss', ['data' => $data]);
+        $this->push('discuss', 'delete-discuss', ['data' => $data]);
         
         return new AngResource(true,'message delete successfully', $data);
     }

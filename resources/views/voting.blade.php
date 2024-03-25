@@ -9,7 +9,6 @@
 </head>
 <body class="hold-transition light-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
 <div class="wrapper">
-  <!-- Navbar -->
   @include('include/navbar')
   @include('include/sidebar')
   <div class="content-wrapper">
@@ -21,30 +20,8 @@
                 </button>
             </div>
             <div class="row" id="voting-content">
-                {{-- content --}}
-
-                {{-- <div class="col-12 col-md-3">
-                    <div>
-                        <div class="text-center">
-                            <img class="img-fluid rounded" src="{{asset('storage/images/hai.png')}}" alt="">
-                        </div>
-                    </div>
-                    <div>
-                        <div class="card" style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; color: rgb(98, 104, 126)">
-                            <h1 class="text-center text-lg pt-3">Zahrani</h1>
-                            <hr class="mx-3" style="border-top:1px solid">
-                            <p class="text-center mx-3">Calon Ketua Himpunan Mahasiswa Teknik Informatika 2023/2024</p>
-                            <p style="font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif" class="display-3 text-center">01</p>
-                            <button class="btn mx-3 mb-1" style="background-color: rgb(98, 104, 126); color: white">
-                                View Visi & Misi
-                            </button><button class="btn btn-primary mx-3 mb-3">
-                                VOTE
-                            </button>
-                        </div>
-                    </div>
-                </div> --}}
+                {{-- voting-content --}}
             </div>
-            <!-- Modal Kandidat 1 -->
             <div class="modal fade" id="resultVoting" tabindex="-1" role="dialog" aria-labelledby="modalCandidate1Label" aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
@@ -64,22 +41,11 @@
                     </div>
                 </div>
             </div>
-            {{-- <div class="container mt-5">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 id="grafik-title" class="card-title">Grafik Hasil E-Voting</h5>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="myChart" width="400" height="200"></canvas>
-                    </div>
-                </div>
-            </div> --}}
         </div>
     </section>
   </div>
   @include('include/footer')
 </div>
-<!-- ./wrapper -->
 @include('include/script')
 <script>
     $(document).ready(function(){
@@ -117,7 +83,6 @@
                 url: "/api/result/1",
                 method: "GET", // First change type to method here
                 success: function(response) {
-                    // console.log(response);
                     const numbers = response.data.map(item => item.number);
                     const results = response.data.map(item => {
                         return{
@@ -125,27 +90,23 @@
                             value: item.result
                         }
                     });
-                    // console.log(value.length);
                     if (response.data.length!=0) {
                         $.ajax({
                             url: "/api/vote/"+response.data[0]['id_vote_topic'],
                             method: "GET", // First change type to method here
                             success: function(response) {
-                                // console.log(response);
                                 const number = response.data.map(item => item.number);
                                 if (numbers.length!=response.data.length) {
                                     const filter = number.filter(value => !numbers.includes(value));
                                     const number_combine = numbers.concat(filter).sort();
                                     for (let index = 0; index < number_combine.length; index++) {
                                         if (number_combine[index]==filter) {
-                                            // console.log(index);
                                             myChart.data.labels = number_combine;
                                             myChart.data.datasets[0].data[index] = 0;
                                             myChart.update();
                                         }
                                         for (let indexx = 0; indexx < results.length; indexx++) {
                                             if(number_combine[index]==results[indexx]['label']){
-                                                // console.log(index);
                                                 myChart.data.labels = number_combine;
                                                 myChart.data.datasets[0].data[index] = results[indexx]['value'];
                                                 myChart.update();
@@ -165,6 +126,7 @@
                 }
             });
         }
+
         realtime();
         // setInterval(realtime, 10000)
         
@@ -181,9 +143,6 @@
             if (data.avatar != null) {
                 $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
             }
-            },
-            error: function(error){
-
             }
         });
 
@@ -195,14 +154,12 @@
             url: "/api/voting",
             method: "GET", // First change type to method here
             success: function(response) {
-                // console.log(response);
                 for (let index = 0; index < response.data.length; index++) {
-                    // var src = "{{asset('storage/images/hai.png')}}"; //respon image
                     var src = "https://democaleg28.nyaleg.id/dirmember/00000001/democaleg28/profile-90.png"; //respon image
                     var card_style = "font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; color: rgb(98, 104, 126)";
                     var number_style = "font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif";
-                    var col = 12/response.data.length
-                    // $('#grafik-title').text(response.data[index]['topic_information'])
+                    var col = 12/response.data.length;
+                    
                     $('#voting-content').append(
                         '<div class="col-12 col-md-'+col+'">'+
                             '<div>'+
@@ -247,7 +204,6 @@
                     $.ajax({
                         url: "/api/check/"+response.data[index]['id_vote_topic'],
                         success: function(response) {
-                            // console.log(sessionStorage.getItem('login'));
                             for (let index = 0; index < response.data.length; index++) {
                                 if (response.data[index]['id_user']==sessionStorage.getItem('login')) {
                                     $('button[name="vote"]').attr('disabled',true) 
@@ -255,9 +211,6 @@
                                     
                                 }
                             }
-                        },
-                        error: function(error){
-
                         }
                     });
                 }

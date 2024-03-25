@@ -14,14 +14,12 @@
         <div class="content-wrapper">
             <section class="content">
                 <div class="container-fluid">
-                    {{-- content --}}
                     <div class="row p-3">
                         <div class="col-12">
                             <div class="card">
                             <div class="card-header">
                                 <h3 class="card-title">Member of HMIF</h3>
                             </div>
-                            <!-- /.card-header -->
                             <div class="card-body">
                                 <table id="example1" class="table table-bordered table-striped">
                                     <thead>
@@ -36,19 +34,13 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {{-- konten table --}}
-                                        
-                                        {{-- konten end --}}
+                                        {{-- table-content --}}
                                     </tbody>
                                 </table>
                             </div>
-                            <!-- /.card-body -->
                             </div>
-                            <!-- /.card -->
                         </div>
-                        <!-- /.col -->
                     </div>
-                    {{-- end content --}}
                 </div>
             </section>
         </div>
@@ -116,7 +108,7 @@
                     "autoWidth": false,
                     "responsive": true,
                     "pagingType": "simple",
-                    "lengthMenu": [10,30,50,-1],
+                    "lengthMenu": [10,25,50],
                     "language": {
                         "search": "search ",
                         "paginate": {
@@ -129,9 +121,6 @@
                         "infoEmpty": "No records available",
                     }
                 });
-            },
-            error: function(error){
-
             }
         });
         $("#btnLogOut").click(function(){

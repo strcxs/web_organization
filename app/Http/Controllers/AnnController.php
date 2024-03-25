@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
-use Pusher\Pusher;
 use App\Models\Announcement;
 use Illuminate\Http\Request;
 use App\Http\Resources\AngResource;
@@ -50,16 +49,7 @@ class AnnController extends Controller
 
         $announcement->formatted_created_at=Carbon::parse($announcement->created_at)->diffForHumans();
 
-        $pusher = new Pusher(
-            env('PUSHER_APP_KEY'),
-            env('PUSHER_APP_SECRET'),
-            env('PUSHER_APP_ID'),
-            [
-                'cluster' => env('PUSHER_APP_CLUSTER'),
-                'useTLS' => true
-            ]
-        );
-        $pusher->trigger('announcement', 'sent-announcement', ['data' => $announcement]);
+        $this->push('announcement', 'sent-announcement', ['data' => $announcement]);
 
         return new AngResource(true,"announcement send successfully", $announcement);
     }
@@ -67,16 +57,7 @@ class AnnController extends Controller
         $data = Announcement::find($id);
         $data-> delete();
         
-        $pusher = new Pusher(
-            env('PUSHER_APP_KEY'),
-            env('PUSHER_APP_SECRET'),
-            env('PUSHER_APP_ID'),
-            [
-                'cluster' => env('PUSHER_APP_CLUSTER'),
-                'useTLS' => true
-            ]
-        );
-        $pusher->trigger('announcement', 'delete-announcement', ['data' => $data]);
+        $this->push('announcement', 'delete-announcement', ['data' => $data]);
 
         return new AngResource(true,'Data berhasil dihapus', $data);
     }
