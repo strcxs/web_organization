@@ -51,8 +51,8 @@
         return window.location = '../login';
       }
 
-      var pusher = new Pusher('71d8b7362ac9e3875667', {
-        cluster: 'ap1'
+      var pusher = new Pusher("{{ env('PUSHER_APP_KEY') }}", {
+        cluster: "{{ env('PUSHER_APP_CLUSTER') }}"
       });
       var channel = pusher.subscribe('announcement');
       channel.bind('sent-announcement', function(data) {
@@ -104,8 +104,9 @@
     });
 
     let page = 1; // Nomor halaman saat ini
-    const itemsPerPage = 10; 
+    const itemsPerPage = 5; 
     let isLoading = false;
+    let maxpage = false;
 
     function loadData() {
       if (!isLoading) {
@@ -120,6 +121,9 @@
           },
           success: function(response) {
             var data_announcement = response.data.data
+            if (data_announcement.length == 0) {
+              maxpage = true;
+            }
             data_announcement.forEach(function(announcement){
               if (announcement['avatar']!=null) {
                 var img = "{{asset('storage/images/users-images/')}}"+'/'+announcement['avatar']
@@ -167,7 +171,7 @@
     function checkEndOfPage() {
       const scrollPosition = $(window).scrollTop() + $(window).height();
       const totalHeight = $(document).height();
-      if (scrollPosition >= totalHeight-1) {
+      if (scrollPosition >= totalHeight-1 && !maxpage) {
         loadData();
       }
     }

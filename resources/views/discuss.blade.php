@@ -93,8 +93,8 @@
         return window.location = '../login';
       }
       
-      var pusher = new Pusher('71d8b7362ac9e3875667', {
-        cluster: 'ap1'
+      var pusher = new Pusher("{{ env('PUSHER_APP_KEY') }}", {
+        cluster: "{{ env('PUSHER_APP_CLUSTER') }}"
       });
 
       var channel = pusher.subscribe('discuss');
@@ -254,8 +254,9 @@
 
     //fetch data forum
     let page = 1;
-    const itemsPerPage = 10; 
+    const itemsPerPage = 5; 
     let isLoading = false;
+    let maxpage = false;
 
     function loadData() {
       if (!isLoading) {
@@ -270,6 +271,9 @@
           },
           success: function(response) {
             var forums = response.data.data;
+            if (forums.length == 0) {
+              maxpage = true;
+            }
             $('#post-count').text(forums.length);
 
             forums.forEach(function(forum) {
@@ -346,7 +350,7 @@
     function checkEndOfPage() {
       const scrollPosition = $(window).scrollTop() + $(window).height();
       const totalHeight = $(document).height();
-      if (scrollPosition >= totalHeight-0,5) {
+      if (scrollPosition >= totalHeight-1 && !maxpage) {
         loadData();
       }
     }
@@ -356,6 +360,7 @@
 
     // Function to fetch comments for a forum
     function fetchComments(forumId) {
+      console.log('coba');
       $.ajax({
         url: "/api/comment/" + forumId,
         method: "GET",

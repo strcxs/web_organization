@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\Announcement;
 use Illuminate\Http\Request;
 use App\Http\Resources\AngResource;
+use Illuminate\Support\Facades\Validator;
 
 class AnnController extends Controller
 {
@@ -32,13 +33,20 @@ class AnnController extends Controller
         return new AngResource(true,'data forum', $ann);
     }
     public function store(Request $request){
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required', 
+            'content' => 'required', 
+        ]);
+        if ($validator->fails()) {
+            return new AngResource(false,"input is missing", null);
+        }
         Announcement::create([
             'user_id'=> $request->user_id,
             'title'=> $request->content
         ]);
 
         if ($request->user_id != 64) {
-            return new AngResource(false,"only admin", null);
+            return new AngResource(false,"You're not an admin.", null);
         }
 
         $announcement = Announcement::join('data_anggota','data_anggota.user_id','=','announcement.user_id')
