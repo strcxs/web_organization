@@ -271,8 +271,8 @@
     fetchDiscuss(3);
     fetchAnnouncement(3);
 
-    var pusher = new Pusher('71d8b7362ac9e3875667', {
-        cluster: 'ap1'
+    var pusher = new Pusher("{{ env('PUSHER_APP_KEY') }}", {
+        cluster: "{{ env('PUSHER_APP_CLUSTER') }}"
     });
 
     var channel = pusher.subscribe('announcement');

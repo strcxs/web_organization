@@ -31,7 +31,7 @@ class comController extends Controller
             'content' => 'required', 
         ]);
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
+            return new AngResource(false,"input is missing", null);
         }
 
         comment::create([

@@ -48,6 +48,7 @@
                   <div class="input-box">
                     <i class="fas fa-lock"></i>
                     <input name="password" id="password" type="password" placeholder="Enter your password" required>
+                  </div>
                   <div class="button input-box">
                     <input type="button" id="btnSubmit" value="Submit" name="login">
                   </div>
