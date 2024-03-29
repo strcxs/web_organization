@@ -26,6 +26,7 @@ class forumController extends Controller
         }
         
         foreach ($forum as $forums) {
+            $forums->nama = ucwords(strtolower($forums->nama));
             $forums->formatted_created_at=Carbon::parse($forums->created_at)->diffForHumans();
         }
 

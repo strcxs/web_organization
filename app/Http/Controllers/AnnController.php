@@ -27,6 +27,7 @@ class AnnController extends Controller
         }
         
         foreach ($ann as $anns) {
+            $anns->nama = ucwords(strtolower($anns->nama));
             $anns->formatted_created_at=Carbon::parse($anns->created_at)->diffForHumans();
         }
 

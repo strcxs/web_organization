@@ -19,6 +19,7 @@ class comController extends Controller
         ->get();
 
         foreach ($comment as $comments) {
+            $comments->nama = ucwords(strtolower($comments->nama));
             $comments->formatted_created_at=Carbon::parse($comments->created_at)->diffForHumans();
         }
 
@@ -47,6 +48,7 @@ class comController extends Controller
         ->orderBy('created_at','desc')
         ->first();
 
+        $comment->nama = ucwords(strtolower($comment->nama));
         $comment->formatted_created_at=Carbon::parse($comment->created_at)->diffForHumans();
 
         $this->push('discuss', 'sent-comment', ['data' => $comment]);

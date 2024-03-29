@@ -360,7 +360,6 @@
 
     // Function to fetch comments for a forum
     function fetchComments(forumId) {
-      console.log('coba');
       $.ajax({
         url: "/api/comment/" + forumId,
         method: "GET",

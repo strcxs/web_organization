@@ -18,11 +18,14 @@ class AngController extends Controller
             ->select('data_anggota.*','divisi.divisi as nama_divisi')
             ->get();
 
+        foreach ($datas as $data) {
+            $data->nama = ucwords(strtolower($data->nama));
+        }
+
         if (is_null($datas)){
             return new AngResource(false, 'tidak ada data', $datas);
         }
         return new AngResource(true, 'data anggota', $datas);
-        // return view("anggota.data", compact("datas"));
     }
     public function store(Request $request)
     {
@@ -77,24 +80,21 @@ class AngController extends Controller
         return new AngResource(false, 'duplicate NIM', null);
     }
     public function show($detail){
+        $join = Anggota::join('users', 'data_anggota.user_id', '=', 'users.id')
+        ->join('divisi', 'divisi.id','=','data_anggota.divisi')
+        ->select('data_anggota.*','users.username','divisi.divisi as nama_divisi')
+        ->where('data_anggota.user_id',$detail)
+        ->first();
+
+        if(is_null($join)){
             $join = Anggota::join('users', 'data_anggota.user_id', '=', 'users.id')
-            ->join('divisi', 'divisi.id','=','data_anggota.divisi')
-            ->select('data_anggota.*','users.username','divisi.divisi as nama_divisi')
+            ->select('data_anggota.*')
             ->where('data_anggota.user_id',$detail)
             ->first();
+        }
+        $join->nama = ucwords(strtolower($join->nama));
 
-            if(is_null($join)){
-                $join = Anggota::join('users', 'data_anggota.user_id', '=', 'users.id')
-                ->select('data_anggota.*')
-                ->where('data_anggota.user_id',$detail)
-                ->first();
-            }
-
-        // if ($join) {
-        //     $join = collect($join)->except('divisi');
-        // }
         if (is_null($join)){
-            // return new AngResource(false, 'tidak ada data', $join);
             return new AngResource(true, 'tidak ada data', null);
 
         }
@@ -106,7 +106,6 @@ class AngController extends Controller
             'username'     => 'unique:users,username',
         ]);
         if ($validator->fails()){
-            // return response()->json($validator->errors(),442);
             return new AngResource(false, "username tidak tersedia", null);
 
         }
@@ -120,7 +119,6 @@ class AngController extends Controller
         $new_data = $request->all();
         $key = collect($new_data)->keys();
 
-        // return new AngResource(true, "tidak ada data yang diubah", $old_data);
         for ($i=0;$i<count($key);$i++) { 
             if ($old_data[$key[$i]]!=$new_data[$key[$i]] || $new_data[$key[$i]]!=null){
                 if ($request->hasFile('avatar')) {
@@ -185,20 +183,6 @@ class AngController extends Controller
             }
         };
         return new AngResource(true, "data berhasil di ubah", $old_data);
-
-        // $validator = Validator::make($request->all(),[
-        //     'nama'     => 'required',
-        //     'nim'   => 'required',
-        //     'tanggal_lahir'     => 'required',
-        //     'tempat_lahir'   => 'required',
-        //     'tahun_akt'     => 'required',
-        //     'no_telp'   => 'required',
-        //     'divisi'     => 'required',
-        // ]);
-
-        // if ($validator->fails()){
-        //     return response()->json($validator->errors(),442);
-        // }
     }
     public function destroy($id){
         $data = Anggota::find($id);
