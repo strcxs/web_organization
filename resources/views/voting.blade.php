@@ -139,7 +139,7 @@
             success: function(response) {
             var data = response.data;
             $(".d-block").text(data.nama);
-            $(".c-block").text('divisi '+data.nama_divisi);
+            $(".c-block").text(data.nama_divisi);
             if (data.avatar != null) {
                 $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
             }

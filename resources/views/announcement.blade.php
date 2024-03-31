@@ -189,7 +189,7 @@
               $('#profile-avatar').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
             }
           $(".d-block").text(data.nama);
-          $(".c-block").text('divisi '+data.nama_divisi);
+          $(".c-block").text(data.nama_divisi);
         }
       });
       $("#btnLogOut").click(function(){

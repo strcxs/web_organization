@@ -26,56 +26,57 @@
         <div class="container-fluid">
           <!-- Info boxes -->
           <div class="row py-3">
-            <div class="row col-12 col-md-8">
-              <div class="col-12 col-sm-6 col-md-6">
-                <div class="info-box mb-3">
-                  <a href="{{ route('discuss') }}" class="info-box-icon bg-danger elevation-1">
-                    <i class="fas fa-users" style="pointer-events: none;"></i>
-                  </a>
-                  <a href="dashboard/members" style="text-decoration: none;color: inherit;">
-                    <div class="info-box-content">
-                      <span class="info-box-text">Members</span>
-                      <span id="members-count" class="info-box-number"></span>
-                    </div>
-                  </a>
-                </div>
-              </div>
-              <div class="clearfix hidden-md-up"></div>
-              <div class="col-12 col-sm-6 col-md-6">
-                <div class="info-box mb-3">
-                  <a href="{{ route('discuss') }}" class="info-box-icon bg-success elevation-1">
-                    <i class="fas fa-reply" style="pointer-events: none;"></i>
-                  </a>
-                  <a href="{{route('discuss')}}" style="text-decoration: none;color: inherit;">
-                    <div class="info-box-content">
-                      <span class="info-box-text">Discuss</span>
-                      <span id="post-count" class="info-box-number"></span>
-                    </div>
-                  </a>
-                </div>
-              </div>
-  
-              <div class="col-md-12">
-                <div class="card">
-                  <div class="card-header bg-primary">
-                    <h3 class="card-title"><i class="nav-icon fas fa-bullhorn"></i> Announcement</h3>
-                    <div class="card-tools">
-                      <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                        <i class="fas fa-minus"></i>
-                      </button>
-                    </div>
+            <div class="col-12 col-md-8">
+              <div class="row">
+                <div class="col-12 col-sm-6 col-md-6">
+                  <div class="info-box mb-3">
+                    <a href="{{ route('members') }}" class="info-box-icon bg-danger elevation-1">
+                      <i class="fas fa-users" style="pointer-events: none;"></i>
+                    </a>
+                    <a href="dashboard/members" style="text-decoration: none;color: inherit;">
+                      <div class="info-box-content">
+                        <span class="info-box-text">Members</span>
+                        <span id="members-count" class="info-box-number"></span>
+                      </div>
+                    </a>
                   </div>
-                  <div class="card-body p-0">
-                    <div class="d-md-flex">
-                      <div id="announcement-content" class="p-1 flex-fill" style="overflow: hidden">
-                        {{-- announcement-content --}}
+                </div>
+                <div class="clearfix hidden-md-up"></div>
+                <div class="col-12 col-sm-6 col-md-6">
+                  <div class="info-box mb-3">
+                    <a href="{{ route('discuss') }}" class="info-box-icon bg-success elevation-1">
+                      <i class="fas fa-reply" style="pointer-events: none;"></i>
+                    </a>
+                    <a href="{{route('discuss')}}" style="text-decoration: none;color: inherit;">
+                      <div class="info-box-content">
+                        <span class="info-box-text">Discuss</span>
+                        <span id="post-count" class="info-box-number"></span>
+                      </div>
+                    </a>
+                  </div>
+                </div>
+    
+                <div class="col-md-12">
+                  <div class="card">
+                    <div class="card-header bg-primary">
+                      <h3 class="card-title"><i class="nav-icon fas fa-bullhorn"></i> Announcement</h3>
+                      <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                          <i class="fas fa-minus"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="card-body p-0">
+                      <div class="d-md-flex">
+                        <div id="announcement-content" class="p-1 flex-fill" style="overflow: hidden">
+                          {{-- announcement-content --}}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-
             <div class="col-md-4">
               <div class="card">
                 <div class="card-header bg-primary">
@@ -155,7 +156,7 @@
             $('#profile-avatar').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
           }
         $(".d-block").text(data.nama);
-        $(".c-block").text('divisi '+data.nama_divisi);
+        $(".c-block").text(data.nama_divisi);
       },
     });
     $("#btnLogOut").click(function(){

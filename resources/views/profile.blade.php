@@ -166,7 +166,7 @@
           $("#profile-nim").text(data.nim);
           $("#profile-divisi-2").text(data.nama_divisi);
           $("#profile-angkatan").text(data.tahun_akt);
-          $(".c-block").text('divisi '+data.nama_divisi);
+          $(".c-block").text(data.nama_divisi);
           
           $("#username-profile").text(data.username);
           $("#name-profile").text(data.nama);
