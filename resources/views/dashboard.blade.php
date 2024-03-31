@@ -26,140 +26,51 @@
         <div class="container-fluid">
           <!-- Info boxes -->
           <div class="row py-3">
-            <div class="col-12 col-sm-6 col-md-3">
-              <div class="info-box">
-                <span class="info-box-icon bg-info elevation-1"><i class="fas fa-briefcase"></i></span>
-                <div class="info-box-content">
-                  <span class="info-box-text">Course Work</span>
-                  <span class="info-box-number">
-                    5 
-                  </span>
+            <div class="row col-12 col-md-8">
+              <div class="col-12 col-sm-6 col-md-6">
+                <div class="info-box mb-3">
+                  <a href="{{ route('discuss') }}" class="info-box-icon bg-danger elevation-1">
+                    <i class="fas fa-users" style="pointer-events: none;"></i>
+                  </a>
+                  <a href="dashboard/members" style="text-decoration: none;color: inherit;">
+                    <div class="info-box-content">
+                      <span class="info-box-text">Members</span>
+                      <span id="members-count" class="info-box-number"></span>
+                    </div>
+                  </a>
                 </div>
               </div>
-            </div>
-            <div class="col-12 col-sm-6 col-md-3">
-              <div class="info-box mb-3">
-                <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-users"></i></span>
-                <a href="dashboard/members" style="text-decoration: none;color: inherit;">
-                  <div class="info-box-content">
-                    <span class="info-box-text">Members</span>
-                    <span id="members-count" class="info-box-number"></span>
-                  </div>
-                </a>
-              </div>
-            </div>
-            <div class="clearfix hidden-md-up"></div>
-            <div class="col-12 col-sm-6 col-md-3">
-              <div class="info-box mb-3">
-                <span class="info-box-icon bg-success elevation-1"><i class="fas fa-reply"></i></span>
-                <a href="{{route('discuss')}}" style="text-decoration: none;color: inherit;">
-                  <div class="info-box-content">
-                    <span class="info-box-text">Discuss</span>
-                    <span id="post-count" class="info-box-number"></span>
-                  </div>
-                </a>
-              </div>
-            </div>
-            <div class="col-12 col-sm-6 col-md-3">
-              <div class="info-box mb-3">
-                <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-network-wired"></i></span>
-                <div class="info-box-content">
-                  <span class="info-box-text">Divisi</span>
-                  <span class="info-box-number">10</span>
+              <div class="clearfix hidden-md-up"></div>
+              <div class="col-12 col-sm-6 col-md-6">
+                <div class="info-box mb-3">
+                  <a href="{{ route('discuss') }}" class="info-box-icon bg-success elevation-1">
+                    <i class="fas fa-reply" style="pointer-events: none;"></i>
+                  </a>
+                  <a href="{{route('discuss')}}" style="text-decoration: none;color: inherit;">
+                    <div class="info-box-content">
+                      <span class="info-box-text">Discuss</span>
+                      <span id="post-count" class="info-box-number"></span>
+                    </div>
+                  </a>
                 </div>
               </div>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-8">
-              <div class="card">
-                <div class="card-header">
-                  <h3 class="card-title"><i class="nav-icon fas fa-bullhorn"></i> Announcement</h3>
-                  <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                      <i class="fas fa-minus"></i>
-                    </button>
-                  </div>
-                </div>
-                
-                <div class="card-body p-0">
-                  <div class="d-md-flex">
-                    <div id="announcement-content" class="p-1 flex-fill" style="overflow: hidden">
-                      {{-- announcement-content --}}
+  
+              <div class="col-md-12">
+                <div class="card">
+                  <div class="card-header bg-primary">
+                    <h3 class="card-title"><i class="nav-icon fas fa-bullhorn"></i> Announcement</h3>
+                    <div class="card-tools">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                      </button>
                     </div>
                   </div>
-                </div>
-              </div>
-
-              <!-- TABLE: LATEST ORDERS -->
-              <div class="card">
-                <div class="card-header border-transparent">
-                  <h3 class="card-title" style="color: red">Latest Absent (NOT AVAILABLE)</h3>
-
-                  <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                      <i class="fas fa-minus"></i>
-                    </button>
-                  </div>
-                </div>
-                <!-- /.card-header -->
-                <div class="card-body p-0">
-                  <div class="table-responsive">
-                    <table class="table m-0">
-                      <thead>
-                      <tr>
-                        <th>NIM</th>
-                        <th>Name</th>
-                        <th>Class</th>
-                        <th>Time</th>
-                      </tr>
-                      </thead>
-                      <tbody>
-                      <tr>
-                        <td>55201120020</td>
-                        <td>Rully D Faishal</td>
-                        <td>2020</td>
-                        <td>09.02</td>
-                      </tr>
-                      <tr>
-                        <td>55201120001</td>
-                        <td>Raka ramadhan</td>
-                        <td>2020</td>
-                        <td>09.10</td>
-                      </tr>
-                      <tr>
-                          <td>55201120020</td>
-                          <td>Tigar dolis</td>
-                          <td>2022</td>
-                          <td>09.02</td>
-                      </tr>
-                      <tr>
-                          <td>55201120020</td>
-                          <td>Satriawan nugraha</td>
-                          <td>2021</td>
-                          <td>09.02</td>
-                      </tr>
-                      <tr>
-                          <td>55201120020</td>
-                          <td>sophie nuraini</td>
-                          <td>2022</td>
-                          <td>09.02</td>
-                      </tr>
-                      <tr>
-                          <td>55201120020</td>
-                          <td>fashal kurniawan</td>
-                          <td>2020</td>
-                          <td>09.02</td>
-                      </tr>
-                      <tr>
-                          <td>55201120020</td>
-                          <td>Randy herawan</td>
-                          <td>2020</td>
-                          <td>09.02</td>
-                      </tr>
-                      </tbody>
-                    </table>
+                  <div class="card-body p-0">
+                    <div class="d-md-flex">
+                      <div id="announcement-content" class="p-1 flex-fill" style="overflow: hidden">
+                        {{-- announcement-content --}}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -169,76 +80,22 @@
               <div class="card">
                 <div class="card-header bg-primary">
                   <h3 class="card-title">New Post</h3>
-
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse">
                       <i class="fas fa-minus"></i>
                     </button>
                   </div>
                 </div>
-                <!-- /.card-header -->
                 <div class="card-body p-0">
                   <ul id="forum-content" class="products-list product-list-in-card pl-2 pr-2">
                   </ul>
                 </div>
-                <!-- /.card-body -->
                 <div class="card-footer text-center">
                   <a href="{{route('discuss')}}" class="uppercase">View All Post</a>
                 </div>
-                <!-- /.card-footer -->
               </div>
-              <!-- Info Boxes Style 2 -->
-              <div class="info-box mb-3 bg-warning">
-                <span class="info-box-icon"><i class="fas fa-coins"></i></span>
-
-                <div class="info-box-content">
-                  <span class="info-box-text">Cash</span>
-                  <span class="info-box-number">Rp. 2.105.200</span>
-                </div>
-                <!-- /.info-box-content -->
-              </div>
-              <!-- /.info-box -->
-              <div class="info-box mb-3 bg-success">
-                <span class="info-box-icon"><i class="far fa-credit-card"></i></span>
-
-                <div class="info-box-content">
-                  <span class="info-box-text">Advokasi</span>
-                  <span class="info-box-number">Rp. 3.010.500</span>
-                </div>
-                <!-- /.info-box-content -->
-              </div>
-              <!-- /.info-box -->
-              <div class="info-box mb-3 bg-info">
-                <span class="info-box-icon"><i class="fas fa-chart-line"></i></span>
-
-                <div class="info-box-content">
-                  <span class="info-box-text">income</span>
-                  <span class="info-box-number">Rp. 122.000</span>
-                </div>
-                <!-- /.info-box-content -->
-              </div>
-              {{-- <div class="card">
-                <div class="card-header bg-primary">
-                  <h3 class="card-title">New Post</h3>
-
-                  <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                      <i class="fas fa-minus"></i>
-                    </button>
-                  </div>
-                </div>
-                <!-- /.card-header -->
-                <div class="card-body p-0">
-                  <ul id="forum-content" class="products-list product-list-in-card pl-2 pr-2">
-                  </ul>
-                </div>
-                <!-- /.card-body -->
-                <div class="card-footer text-center">
-                  <a href="{{route('discuss')}}" class="uppercase">View All Post</a>
-                </div>
-                <!-- /.card-footer -->
-              </div> --}}
             </div>
+            
           </div>
         </div>
       </section>
