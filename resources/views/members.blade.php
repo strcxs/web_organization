@@ -49,26 +49,13 @@
 </body>
 @include('include/script')
 
+<script src="{{asset('storage/js/logincheck.js')}}"></script>
 <script>
     $(document).ready(function(){
         if (sessionStorage.getItem('login')==null) {
         return window.location = '../login';
         }
-        $.ajax({
-            url: "/api/data/"+sessionStorage.getItem('login'),
-            method: "GET", // First change type to method here
-            success: function(response) {
-                var data = response.data;
-                $(".d-block").text(data.nama);
-                $(".c-block").text(data.nama_divisi);
-                if (data.avatar != null) {
-                    $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
-                }
-            },
-            error: function(error){
-
-            }
-        });
+        loginCheck(sessionStorage.getItem('login'));
         $.ajax({
             url: "/api/data",
             method: "GET", // First change type to method here
@@ -122,10 +109,6 @@
                     }
                 });
             }
-        });
-        $("#btnLogOut").click(function(){
-            sessionStorage.clear();
-            window.location = '../login';
         });
     });
 </script>

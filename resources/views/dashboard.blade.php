@@ -109,6 +109,7 @@
 <!-- REQUIRED SCRIPTS -->
 @include('include/script')
 <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+<script src="{{asset('storage/js/logincheck.js')}}"></script>
 <script>
   $(document).ready(function(){
     if (sessionStorage.getItem('login')==null) {
@@ -135,32 +136,13 @@
       fetchAnnouncement(3);
     });
   });
-
   function limitWords(inputString, maxWords) {
       var words = inputString.split(' ');
       var limitedWords = words.slice(0, maxWords);
       var resultString = limitedWords.join(' ');
       return resultString+" <a href='dashboard/discuss'>...read more</a>";
   }
-  function loginCheck(user){
-    $.ajax({
-      url: "/api/data/"+user,
-      method: "GET", // First change type to method here
-      success: function(response) {
-        var data = response.data;
-        if (data.avatar != null) {
-            $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
-            $('#profile-avatar').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
-          }
-        $(".d-block").text(data.data_anggota.nama);
-        $(".c-block").text(data.data_divisi.divisi);
-      },
-    });
-    $("#btnLogOut").click(function(){
-      sessionStorage.clear();
-      window.location = '../login';
-    });
-  }
+  
   function fetchDiscuss(page){
     $.ajax({
       url: "/api/forum",

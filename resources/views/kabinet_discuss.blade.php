@@ -79,12 +79,13 @@
             </div>
         </div>
     </div>
-    </section>
-  </div>
-  @include('include/footer')
+  </section>
+</div>
+@include('include/footer')
 </div>
 @include('include/script')
 <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+<script src="{{asset('storage/js/logincheck.js')}}"></script>
 <script>
     var datasave = [];
     var id_comment = [];
@@ -223,22 +224,7 @@
         }
       });
 
-      $.ajax({
-          url: "/api/data/"+sessionStorage.getItem('login'),
-          method: "GET", // First change type to method here
-          success: function(response) {
-            var data = response.data;
-            $(".d-block").text(data.nama);
-            $(".c-block").text(data.nama_divisi);
-            if (data.avatar != null) {
-                $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
-            }
-          }
-        });
-        $("#btnLogOut").click(function(){
-          sessionStorage.clear();
-          window.location = '../login';
-        });
+    loginCheck(sessionStorage.getItem('login'));
     });
     function deleteForumConfirm(forum_id,content='Are you sure you want to delete this post?') {
       $('#confirmationDeleteForum').modal('show');
