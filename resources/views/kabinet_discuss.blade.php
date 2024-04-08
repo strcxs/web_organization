@@ -23,7 +23,7 @@
           <div class="col">
             <div class="card mb-3">
               <div class="card-header bg-primary">
-                <h3 class="card-title"><i class="nav-icon fas fa-bolt"></i> Mari Bersuara!</h3>
+                <h3 class="card-title text-capitalize" id="header">divisi <i class="nav-icon fas fa-bolt"></i></h3>
                 <div class="card-tools">
                 </div>
               </div>
@@ -258,6 +258,12 @@
     let isLoading = false;
     let maxpage = false;
 
+    var urlParams = new URLSearchParams(window.location.search);
+    var connection = urlParams.get('d');
+    var text = connection;
+    $("#header").text(text.toUpperCase());
+
+
     function loadData() {
       if (!isLoading) {
         isLoading = true;
@@ -265,6 +271,7 @@
           url: "/api/forum",
           method: "GET",
           data: {
+            connection: connection,
             pagination : true,
             page: page,
             perPage: itemsPerPage 
@@ -427,14 +434,15 @@
       if (progres_forum) {
         return;
       };
-
+      
       progres_forum = true;
       $.ajax({
         url: "/api/forum",
         method: 'POST',
         data: {
           "user_id": sessionStorage.getItem('login'),
-          "content": content
+          "content": content,
+          'connection':connection
         },
         success: function(response) {
           $('#send-post').val("");

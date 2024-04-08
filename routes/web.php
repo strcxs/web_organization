@@ -42,10 +42,17 @@ Route::get('/dashboard/vote/view', function () {
     return view('visimisi');
 })->name('visimisi');
 
-Route::get('/dashboard/voting', function () {
+Route::get('/dashboard/managevote', function () {
     return view('voteManage');
 })->name('voteManage');
 
+Route::get('/dashboard/cabinet', function () {
+    return view('kabinet');
+})->name('cabinet');
+
+Route::get('/dashboard/cabinet/discuss', function () {
+    return view('kabinet_discuss');
+})->name('cabinet_discuss');
 
 
 Route::get('/dashboard/profile', function () {
