@@ -203,8 +203,8 @@
       success: function(response) {
         var data_user = response.data
         for (let index = 0; index < page; index++) {
-          if (data_user[index]['avatar']!=null) {
-            var img = "{{asset('storage/images/users-images/')}}"+'/'+data_user[index]['avatar']
+          if (data_user[index].data_users['avatar']!=null) {
+            var img = "{{asset('storage/images/users-images/')}}"+'/'+data_user[index].data_users['avatar']
           }
           else{
             var img = "{{asset('storage/images/default/default-user-icon.jpg')}}"
@@ -214,7 +214,7 @@
               +'<div class="user-block">'+
                 '<img class="img-circle img-bordered-sm" src='+img+' alt="user image style="width: 43px; height: 43px; object-fit: cover; border-radius: 50%;"">'+
                 '<span class="username">'+
-                  '<a href="dashboard/profile/detail?id='+data_user[index]['user_id']+'">'+data_user[index]['nama']+'</a>'+
+                  '<a href="dashboard/profile/detail?id='+data_user[index]['user_id']+'">'+data_user[index].data_users.data_anggota['nama']+'</a>'+
                 '</span>'+
                 '<span class="description">'+data_user[index]['formatted_created_at']+'</span>'+
               '</div>'+

@@ -14,20 +14,20 @@ class AnnController extends Controller
         $pagination = $request->input('pagination',false);
         if ($pagination) {
             $perpage =$request->input('perPage',10);
-            $ann = Announcement::orderBy('created_at','desc')
-            ->join('data_anggota','data_anggota.user_id','=','announcement.user_id')
-            ->select('announcement.id','data_anggota.avatar','announcement.user_id','data_anggota.nama','announcement.title','announcement.created_at')
+            $ann = Announcement::with('dataUsers.dataAnggota')
+            ->orderBy('created_at','desc')
+            ->select('id','user_id','title','created_at')
             ->paginate($perpage);
         }else{
             $perpage =$request->input('perPage',10);
-            $ann = Announcement::orderBy('created_at','desc')
-            ->join('data_anggota','data_anggota.user_id','=','announcement.user_id')
-            ->select('announcement.id','data_anggota.avatar','announcement.user_id','data_anggota.nama','announcement.title','announcement.created_at')
+            $ann = Announcement::with(['dataUsers.dataAnggota'])
+            ->orderBy('created_at','desc')
+            ->select('id','user_id','title','created_at')
             ->get();
         }
         
         foreach ($ann as $anns) {
-            $anns->nama = ucwords(strtolower($anns->nama));
+            $anns->dataUsers->dataAnggota->nama = ucwords(strtolower($anns->dataUsers->dataAnggota->nama));
             $anns->formatted_created_at=Carbon::parse($anns->created_at)->diffForHumans();
         }
 
@@ -50,16 +50,15 @@ class AnnController extends Controller
             return new AngResource(false,"You're not an admin.", null);
         }
 
-        $announcement = Announcement::join('data_anggota','data_anggota.user_id','=','announcement.user_id')
-        ->select('announcement.id','data_anggota.avatar','announcement.user_id','data_anggota.nama','announcement.title','announcement.created_at')
-        ->where('announcement.user_id', $request->user_id)
+        $announcement = Announcement::with(['dataUsers.dataAnggota'])
+        ->select('id','user_id','title','created_at')
+        ->where('user_id', $request->user_id)
         ->orderBy('created_at','desc')
         ->first();
 
         $announcement->formatted_created_at=Carbon::parse($announcement->created_at)->diffForHumans();
 
         $this->push('announcement', 'sent-announcement', ['data' => $announcement]);
-
         return new AngResource(true,"announcement send successfully", $announcement);
     }
     public function destroy($id){
