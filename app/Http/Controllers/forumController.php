@@ -12,19 +12,25 @@ class forumController extends Controller
 {
     public function index(Request $request){
         $pagination = $request->input('pagination',false);
-        $connection = $request->input('connection','main');
+        $connection = $request->input('connection_id','1');
+
+        $connection = $request->connection;
+
+        if ($connection==null) {
+            $connection = 1;
+        }
 
         if ($pagination) {
             $perpage =$request->input('perPage',10);
             $forum = Forum::join('data_anggota','forum.user_id','=','data_anggota.user_id')
             ->select('forum.id','forum.content','forum.created_at','data_anggota.nama','data_anggota.avatar','data_anggota.user_id as no_user')
-            ->where('forum.connection',$connection)
+            ->where('forum.connection_id',$connection)
             ->orderBy('created_at','desc')
             ->paginate($perpage);
         }else{
             $forum = Forum::join('data_anggota','forum.user_id','=','data_anggota.user_id')
             ->select('forum.id','forum.content','forum.created_at','data_anggota.nama','data_anggota.avatar','data_anggota.user_id as no_user')
-            ->where('forum.connection',$connection)
+            ->where('forum.connection_id',$connection)
             ->orderBy('created_at','desc')
             ->get();
         }
@@ -48,13 +54,13 @@ class forumController extends Controller
             Forum::create([
                 'user_id'=> $request->user_id,
                 'content'=> $request->content,
-                'connection'=> $request->connection,
+                'connection_id'=> $request->connection,
             ]);
         }else{
             Forum::create([
                 'user_id'=> $request->user_id,
                 'content'=> $request->content,
-                'connection'=> 'main',
+                'connection_id'=> '1',
             ]);
         }
 

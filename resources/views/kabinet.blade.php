@@ -25,14 +25,14 @@
                         </thead>
                         <tbody id="table-content">
                             <tr>
-                                <td class="text"><a href="{{route('cabinet_discuss')}}?d=kaderisasi">Divisi Kaderisasi</a></td>
+                                <td class="text"><a href="{{route('cabinet_discuss')}}?d=2">Divisi Kaderisasi</a></td>
                                 <td class="text-center">
                                     <button class="btn btn-warning m-1"><i class="nav-icon fas fa-pen"></i></button>
                                     <button id="del-topic" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="text"><a href="{{route('cabinet_discuss')}}?d=sosial">Divisi Sosial</a></td>
+                                <td class="text"><a href="{{route('cabinet_discuss')}}?d=3">Divisi Sosial</a></td>
                                 <td class="text-center">
                                     <button class="btn btn-warning m-1"><i class="nav-icon fas fa-pen"></i></button>
                                     <button id="del-topic" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>
