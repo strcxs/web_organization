@@ -11,5 +11,7 @@ class comment extends Model
 
     protected $table = 'comment';
     protected $guarded = [];
-    // protected $hidden = ['pass'];
+    public function dataUsers(){
+        return $this->hasOne(Users::class,'id','user_id');
+    }
 }

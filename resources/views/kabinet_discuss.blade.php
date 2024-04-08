@@ -99,8 +99,8 @@
 
       var channel = pusher.subscribe('discuss');
       channel.bind('sent-discuss', function(data) {
-        if (data.data['avatar']!=null) {
-          var img = "{{asset('storage/images/users-images/')}}"+'/'+data.data['avatar']
+        if (data.data.data_users['avatar']!=null) {
+          var img = "{{asset('storage/images/users-images/')}}"+'/'+data.data.data_users['avatar']
         }
         else{
           var img = "{{asset('storage/images/default/default-user-icon.jpg')}}"
@@ -116,7 +116,7 @@
                 '</div>'+
                 '<img class="img-circle img-bordered-sm" src='+img+' alt="user image" style="width: 43px; height: 43px; object-fit: cover; border-radius: 50%;" >'+
                 '<span class="username">'+
-                  '<a href="profile/detail?id='+data.data['no_user']+'">'+data.data['nama']+'</a>'+
+                  '<a href="profile/detail?id='+data.data.data_users['id']+'">'+data.data.data_users.data_anggota['nama']+'</a>'+
                 '</span>'+
                 '<span class="description">'+data.data['formatted_created_at']+'</span>'+
               '</div>'+
@@ -162,13 +162,12 @@
       });
 
       channel.bind('sent-comment', function(data) {
-
         $.ajax({
-          url: "/api/comment/" + data.data['forum_id'],
+          url: "/api/comment/" + data.data['id_forum'],
           method: "GET",
           success: function(response) {
             var comments = response.data;
-            var commentCountElement = $('#count-comment-' + data.data['forum_id']);
+            var commentCountElement = $('#count-comment-' + data.data['id_forum']);
 
             if (comments && comments.length > 0) {
               commentCountElement.html(
@@ -178,13 +177,13 @@
                   '</button>' +
                 '</div>'
               );
-              var commentContainer = $('#forum-comment-' + data.data['forum_id']);
-              if (sessionStorage.getItem('login') == data.data['no_user']) {
-                $('#forum-comment-'+data.data['forum_id']).removeClass().addClass("card-footer card-comments ");
+              var commentContainer = $('#forum-comment-' + data.data['id_forum']);
+              if (sessionStorage.getItem('login') == data.data['user_id']) {
+                $('#forum-comment-'+data.data['id_forum']).removeClass().addClass("card-footer card-comments ");
               }
               comments.forEach(function(comment) {
                 if (!id_comment.includes(comment.id)){
-                  renderComment(comment, commentContainer, data.data['forum_id'], prepend=false);
+                  renderComment(comment, commentContainer, data.data['id_forum'], prepend=false);
                   id_comment.push(comment.id)
                 }
               });
@@ -281,10 +280,9 @@
             if (forums.length == 0) {
               maxpage = true;
             }
-            $('#post-count').text(forums.length);
 
             forums.forEach(function(forum) {
-              var img = forum.avatar ? "{{asset('storage/images/users-images/')}}" + '/' + forum.avatar : "{{asset('storage/images/default/default-user-icon.jpg')}}";
+              var img = forum.data_users.avatar ? "{{asset('storage/images/users-images/')}}" + '/' + forum.data_users.avatar : "{{asset('storage/images/default/default-user-icon.jpg')}}";
 
               $('#forum-content').append(
                 '<div class="card p-3" id="card-content-' + forum.id + '">' +
@@ -297,7 +295,7 @@
                       '</div>' +
                       '<img class="img-circle img-bordered-sm" src=' + img + ' alt="user image" style="width: 43px; height: 43px; object-fit: cover; border-radius: 50%;" >' +
                       '<span class="username">' +
-                        '<a href="profile/detail?id=' + forum.no_user + '">' + forum.nama + '</a>' +
+                        '<a href="profile/detail?id=' + forum.data_users.id + '">' + forum.data_users.data_anggota.nama + '</a>' +
                       '</span>' +
                       '<span class="description">' + forum.formatted_created_at + '</span>' +
                     '</div>' +
@@ -458,7 +456,7 @@
 
     // Function to render a comment in the UI
     function renderComment(comment, container, forumId,prepend=true) {
-      var img = comment.avatar ? "{{asset('storage/images/users-images/')}}" + '/' + comment.avatar : "{{asset('storage/images/default/default-user-icon.jpg')}}";
+      var img = comment.data_users.avatar ? "{{asset('storage/images/users-images/')}}" + '/' + comment.data_users.avatar : "{{asset('storage/images/default/default-user-icon.jpg')}}";
 
       if (prepend) {
         container.prepend(
@@ -471,7 +469,7 @@
             '<img class="img-circle img-sm" src=' + img + ' alt="User Image" style="width: 27px; height: 27px; object-fit: cover; border-radius: 50%;" >' +
             '<div class="comment-text">' +
               '<span class="username">' +
-                '<a href="profile/detail?id=' + comment.no_user + '">' + comment.nama + '</a>' +
+                '<a href="profile/detail?id=' + comment.data_users.id + '">' + comment.data_users.data_anggota.nama + '</a>' +
                 '<span class="text-muted float-right">' + comment.formatted_created_at + '</span>' +
               '</span>' +
               comment.content +
@@ -489,7 +487,7 @@
             '<img class="img-circle img-sm" src=' + img + ' alt="User Image" style="width: 27px; height: 27px; object-fit: cover; border-radius: 50%;" >' +
             '<div class="comment-text">' +
               '<span class="username">' +
-                '<a href="profile/detail?id=' + comment.no_user + '">' + comment.nama + '</a>' +
+                '<a href="profile/detail?id=' + comment.data_users.id + '">' + comment.data_users.data_anggota.nama + '</a>' +
                 '<span class="text-muted float-right">' + comment.formatted_created_at + '</span>' +
               '</span>' +
               comment.content +
