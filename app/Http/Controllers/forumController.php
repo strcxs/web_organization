@@ -22,21 +22,19 @@ class forumController extends Controller
 
         if ($pagination) {
             $perpage =$request->input('perPage',10);
-            $forum = Forum::join('data_anggota','forum.user_id','=','data_anggota.user_id')
-            ->select('forum.id','forum.content','forum.created_at','data_anggota.nama','data_anggota.avatar','data_anggota.user_id as no_user')
+            $forum = Forum::with(['dataUsers.dataAnggota'])
             ->where('forum.connection_id',$connection)
             ->orderBy('created_at','desc')
             ->paginate($perpage);
         }else{
-            $forum = Forum::join('data_anggota','forum.user_id','=','data_anggota.user_id')
-            ->select('forum.id','forum.content','forum.created_at','data_anggota.nama','data_anggota.avatar','data_anggota.user_id as no_user')
+            $forum = Forum::with(['dataUsers.dataAnggota'])
             ->where('forum.connection_id',$connection)
             ->orderBy('created_at','desc')
             ->get();
         }
         
         foreach ($forum as $forums) {
-            $forums->nama = ucwords(strtolower($forums->nama));
+            $forums->dataUsers->dataAnggota->nama = ucwords(strtolower($forums->dataUsers->dataAnggota->nama));
             $forums->formatted_created_at=Carbon::parse($forums->created_at)->diffForHumans();
         }
 
@@ -64,8 +62,7 @@ class forumController extends Controller
             ]);
         }
 
-        $forum = Forum::join('data_anggota','forum.user_id','=','data_anggota.user_id')
-        ->select('forum.id','forum.content','forum.created_at','data_anggota.nama','data_anggota.avatar','data_anggota.user_id as no_user')
+        $forum = Forum::with(['dataUsers.dataAnggota'])
         ->orderBy('created_at','desc')
         ->first();
 

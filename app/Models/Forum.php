@@ -11,5 +11,7 @@ class Forum extends Model
 
     protected $table = 'forum';
     protected $guarded = [];
-    // protected $hidden = ['pass'];
+    public function dataUsers(){
+        return $this->hasOne(Users::class,'id','user_id');
+    }
 }

@@ -57,8 +57,8 @@
       var channel = pusher.subscribe('announcement');
       channel.bind('sent-announcement', function(data) {
         $('#new-announcement').val("");
-        if (data.data['avatar']!=null) {
-            var img = "{{asset('storage/images/users-images/')}}"+'/'+data.data['avatar']
+        if (data.data.data_users['avatar']!=null) {
+            var img = "{{asset('storage/images/users-images/')}}"+'/'+data.data.data_users['avatar']
         }
         else{
             var img = "{{asset('storage/images/default/default-user-icon.jpg')}}"
@@ -77,7 +77,7 @@
 
                         '<img class="img-circle img-bordered-sm" src='+img+' alt="user image">'+
                         '<span class="username">'+
-                            '<a href="#">'+data.data['nama']+'</a>'+
+                            '<a href="#">'+data.data.data_users.data_anggota['nama']+'</a>'+
                         '</span>'+
                         '<span class="description">'+data.data['formatted_created_at']+'</span>'+
                     '</div>'+
@@ -125,8 +125,8 @@
               maxpage = true;
             }
             data_announcement.forEach(function(announcement){
-              if (announcement['avatar']!=null) {
-                var img = "{{asset('storage/images/users-images/')}}"+'/'+announcement['avatar']
+              if (announcement.data_users['avatar']!=null) {
+                var img = "{{asset('storage/images/users-images/')}}"+'/'+announcement.data_users['avatar']
               }
               else{
                 var img = "{{asset('storage/images/default/default-user-icon.jpg')}}"
@@ -142,7 +142,7 @@
                       '</div>'+
                       '<img class="img-circle img-bordered-sm" src='+img+' alt="user image">'+
                       '<span class="username">'+
-                        '<a href="#">'+announcement['nama']+'</a>'+
+                        '<a href="#">'+announcement.data_users.data_anggota['nama']+'</a>'+
                       '</span>'+
                       '<span class="description">'+announcement['formatted_created_at']+'</span>'+
                     '</div>'+
@@ -185,11 +185,11 @@
         success: function(response) {
           var data = response.data;
           if (data.avatar != null) {
-              $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
-              $('#profile-avatar').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
-            }
-          $(".d-block").text(data.nama);
-          $(".c-block").text(data.nama_divisi);
+            $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
+            $('#profile-avatar').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
+          }
+          $(".d-block").text(data.data_anggota.nama);
+          $(".c-block").text(data.data_divisi.divisi);
         }
       });
       $("#btnLogOut").click(function(){

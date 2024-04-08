@@ -11,15 +11,13 @@ use Illuminate\Support\Facades\Validator;
 class comController extends Controller
 {
     public function show($id){
-        $comment = comment::join('forum','comment.id_forum','=','forum.id')
-        ->join('data_anggota','data_anggota.user_id','=','comment.user_id')
-        ->select('data_anggota.avatar','data_anggota.nama','forum.id as forum_id','comment.content','comment.created_at','data_anggota.user_id as no_user','comment.id')
-        ->where('forum.id', $id)
+        $comment = comment::with(['dataUsers.dataAnggota'])
+        ->where('id_forum', $id)
         ->orderBy('created_at','desc')
         ->get();
 
         foreach ($comment as $comments) {
-            $comments->nama = ucwords(strtolower($comments->nama));
+            $comments->dataUsers->dataAnggota->nama = ucwords(strtolower($comments->dataUsers->dataAnggota->nama));
             $comments->formatted_created_at=Carbon::parse($comments->created_at)->diffForHumans();
         }
 
@@ -41,14 +39,12 @@ class comController extends Controller
             'content'=> $request->content
         ]);
 
-        $comment = comment::join('forum','comment.id_forum','=','forum.id')
-        ->join('data_anggota','data_anggota.user_id','=','comment.user_id')
-        ->select('data_anggota.avatar','data_anggota.nama','forum.id as forum_id','comment.content','comment.created_at','data_anggota.user_id as no_user')
-        ->where('forum.id', $request->id_forum)
+        $comment = comment::with(['dataUsers.dataAnggota'])
+        ->where('id_forum', $request->id_forum)
         ->orderBy('created_at','desc')
         ->first();
 
-        $comment->nama = ucwords(strtolower($comment->nama));
+        $comment->dataUsers->dataAnggota->nama = ucwords(strtolower($comment->dataUsers->dataAnggota->nama));
         $comment->formatted_created_at=Carbon::parse($comment->created_at)->diffForHumans();
 
         $this->push('discuss', 'sent-comment', ['data' => $comment]);

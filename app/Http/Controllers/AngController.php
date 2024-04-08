@@ -14,12 +14,12 @@ class AngController extends Controller
 {
     public function index(Request $request)
     {   
-        $datas = Anggota::join('divisi', 'data_anggota.divisi', '=', 'divisi.id')
-            ->select('data_anggota.*','divisi.divisi as nama_divisi')
-            ->get();
+        $datas = Users::with('dataAnggota')
+        ->with('dataDivisi')
+        ->with('dataProgram')->get();
 
         foreach ($datas as $data) {
-            $data->nama = ucwords(strtolower($data->nama));
+            $data->dataAnggota->nama = ucwords(strtolower($data->dataAnggota->nama));
         }
 
         if (is_null($datas)){
@@ -27,72 +27,14 @@ class AngController extends Controller
         }
         return new AngResource(true, 'data anggota', $datas);
     }
-    public function store(Request $request)
-    {
-        $data_user = Anggota::select('*')->where('nim',$request->nim)->first();
-        $validator = Validator::make($request->all(),[
-            'avatar'     => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'nama'     => 'required',
-            'nim'   => 'required',
-            'tanggal_lahir'     => 'required',
-            'tempat_lahir'   => 'required',
-            'tahun_akt'     => 'required',
-            'no_telp'   => 'required',
-        ]);
-
-        if ($validator->fails()){
-            return response()->json($validator->errors(),442);
-        }
-
-        if (is_null($data_user)){
-            if ($request->hasFile('avatar')){
-                $avatar = $request->file('avatar');
-                $avatar->storeAs('public/images', $avatar->hashName());
-    
-                $upload = Anggota::create([
-                    "avatar" => $avatar->hashName(),
-                    'nama'     => $request->nama,
-                    'nim'   => $request->nim,
-                    'tanggal_lahir'     => $request->tanggal_lahir,
-                    'tempat_lahir'   => $request->tempat_lahir,
-                    'tahun_akt'     => $request->tahun_akt,
-                    'no_telp'   => $request->no_telp,
-                    'updated_at' => now(),
-                    'created_at' => now(),
-                ]);
-                return new AngResource(true, 'data anggota', $upload);
-    
-            }
-            $upload = Anggota::create([
-                'nama'     => $request->nama,
-                'nim'   => $request->nim,
-                'tanggal_lahir'     => $request->tanggal_lahir,
-                'tempat_lahir'   => $request->tempat_lahir,
-                'tahun_akt'     => $request->tahun_akt,
-                'no_telp'   => $request->no_telp,
-                'updated_at' => now(),
-                'created_at' => now(),
-            ]);
-    
-            // return $upload;
-            return new AngResource(true, 'data anggota', $upload);
-        }
-        return new AngResource(false, 'duplicate NIM', null);
-    }
     public function show($detail){
-        $join = Anggota::join('users', 'data_anggota.user_id', '=', 'users.id')
-        ->join('divisi', 'divisi.id','=','data_anggota.divisi')
-        ->select('data_anggota.*','users.username','divisi.divisi as nama_divisi')
-        ->where('data_anggota.user_id',$detail)
+        $join = Users::with('dataAnggota')
+        ->with('dataDivisi')
+        ->with('dataProgram')
+        ->where('Users.id',$detail)
         ->first();
 
-        if(is_null($join)){
-            $join = Anggota::join('users', 'data_anggota.user_id', '=', 'users.id')
-            ->select('data_anggota.*')
-            ->where('data_anggota.user_id',$detail)
-            ->first();
-        }
-        $join->nama = ucwords(strtolower($join->nama));
+        $join->dataAnggota->nama = ucwords(strtolower($join->dataAnggota->nama));
 
         if (is_null($join)){
             return new AngResource(true, 'tidak ada data', null);
@@ -107,7 +49,6 @@ class AngController extends Controller
         ]);
         if ($validator->fails()){
             return new AngResource(false, "username tidak tersedia", null);
-
         }
 
         $user = Anggota::join('users', 'data_anggota.user_id', '=', 'users.id')
@@ -125,32 +66,22 @@ class AngController extends Controller
                     $validator = Validator::make($request->all(),[
                         'avatar'     => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                     ]);
-            
                     if ($validator->fails()){
                         return response()->json($validator->errors(),442);
                     }
                     //upload image
                     $avatar = $request->file('avatar');
-
-                    $validator = Validator::make($request->all(),[
-                        'avatar'     => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                    ]);
-            
-                    if ($validator->fails()){
-                        return response()->json($validator->errors(),442);
-                    }
-                    
                     $avatar->storeAs('public/images/users-images/', $avatar->hashName());
                     
                     //delete old image
-                    Storage::delete('public/images/users-images/'.$old_data->avatar);
+                    Storage::delete('public/images/users-images/'.Users::find($id)->avatar);
                     
                     // update post with new image
-                    $old_data->update([
+                    Users::find($id)->update([
                         "avatar" => $avatar->hashName(),
                         'updated_at' => now(),
                     ]);
-                    return new AngResource(true, "data berhasil di ubah", $old_data);
+                    return new AngResource(true, "data berhasil di ubah", Users::find($id));
                 }
                 else{
                     if ($key[$i]=='username') {
@@ -163,8 +94,8 @@ class AngController extends Controller
                     }
                     if ($key[$i]=='avatar') {
                         if ($new_data['avatar']=='delete') {
-                            Storage::delete('public/images/users-images/'.$old_data->avatar);
-                            $old_data->update([
+                            Storage::delete('public/images/users-images/'.Users::find($id)->avatar);
+                            Users::find($id)->update([
                                 'avatar'    => null,
                                 'updated_at' => now(),
                             ]);
@@ -172,7 +103,7 @@ class AngController extends Controller
                     }
                     if ($new_data[$key[$i]]!=null) {
                         if ($key[$i]!='avatar') {
-                            $old_data->update([
+                            Users::find($id)->update([
                                 $key[$i]    => $request->get($key[$i]),
                                 'updated_at' => now(),
                             ]);
@@ -182,10 +113,10 @@ class AngController extends Controller
                 }
             }
         };
-        return new AngResource(true, "data berhasil di ubah", $old_data);
+        return new AngResource(true, "data berhasil di ubah", Users::find($id));
     }
     public function destroy($id){
-        $data = Anggota::find($id);
+        $data = Users::find($id);
 
         Storage::delete('storage/images/users-images'.$data->avatar);
 

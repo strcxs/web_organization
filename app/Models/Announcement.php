@@ -10,4 +10,7 @@ class Announcement extends Model
     use HasFactory;
     protected $table = 'announcement';
     protected $guarded = [];
+    public function dataUsers(){
+        return $this->hasOne(Users::class,'id','user_id');
+    }
 }
