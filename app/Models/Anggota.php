@@ -2,25 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Users;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class anggota extends Model
 {
     use HasFactory;
     protected $table = "data_anggota";
     protected $guarded = ["created_at"];
-    // protected $hidden = ["user_id"];
-
-    public function getName(){
-        return $this->nama;
-    }public function getAvatar(){
-        return $this->avatar;
-    }public function getNim(){
-        return $this->nim;
-    }
-
-    public function Divisi(){
-        return $this->belongsTo("App\Models\Divisi");
+    public function dataUsers(){
+        return $this->hasOne(Users::class,'id','user_id');
     }
 }

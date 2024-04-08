@@ -141,7 +141,6 @@
         method: "GET", // First change type to method here
         success: function(response) {
           var data = response.data;
-          console.log(data);
           if (data.tanggal_lahir == null) {
               data.tanggal_lahir = "-";
           }if (data.tempat_lahir == null) {
@@ -149,8 +148,8 @@
           }if (data.no_telp == null) {
               data.no_telp = "-";
           }
-          $(".d-block").text(data.nama);
-          $(".c-block").text(data.nama_divisi);
+          $(".d-block").text(data.data_anggota.nama);
+          $(".c-block").text(data.data_divisi.divisi);
 
           if (data.avatar!=null) {
             $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);

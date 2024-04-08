@@ -155,8 +155,8 @@
             $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
             $('#profile-avatar').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
           }
-        $(".d-block").text(data.nama);
-        $(".c-block").text(data.nama_divisi);
+        $(".d-block").text(data.data_anggota.nama);
+        $(".c-block").text(data.data_divisi.divisi);
       },
     });
     $("#btnLogOut").click(function(){
