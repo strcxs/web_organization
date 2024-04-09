@@ -31,4 +31,10 @@ class ProgramController extends Controller
 
         return new AngResource(true,'success create program',$data);
     }
+    public function destroy($id){
+        $data = Program::find($id);
+        $data-> delete();
+        
+        return new AngResource(true,'Deleted', $data);
+    }
 }

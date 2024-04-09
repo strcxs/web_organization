@@ -31,4 +31,10 @@ class DivisiController extends Controller
 
         return new AngResource(true,'success create new divisi',$data);
     }
+    public function destroy($id){
+        $data = Divisi::find($id);
+        $data-> delete();
+        
+        return new AngResource(true,'Deleted', $data);
+    }
 }

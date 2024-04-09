@@ -9,6 +9,6 @@ class Program extends Model
 {
     use HasFactory;
     protected $table = 'program';
-    protected $guarded = ['id'];
+    protected $guarded = [];
 
 }

@@ -172,26 +172,44 @@
                         if (element.data_program != null) {
                             contentName =  element.data_program.program;
                             $('#table-content-program').append(
-                                '<tr>' +
-                                    '<td class="text"><a href="{{route('cabinet_discuss')}}?d='+element.id+'">'+contentName+'</a></td>' +
+                                '<tr id="tr-'+element.data_program.id+'">' +
+                                    '<td class="text"><a href="{{route('cabinet_discuss')}}?d='+element.data_program.id+'">'+contentName+'</a></td>' +
                                     '<td class="text-center">' +
                                         '<button class="btn btn-warning m-1"><i class="nav-icon fas fa-pen"></i></button>' +
-                                        '<button id="del-topic-'+element.id+'" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
+                                        '<button id="del-topic-'+element.data_program.id+'" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
                                     '</td>' +
                                 '</tr>'
                             );
+                            $('#del-topic-' + element.data_program.id).on('click', function() {
+                                $.ajax({
+                                    url: "/api/program/"+element.data_program.id,
+                                    method: "delete", // First change type to method here    
+                                    success: function(response) {
+                                        $('#tr-'+element.data_program.id+'').remove();
+                                    }
+                                });
+                            });
                         }
                         else{
                             contentName = element.data_divisi.divisi;
                             $('#table-content-divisi').append(
-                                '<tr>' +
-                                    '<td class="text"><a href="{{route('cabinet_discuss')}}?d='+element.id+'">'+contentName+'</a></td>' +
+                                '<tr id="tr-'+element.data_divisi.id+'">'+
+                                    '<td class="text"><a href="{{route('cabinet_discuss')}}?d='+element.data_divisi.id+'">'+contentName+'</a></td>' +
                                     '<td class="text-center">' +
                                         '<button class="btn btn-warning m-1"><i class="nav-icon fas fa-pen"></i></button>' +
-                                        '<button id="del-topic-'+element.id+'" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
+                                        '<button id="del-topic-'+element.data_divisi.id+'" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
                                     '</td>' +
                                 '</tr>'
                             );
+                            $('#del-topic-' + element.data_divisi.id).on('click', function() {
+                                $.ajax({
+                                    url: "/api/divisi/"+element.data_divisi.id,
+                                    method: "delete", // First change type to method here    
+                                    success: function(response) {
+                                        $('#tr-'+element.data_divisi.id+'').remove();
+                                    }
+                                });
+                            });
                         }
                     }
                 });
@@ -251,7 +269,6 @@
                     });    
                 }
             });
-
         });
         $('#divisiForm').submit(function(event) {
             $.ajax({
