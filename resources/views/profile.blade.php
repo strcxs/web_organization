@@ -30,11 +30,13 @@
                 <h3 class="profile-username text-center" id="profile-name"></h3>
                 <p class="text-muted text-center" id="profile-nim"></p>
                 <ul class="list-group list-group-unbordered mb-3">
-                  <li class="list-group-item">
-                    <b>Angkatan</b> <b class="float-right" id="profile-angkatan"></b>
+                  <li class="list-group-item text-center">
+                    <b class="text-center" id="profile-divisi-2"></b>
                   </li>
-                  <li class="list-group-item">
-                    <b>Divisi</b> <b class="float-right" id="profile-divisi-2"></b>
+                  <li class="list-group-item text-center">
+                    <b>Angkatan </b><b class="text-center" id="profile-angkatan"></b>
+                  </li>
+                  <li class="list-group-item text-center">
                   </li>
                   <div class="btn btn-success" id="btnUpload"><i class="fas fa-upload"></i> Upload new image</div>
                   <input type="file" id="fileToUpload" style="display: none">

@@ -53,10 +53,4 @@ Route::delete("/topic/{id}","App\Http\Controllers\\TopicController@destroy");
 Route::post("/topic","App\Http\Controllers\\TopicController@store");
 Route::post("/topic/{id}","App\Http\Controllers\\TopicController@update");
 
-// Route::post("/data","App\Http\Controllers\\AngController@update");
-
-// Route::get("/data","App\Http\Controllers\\AngController@show");
-
-// Route::prefix('v1')->group(function (){
-//     Route::apiResource('/blog', 'App\Http\Controllers\\AngController');
-// });
+Route::apiResource("/connection","App\Http\Controllers\\ConnectionController");
