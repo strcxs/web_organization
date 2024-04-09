@@ -82,34 +82,23 @@ class AngController extends Controller
                         'updated_at' => now(),
                     ]);
                     return new AngResource(true, "data berhasil di ubah", Users::find($id));
-                }
-                else{
-                    if ($key[$i]=='username') {
-                        if ($new_data['username']!=null) {
+                }else{
+                    if ($key[$i]=='username' or $key[$i]=='program_id' or $key[$i]=='divisi_id') {
+                        if ($new_data[$key[$i]]!=null) {
                             $update_user = Users::find($id);
                             $update_user->update([
-                                'username'=> $request->get('username'),
+                                $key[$i]=> $request->get($key[$i]),
+                            ]);
+                        }
+                    }else{
+                        if ($new_data[$key[$i]]!=null) {
+                            $update_user = Anggota::select('*')
+                            ->where('user_id','=',$id)->first();
+                            $update_user->update([
+                                $key[$i]=> $request->get($key[$i]),
                             ]);
                         }
                     }
-                    if ($key[$i]=='avatar') {
-                        if ($new_data['avatar']=='delete') {
-                            Storage::delete('public/images/users-images/'.Users::find($id)->avatar);
-                            Users::find($id)->update([
-                                'avatar'    => null,
-                                'updated_at' => now(),
-                            ]);
-                        }
-                    }
-                    if ($new_data[$key[$i]]!=null) {
-                        if ($key[$i]!='avatar') {
-                            Users::find($id)->update([
-                                $key[$i]    => $request->get($key[$i]),
-                                'updated_at' => now(),
-                            ]);
-                        }
-                    }
-                    
                 }
             }
         };

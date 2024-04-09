@@ -188,8 +188,8 @@
         sessionStorage.clear();
         window.location = '../login';
       });
-      $('#btnUpload').click(function(){
-            $('#fileToUpload').click();
+      $('#btnUpload').click(function(event){
+        $('#fileToUpload').click();
       });
       $('#btnDelete').click(function(){
         $.ajax({
@@ -200,7 +200,6 @@
           },
           success: function(response) {
             var data = response.data;
-            console.log(response);
             $('#user_image').attr('src', `{{asset('storage/images/default/default-user-icon.jpg')}}`);
             $('#profile-avatar').attr('src', `{{asset('storage/images/default/default-user-icon.jpg')}}`);
             
@@ -212,7 +211,6 @@
           var file_avatar = $('#fileToUpload').prop('files')[0];
           var avatar = new FormData();
           avatar.append('avatar', file_avatar);
-          // console.log(file_avatar);
           $.ajax({
           url: "/api/data/"+sessionStorage.getItem('login'),
           method: "POST", // First change type to method here    
@@ -221,7 +219,7 @@
           contentType: false,
           success: function(response) {
             var data = response.data;
-            console.log(data);
+            alert(response.message);
             if (data.avatar != null) {
               $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
               $('#profile-avatar').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
@@ -229,7 +227,7 @@
           }
         });  
       });
-      $("#btnUpdate").click(function(){ 
+      $("#btnUpdate").click(function(event){ 
         var user = $("#username").val();
 
         var tanggal = $("#tanggal_lahir").val();

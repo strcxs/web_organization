@@ -34,7 +34,7 @@
                         </tbody>
                     </table>
 
-                    <button class="btn btn-success"  data-toggle="modal" data-target="#addTopic"><i class="fas fa-solid fa-plus"></i>  Add new</button>
+                    <button class="btn btn-success"  data-toggle="modal" data-target="#addDivisi"><i class="fas fa-solid fa-plus"></i>  Add new</button>
                 </div>
             </div>
             <div class="card">
@@ -54,7 +54,43 @@
                     <button class="btn btn-success"  data-toggle="modal" data-target="#addProgram"><i class="fas fa-solid fa-plus"></i>  Add new</button>
                 </div>
             </div>
-
+            {{-- modal divisi --}}
+            <div class="modal fade" id="addDivisi" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header bg-success">
+                            <h5 id="grafik-title" class="modal-title">Tambah Divisi Baru</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <form id="divisiForm">
+                                <div class="form-group">
+                                    <label for="divisi">Nama Divisi</label>
+                                    <input type="text" class="form-control" id="divisiName" name="divisi_name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="leader">Leader</label>
+                                    <select class="form-control" id="divisi_leader" name="leader" required>
+                                        <option value="" disabled selected>select</option>
+                                        <!-- Tambahkan lebih banyak anggota sesuai kebutuhan -->
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="memberList">Pilih Anggota</label><br>
+                                    <select multiple class="form-control" id="divisi_memberList" name="members[]">
+                                        <!-- Tambahkan lebih banyak anggota sesuai kebutuhan -->
+                                    </select>
+                                </div>
+                                <button class="btn btn-primary float-right mb-2">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{-- end modal divisi  --}}
+            {{-- modal program --}}
             <div class="modal fade" id="addProgram" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
@@ -65,26 +101,31 @@
                             </button>
                         </div>
                         <div class="card-body">
-                            <form id="topicForm">
+                            <form id="programForm">
                                 <div class="form-group">
-                                    <label for="topicName">Nama Program</label>
-                                    <input type="text" class="form-control" name="topic_name" required>
+                                    <label for="program">Nama Program</label>
+                                    <input type="text" class="form-control" id="programName" name="program_name" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="memberList">Pilih Anggota</label>
-                                    <select multiple class="form-control" id="memberList" name="members[]">
-                                        <option value="member1">Anggota 1</option>
-                                        <option value="member2">Anggota 2</option>
-                                        <option value="member3">Anggota 3</option>
+                                    <label for="leader">Leader</label>
+                                    <select class="form-control" id="leader" name="leader" required>
+                                        <option value="" disabled selected>select</option>
                                         <!-- Tambahkan lebih banyak anggota sesuai kebutuhan -->
                                     </select>
                                 </div>
+                                <div class="form-group">
+                                    <label for="memberList">Pilih Anggota</label><br>
+                                    <select multiple class="form-control" id="memberList" name="members[]">
+                                        <!-- Tambahkan lebih banyak anggota sesuai kebutuhan -->
+                                    </select>
+                                </div>
+                                <button class="btn btn-primary float-right mb-2">Submit</button>
                             </form>
-                            <button class="btn btn-primary float-right mb-2">Submit</button>
                         </div>
                     </div>
                 </div>
             </div>
+            {{-- end modal program --}}
         </div>
     </section>
   </div>
@@ -102,6 +143,23 @@
         $('#memberList').select2({
             placeholder: 'Pilih Anggota', // Teks placeholder
             allowClear: true // Memungkinkan pengguna menghapus pilihan
+        });
+        $('#divisi_memberList').select2({
+            placeholder: 'Pilih Anggota', // Teks placeholder
+            allowClear: true // Memungkinkan pengguna menghapus pilihan
+        });
+        var previousLeader = '';
+        var divisi_previousLeader = '';
+
+        $('#divisi_leader').change(function() {
+            $('#divisi_memberList option[value="' + divisi_previousLeader + '"]').remove();
+            $('#divisi_memberList option[value="'+$(this).val()+'"]').prop('selected', true);
+            divisi_previousLeader = $(this).val();
+        });
+        $('#leader').change(function() {
+            $('#memberList option[value="' + previousLeader + '"]').remove();
+            $('#memberList option[value="'+$(this).val()+'"]').prop('selected', true);
+            previousLeader = $(this).val();
         });
         $.ajax({
             url: "/api/connection",
@@ -138,6 +196,91 @@
                     }
                 });
             }
+        });
+
+        $.ajax({
+            url: "/api/data",
+            method:'GET',
+            success: function (response) {
+                var data = response.data;
+                data.forEach(element => {
+                    if (element.data_program == null){
+                        $('#memberList').append(
+                            '<option value="'+element.id+'">'+element.data_anggota.nama+'</option>'
+                        )
+                        $('#leader').append(
+                            '<option value="'+element.id+'">'+element.data_anggota.nama+'</option>'
+                        )
+                    }
+                    if (element.data_divisi.id == 1) {
+                        $('#divisi_memberList').append(
+                            '<option value="'+element.id+'">'+element.data_anggota.nama+'</option>'
+                        )
+                        $('#divisi_leader').append(
+                            '<option value="'+element.id+'">'+element.data_anggota.nama+'</option>'
+                        )
+                    }
+                });
+            }
+        });
+        $('#programForm').submit(function(event) {
+            $.ajax({
+                url: "/api/program/",
+                method: "POST", // First change type to method here    
+                data: {
+                    'program': $('#programName').val(),
+                    'leader_id': $('#leader').val()
+                },
+                success:function(response){
+                    var data = response.data
+                    $('#memberList').val().forEach(element => {
+                        $.ajax({
+                            url: "/api/data/"+element,
+                            method: "POST", // First change type to method here    
+                            data: {
+                                'program_id':data.id,
+                            }
+                        });    
+                    });
+                    $.ajax({
+                        url: "/api/connection",
+                        method: "POST", // First change type to method here    
+                        data: {
+                            'program_id':data.id,
+                        }
+                    });    
+                }
+            });
+
+        });
+        $('#divisiForm').submit(function(event) {
+            $.ajax({
+                url: "/api/divisi/",
+                method: "POST", // First change type to method here    
+                data: {
+                    'divisi': $('#divisiName').val(),
+                    'leader_id': $('#divisi_leader').val()
+                },
+                success:function(response){
+                    var data = response.data
+                    $('#divisi_memberList').val().forEach(element => {
+                        $.ajax({
+                            url: "/api/data/"+element,
+                            method: "POST", // First change type to method here    
+                            data: {
+                                'divisi_id':data.id,
+                            }
+                        });    
+                    });
+                    $.ajax({
+                        url: "/api/connection",
+                        method: "POST", // First change type to method here    
+                        data: {
+                            'divisi_id':data.id,
+                        }
+                    });    
+                }
+            });
         });
     });
 </script>

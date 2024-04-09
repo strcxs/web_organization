@@ -54,3 +54,6 @@ Route::post("/topic","App\Http\Controllers\\TopicController@store");
 Route::post("/topic/{id}","App\Http\Controllers\\TopicController@update");
 
 Route::apiResource("/connection","App\Http\Controllers\\ConnectionController");
+
+Route::apiResource("/program","App\Http\Controllers\\ProgramController");
+Route::apiResource("/divisi","App\Http\Controllers\\DivisiController");
