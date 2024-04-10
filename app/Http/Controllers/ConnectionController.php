@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\Validator;
 class ConnectionController extends Controller
 {
     public function index(){
-        $data = Connection::with('dataDivisi')
-        ->with('dataProgram')
+        $data = Connection::with('dataDivisi.dataUsers.dataAnggota')
+        ->with('dataProgram.dataUsers.dataAnggota')
         ->get();
 
         return new AngResource(true,'data Connection',$data);

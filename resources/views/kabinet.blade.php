@@ -143,26 +143,29 @@
             return window.location = '../login';
         }
         loginCheck(sessionStorage.getItem('login'));
-        $('#memberList').select2({
-            placeholder: 'Pilih Anggota', // Teks placeholder
-            allowClear: true // Memungkinkan pengguna menghapus pilihan
-        });
-        $('#divisi_memberList').select2({
-            placeholder: 'Pilih Anggota', // Teks placeholder
-            allowClear: true // Memungkinkan pengguna menghapus pilihan
+        $('#memberList, #divisi_memberList').select2({
+            placeholder: 'Pilih Anggota',
+            allowClear: true
         });
         var previousLeader = '';
         var divisi_previousLeader = '';
 
-        $('#divisi_leader').change(function() {
-            $('#divisi_memberList option[value="' + divisi_previousLeader + '"]').remove();
-            $('#divisi_memberList option[value="'+$(this).val()+'"]').prop('selected', true);
-            divisi_previousLeader = $(this).val();
-        });
-        $('#leader').change(function() {
-            $('#memberList option[value="' + previousLeader + '"]').remove();
-            $('#memberList option[value="'+$(this).val()+'"]').prop('selected', true);
-            previousLeader = $(this).val();
+        $('#divisi_leader, #leader').change(function() {
+            var prevLeader = $(this).attr('id') === 'divisi_leader' ? divisi_previousLeader : previousLeader;
+            var prevLeader_text = $('#' + $(this).attr('id').replace('leader', 'memberList') + ' option[value="' + prevLeader + '"]').text();
+
+            $('#' + $(this).attr('id').replace('leader', 'memberList') + ' option[value="' + prevLeader + '"]').remove();
+            $('#' + $(this).attr('id').replace('leader', 'memberList') + ' option[value="' + prevLeader + '"]').prop('selected',false);
+            $('#memberList').append(
+                '<option value="'+prevLeader+'">'+prevLeader_text+'</option>'
+            )
+
+            $('#' + $(this).attr('id').replace('leader', 'memberList') + ' option[value="'+$(this).val()+'"]').prop('selected', true);
+            if ($(this).attr('id') === 'divisi_leader') {
+                divisi_previousLeader = $(this).val();
+            } else {
+                previousLeader = $(this).val();
+            }
         });
         $.ajax({
             url: "/api/data",
@@ -189,109 +192,81 @@
                 });
             }
         });
+        function submitAjax(url, formData, successCallback) {
+            $.ajax({
+                url: url,
+                method: "POST",
+                data: formData,
+                success: successCallback
+            });
+        }
+
+        function deleteProgram(id) {
+            $('#' + id).on('click', function() {
+                $.ajax({
+                    url: "/api/" + id.split('-')[0] + "/" + id.split('-')[1],
+                    method: "DELETE",
+                    success: function(response) {
+                        $('#tr-' + id.split('-')[1]).remove();
+                    }
+                });
+            });
+        }
+
         $('#programForm').submit(function(event) {
             event.preventDefault();
-            $.ajax({
-                url: "/api/program/",
-                method: "POST", // First change type to method here    
-                data: {
-                    'program': $('#programName').val(),
-                    'leader_id': $('#leader').val()
-                },
-                success:function(response){
-                    var data = response.data
-                    $('#memberList').val().forEach(element => {
-                        $.ajax({
-                            url: "/api/data/"+element,
-                            method: "POST", // First change type to method here    
-                            data: {
-                                'program_id':data.id,
-                            }
-                        });    
-                    });
-                    $.ajax({
-                        url: "/api/connection",
-                        method: "POST", // First change type to method here    
-                        data: {
-                            'program_id':data.id,
-                        },
-                        success: function(response){
-                            $('#table-content-program').append(
-                                '<tr id="tr-'+data.id+'">' +
-                                    '<td class="text"><a href="{{route('cabinet_discuss')}}?d='+response.data.id+'">'+data.program+'</a></td>' +
-                                    '<td class="text-center">' +
-                                        '<button class="btn btn-warning m-1"data-toggle="modal" data-target="#editDivisi-'+data.id+'"><i class="nav-icon fas fa-pen"></i></button>' +
-                                        '<button id="del-topic-'+data.id+'" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
-                                    '</td>' +
-                                '</tr>'
-                            );
-                        }
-                    });    
-                    $('#del-topic-' + data.id).on('click', function() {
-                        console.log('test');
-                        $.ajax({
-                            url: "/api/program/"+data.id,
-                            method: "delete", // First change type to method here    
-                            success: function(response) {
-                                $('#tr-'+data.id+'').remove();
-                            }
-                        });
-                    });
-                    $('#addProgram').modal('hide');
-                }
+            var formData = {
+                'program': $('#programName').val(),
+                'leader_id': $('#leader').val()
+            };
+            submitAjax("/api/program/", formData, function(response) {
+                var data = response.data;
+                $('#memberList').val().forEach(function(element) {
+                    submitAjax("/api/data/" + element, {'program_id': data.id});
+                });
+                submitAjax("/api/connection", {'program_id': data.id}, function(response) {
+                    $('#table-content-program').append(
+                        '<tr id="tr-' + data.id + '">' +
+                            '<td class="text"><a href="{{route('cabinet_discuss')}}?d=' + response.data.id + '">' + data.program + '</a></td>' +
+                            '<td class="text-center">' +
+                                '<button class="btn btn-warning m-1"data-toggle="modal" data-target="#editDivisi-' + data.id + '"><i class="nav-icon fas fa-pen"></i></button>' +
+                                '<button id="del-program-' + data.id + '" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
+                            '</td>' +
+                        '</tr>'
+                    );
+                    deleteProgram('del-program-' + data.id);
+                });
+                $('#addProgram').modal('hide');
             });
         });
+
         $('#divisiForm').submit(function(event) {
             event.preventDefault();
-            $.ajax({
-                url: "/api/divisi/",
-                method: "POST", // First change type to method here    
-                data: {
-                    'divisi': $('#divisiName').val(),
-                    'leader_id': $('#divisi_leader').val()
-                },
-                success:function(response){
-                    var data = response.data
-                    $('#divisi_memberList').val().forEach(element => {
-                        $.ajax({
-                            url: "/api/data/"+element,
-                            method: "POST", // First change type to method here    
-                            data: {
-                                'divisi_id':data.id,
-                            }
-                        });    
-                    });
-                    $.ajax({
-                        url: "/api/connection",
-                        method: "POST", // First change type to method here    
-                        data: {
-                            'divisi_id':data.id,
-                        },
-                        success: function(response){
-                            $('#table-content-divisi').append(
-                                '<tr id="tr-'+data.id+'">'+
-                                    '<td class="text"><a href="{{route('cabinet_discuss')}}?d='+response.data.id+'">'+data.divisi+'</a></td>' +
-                                    '<td class="text-center">' +
-                                        '<button class="btn btn-warning m-1"data-toggle="modal" data-target="#editDivisi-'+data.id+'"><i class="nav-icon fas fa-pen"></i></button>' +
-                                        '<button id="del-topic-'+data.id+'" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
-                                    '</td>' +
-                                '</tr>'
-                            );
-                        }
-                    });   
-                    $('#del-topic-' + data.id).on('click', function() {
-                        $.ajax({
-                            url: "/api/divisi/"+data.id,
-                            method: "delete", // First change type to method here    
-                            success: function(response) {
-                                $('#tr-'+data.id+'').remove();
-                            }
-                        });
-                    });
-                    $('#addDivisi').modal('hide');
-                }
+            var formData = {
+                'divisi': $('#divisiName').val(),
+                'leader_id': $('#divisi_leader').val()
+            };
+            submitAjax("/api/divisi/", formData, function(response) {
+                var data = response.data;
+                $('#divisi_memberList').val().forEach(function(element) {
+                    submitAjax("/api/data/" + element, {'divisi_id': data.id});
+                });
+                submitAjax("/api/connection", {'divisi_id': data.id}, function(response) {
+                    $('#table-content-divisi').append(
+                        '<tr id="tr-' + data.id + '">' +
+                            '<td class="text"><a href="{{route('cabinet_discuss')}}?d=' + response.data.id + '">' + data.divisi + '</a></td>' +
+                            '<td class="text-center">' +
+                                '<button class="btn btn-warning m-1"data-toggle="modal" data-target="#editDivisi-' + data.id + '"><i class="nav-icon fas fa-pen"></i></button>' +
+                                '<button id="del-divisi-' + data.id + '" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
+                            '</td>' +
+                        '</tr>'
+                    );
+                    deleteProgram('del-divisi-' + data.id);
+                });
+                $('#addDivisi').modal('hide');
             });
         });
+
 
         // fetch connection/program 
         $.ajax({
@@ -299,253 +274,240 @@
             method: "GET",
             success: function (response) {
                 var data = response.data;
-                data.forEach(element => {
-                    if (!(element.divisi_id == null && element.program_id == null)) {
-                        var contentName = 'error';
-                        // PROGRAM 
-                        if (element.data_program != null) {
-                            contentName = element.data_program.program;
-                            $('#table-content-program').append(
-                                '<tr id="tr-'+element.data_program.id+'">'+
-                                    '<td class="text"><a href="{{route('cabinet_discuss')}}?d='+element.id+'">'+contentName+'</a></td>' +
-                                    '<td class="text-center">' +
-                                        '<button class="btn btn-warning m-1"data-toggle="modal" data-target="#editProgram-'+element.data_program.id+'"><i class="nav-icon fas fa-pen"></i></button>' +
-                                        '<button id="del-topic-'+element.data_program.id+'" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
-                                    '</td>' +
-                                '</tr>'
-                            );
-                            $('#del-topic-'+element.data_program.id+'').on('click', function() {
-                                console.log('cok');
-                                $.ajax({
-                                    url: "/api/program/"+element.data_program.id,
-                                    method: "delete", // First change type to method here    
-                                    success: function(response) {
-                                        $('#tr-'+element.data_program.id+'').remove();
-                                    }
-                                });
-                            });
-                            $('#modal-save').append(
-                                '<div class="modal fade" id="editProgram-'+element.data_program.id+'" tabindex="-1" role="dialog" aria-hidden="true">' +
-                                    '<div class="modal-dialog modal-lg" role="document">' +
-                                        '<div class="modal-content">' +
-                                            '<div class="modal-header bg-warning">' +
-                                                '<h5 id="grafik-title" class="modal-title">Manage Program</h5>' +
-                                                '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
-                                                    '<span aria-hidden="true">&times;</span>' +
-                                                '</button>' +
+                $.ajax({
+                    url: "/api/data",
+                    method:'GET',
+                    success: function (response) {
+                        var dataUsers = response.data;
+                        data.forEach(element => {
+                            if (!(element.divisi_id == null && element.program_id == null)) {
+                                var contentName = 'error';
+                                // PROGRAM 
+                                if (element.data_program != null) {
+                                    contentName = element.data_program.program;
+                                    $('#table-content-program').append(
+                                        '<tr id="tr-'+element.data_program.id+'">'+
+                                            '<td class="text"><a href="{{route('cabinet_discuss')}}?d='+element.id+'">'+contentName+'</a></td>' +
+                                            '<td class="text-center">' +
+                                                '<button class="btn btn-warning m-1"data-toggle="modal" data-target="#editProgram-'+element.data_program.id+'"><i class="nav-icon fas fa-pen"></i></button>' +
+                                                '<button id="del-topic-'+element.data_program.id+'" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
+                                            '</td>' +
+                                        '</tr>'
+                                    );
+                                    $('#del-topic-'+element.data_program.id+'').on('click', function() {
+                                        console.log('cok');
+                                        $.ajax({
+                                            url: "/api/program/"+element.data_program.id,
+                                            method: "delete", // First change type to method here    
+                                            success: function(response) {
+                                                $('#tr-'+element.data_program.id+'').remove();
+                                            }
+                                        });
+                                    });
+                                    $('#modal-save').append(
+                                        '<div class="modal fade" id="editProgram-'+element.data_program.id+'" tabindex="-1" role="dialog" aria-hidden="true">' +
+                                            '<div class="modal-dialog modal-lg" role="document">' +
+                                                '<div class="modal-content">' +
+                                                    '<div class="modal-header bg-warning">' +
+                                                        '<h5 id="grafik-title" class="modal-title">Manage Program</h5>' +
+                                                        '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                                                            '<span aria-hidden="true">&times;</span>' +
+                                                        '</button>' +
+                                                    '</div>' +
+                                                    '<div class="card-body">' +
+                                                        '<form id="edit_programForm-'+element.data_program.id+'">' +
+                                                            '<div class="form-group">' +
+                                                                '<label for="edit_program">Rename</label>' +
+                                                                '<input type="text" class="form-control" id="edit_programName-'+element.data_program.id+'" name="edit_program_name" placeholder="'+element.data_program.program+'">' +
+                                                            '</div>' +
+                                                            '<div class="form-group">' +
+                                                                '<label for="leader">Change Leader</label>' +
+                                                                '<select class="form-control" id="edit_program_leader-'+element.data_program.id+'" name="leader">' +
+                                                                '</select>' +
+                                                            '</div>' +
+                                                            '<div class="form-group">' +
+                                                                '<label for="memberList">Edit Anggota</label><br>' +
+                                                                '<select multiple class="form-control" id="edit_program_memberList-'+element.data_program.id+'" name="members[]">' +
+                                                                    '<!-- Tambahkan lebih banyak anggota sesuai kebutuhan -->' +
+                                                                '</select>' +
+                                                            '</div>' +
+                                                            '<button class="btn btn-warning float-right mb-2">save</button>' +
+                                                        '</form>' +
+                                                    '</div>' +
+                                                '</div>' +
                                             '</div>' +
-                                            '<div class="card-body">' +
-                                                '<form id="edit_programForm-'+element.data_program.id+'">' +
-                                                    '<div class="form-group">' +
-                                                        '<label for="edit_program">Rename</label>' +
-                                                        '<input type="text" class="form-control" id="edit_programName-'+element.data_program.id+'" name="edit_program_name" placeholder="'+element.data_program.program+'">' +
-                                                    '</div>' +
-                                                    '<div class="form-group">' +
-                                                        '<label for="leader">Change Leader</label>' +
-                                                        '<select class="form-control" id="edit_program_leader-'+element.data_program.id+'" name="leader">' +
-                                                        '</select>' +
-                                                    '</div>' +
-                                                    '<div class="form-group">' +
-                                                        '<label for="memberList">Edit Anggota</label><br>' +
-                                                        '<select multiple class="form-control" id="edit_program_memberList-'+element.data_program.id+'" name="members[]">' +
-                                                            '<!-- Tambahkan lebih banyak anggota sesuai kebutuhan -->' +
-                                                        '</select>' +
-                                                    '</div>' +
-                                                    '<button class="btn btn-warning float-right mb-2">save</button>' +
-                                                '</form>' +
-                                            '</div>' +
-                                        '</div>' +
-                                    '</div>' +
-                                '</div>'
-                            );
-                            let users_before_program = [];
-                            let leader_before_program = '';
-                            $('#edit_programForm-'+element.data_program.id+'').submit(function(event) {
-                                event.preventDefault();
-                                var users_program = $('#edit_program_memberList-'+element.data_program.id+'').val();
-                                var leader_program = $('#edit_program_leader-'+element.data_program.id+'').val()
-                                
-                                var users_delete_program = users_before_program.filter(item=> !users_program.includes(item));
-                                var users_new_program = users_program.filter(item=> !users_before_program.includes(item));
-                                
-                                if (leader_before_program != leader_program) {
-                                    $.ajax({
-                                        url: "/api/program/"+element.data_program.id,
-                                        method: "put", // First change type to method here    
-                                        data: {
-                                            'leader_id': leader_program
+                                        '</div>'
+                                    );
+                                    let users_before_program = [];
+                                    let leader_before_program = '';
+                                    $('#edit_programForm-'+element.data_program.id+'').submit(function(event) {
+                                        event.preventDefault();
+                                        var users_program = $('#edit_program_memberList-'+element.data_program.id+'').val();
+                                        var leader_program = $('#edit_program_leader-'+element.data_program.id+'').val()
+                                        
+                                        var users_delete_program = users_before_program.filter(item=> !users_program.includes(item));
+                                        var users_new_program = users_program.filter(item=> !users_before_program.includes(item));
+                                        
+                                        if (leader_before_program != leader_program) {
+                                            $.ajax({
+                                                url: "/api/program/"+element.data_program.id,
+                                                method: "put", // First change type to method here    
+                                                data: {
+                                                    'leader_id': leader_program
+                                                }
+                                            })
                                         }
-                                    })
-                                }
-                                users_new_program.forEach(user => {
-                                    $.ajax({
-                                        url: "/api/data/"+user,
-                                        method: "POST", // First change type to method here    
-                                        data: {
-                                            'program_id': element.data_program.id
-                                        }
-                                    })
-                                });
-                                users_delete_program.forEach(user => {
-                                    $.ajax({
-                                        url: "/api/data/"+user,
-                                        method: "POST", // First change type to method here    
-                                        data: {
-                                            'program_id': 1
-                                        }
-                                    })
-                                });
-                                $('#editProgram-'+element.data_program.id+'').modal('hide');
-                            });
-                            $('#edit_program_memberList-'+element.data_program.id+'').select2({
-                                placeholder: 'Pilih Anggota', // Teks placeholder
-                                allowClear: true // Memungkinkan pengguna menghapus pilihan
-                            });
-                            
-                            $.ajax({
-                                url: "/api/data",
-                                method:'GET',
-                                success: function (response) {
-                                    var data = response.data;
-                                    data.forEach(loop => {
-                                        if (loop.data_program != null) {
+                                        users_new_program.forEach(user => {
+                                            $.ajax({
+                                                url: "/api/data/"+user,
+                                                method: "POST", // First change type to method here    
+                                                data: {
+                                                    'program_id': element.data_program.id
+                                                }
+                                            })
+                                        });
+                                        users_delete_program.forEach(user => {
+                                            $.ajax({
+                                                url: "/api/data/"+user,
+                                                method: "POST", // First change type to method here    
+                                                data: {
+                                                    'program_id': 1
+                                                }
+                                            })
+                                        });
+                                        $('#editProgram-'+element.data_program.id+'').modal('hide');
+                                    });
+                                    $('#edit_program_memberList-'+element.data_program.id+'').select2({
+                                        placeholder: 'Pilih Anggota', // Teks placeholder
+                                        allowClear: true // Memungkinkan pengguna menghapus pilihan
+                                    });
+                                    
+                                    dataUsers.forEach(loop => {
+                                        if (loop.data_program !=null) {
                                             if (loop.data_program.id == element.data_program.id) {
                                                 if (loop.data_program.leader_id != loop.id) {
                                                     $('#edit_program_leader-'+element.data_program.id+'').append(
                                                         '<option value="'+loop.id+'">'+loop.data_anggota.nama+'</option>'
                                                     )
                                                 }
+                                                if (loop.data_program.leader_id == loop.id) {
+                                                    $('#edit_program_leader-'+element.data_program.id+'').append(
+                                                        '<option value="'+loop.id+'" selected>'+loop.data_anggota.nama+'</option>'
+                                                    )
+                                                    leader_before = $('#edit_program_leader-'+element.data_program.id+'').val();
+                                                }
                                                 $('#edit_program_memberList-'+element.data_program.id+'').append(
                                                     '<option value="'+loop.id+'"selected>'+loop.data_anggota.nama+'</option>'
                                                 )
                                             }
-                                        }
-                                        if(loop.data_program.id == 1)  {
-                                            $('#edit_program_memberList-'+element.data_program.id+'').append(
-                                                '<option value="'+loop.id+'">'+loop.data_anggota.nama+'</option>'
-                                            )
+                                            if (loop.data_program.id == 1) {
+                                                $('#edit_program_memberList-'+element.data_program.id+'').append(
+                                                    '<option value="'+loop.id+'">'+loop.data_anggota.nama+'</option>'
+                                                )
+                                            }
                                         }
                                     });
-                                    users_before_program = $('#edit_program_memberList-'+element.data_program.id+'').val();
-                                    leader_before_program = $('#edit_program_leader-'+element.data_program.id+'').val();
-                                }
-                            });
-                            $.ajax({
-                                url: "/api/program/"+element.data_program.id,
-                                method:'GET',
-                                success: function (response) {
-                                    var data = response.data;
-                                    $('#edit_program_leader-'+element.data_program.id+'').append(
-                                        '<option value="'+data.leader_id+'" selected>'+data.data_users.data_anggota.nama+'</option>'
-                                    )
-                                    leader_before_program = $('#edit_program_leader-'+element.data_program.id+'').val();
-                                }
-                            });
-                            
-                        // DIVISI 
-                        }else{
-                            contentName = element.data_divisi.divisi;
-                            $('#table-content-divisi').append(
-                                '<tr id="tr-'+element.data_divisi.id+'">'+
-                                    '<td class="text"><a href="{{route('cabinet_discuss')}}?d='+element.id+'">'+contentName+'</a></td>' +
-                                    '<td class="text-center">' +
-                                        '<button class="btn btn-warning m-1"data-toggle="modal" data-target="#editDivisi-'+element.data_divisi.id+'"><i class="nav-icon fas fa-pen"></i></button>' +
-                                        '<button id="del-topic-'+element.data_divisi.id+'" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
-                                    '</td>' +
-                                '</tr>'
-                            );
-                            $('#del-topic-' + element.data_divisi.id).on('click', function() {
-                                $.ajax({
-                                    url: "/api/divisi/"+element.data_divisi.id,
-                                    method: "delete", // First change type to method here    
-                                    success: function(response) {
-                                        $('#tr-'+element.data_divisi.id+'').remove();
-                                    }
-                                });
-                            });
-                            $('#modal-save').append(
-                                '<div class="modal fade" id="editDivisi-'+element.data_divisi.id+'" tabindex="-1" role="dialog" aria-hidden="true">' +
-                                    '<div class="modal-dialog modal-lg" role="document">' +
-                                        '<div class="modal-content">' +
-                                            '<div class="modal-header bg-warning">' +
-                                                '<h5 id="grafik-title" class="modal-title">Manage Divisi</h5>' +
-                                                '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
-                                                    '<span aria-hidden="true">&times;</span>' +
-                                                '</button>' +
+                                    users_before = $('#edit_program_memberList-'+element.data_program.id+'').val();
+                                    leader_before = $('#edit_program_leader-'+element.data_program.id+'').val();
+                                    
+                                // DIVISI 
+                                }else{
+                                    contentName = element.data_divisi.divisi;
+                                    $('#table-content-divisi').append(
+                                        '<tr id="tr-'+element.data_divisi.id+'">'+
+                                            '<td class="text"><a href="{{route('cabinet_discuss')}}?d='+element.id+'">'+contentName+'</a></td>' +
+                                            '<td class="text-center">' +
+                                                '<button class="btn btn-warning m-1"data-toggle="modal" data-target="#editDivisi-'+element.data_divisi.id+'"><i class="nav-icon fas fa-pen"></i></button>' +
+                                                '<button id="del-topic-'+element.data_divisi.id+'" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
+                                            '</td>' +
+                                        '</tr>'
+                                    );
+                                    $('#del-topic-' + element.data_divisi.id).on('click', function() {
+                                        $.ajax({
+                                            url: "/api/divisi/"+element.data_divisi.id,
+                                            method: "delete", // First change type to method here    
+                                            success: function(response) {
+                                                $('#tr-'+element.data_divisi.id+'').remove();
+                                            }
+                                        });
+                                    });
+                                    $('#modal-save').append(
+                                        '<div class="modal fade" id="editDivisi-'+element.data_divisi.id+'" tabindex="-1" role="dialog" aria-hidden="true">' +
+                                            '<div class="modal-dialog modal-lg" role="document">' +
+                                                '<div class="modal-content">' +
+                                                    '<div class="modal-header bg-warning">' +
+                                                        '<h5 id="grafik-title" class="modal-title">Manage Divisi</h5>' +
+                                                        '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                                                            '<span aria-hidden="true">&times;</span>' +
+                                                        '</button>' +
+                                                    '</div>' +
+                                                    '<div class="card-body">' +
+                                                        '<form id="edit_divisiForm-'+element.data_divisi.id+'">' +
+                                                            '<div class="form-group">' +
+                                                                '<label for="edit_divisi">Rename</label>' +
+                                                                '<input type="text" class="form-control" id="edit_divisiName-'+element.data_divisi.id+'" name="edit_divisi_name" placeholder="'+element.data_divisi.divisi+'">' +
+                                                            '</div>' +
+                                                            '<div class="form-group">' +
+                                                                '<label for="leader">Change Leader</label>' +
+                                                                '<select class="form-control" id="edit_divisi_leader-'+element.data_divisi.id+'" name="leader">' +
+                                                                '</select>' +
+                                                            '</div>' +
+                                                            '<div class="form-group">' +
+                                                                '<label for="memberList">Edit Anggota</label><br>' +
+                                                                '<select multiple class="form-control" id="edit_divisi_memberList-'+element.data_divisi.id+'" name="members[]">' +
+                                                                    '<!-- Tambahkan lebih banyak anggota sesuai kebutuhan -->' +
+                                                                '</select>' +
+                                                            '</div>' +
+                                                            '<button class="btn btn-warning float-right mb-2">save</button>' +
+                                                        '</form>' +
+                                                    '</div>' +
+                                                '</div>' +
                                             '</div>' +
-                                            '<div class="card-body">' +
-                                                '<form id="edit_divisiForm-'+element.data_divisi.id+'">' +
-                                                    '<div class="form-group">' +
-                                                        '<label for="edit_divisi">Rename</label>' +
-                                                        '<input type="text" class="form-control" id="edit_divisiName-'+element.data_divisi.id+'" name="edit_divisi_name" placeholder="'+element.data_divisi.divisi+'">' +
-                                                    '</div>' +
-                                                    '<div class="form-group">' +
-                                                        '<label for="leader">Change Leader</label>' +
-                                                        '<select class="form-control" id="edit_divisi_leader-'+element.data_divisi.id+'" name="leader">' +
-                                                        '</select>' +
-                                                    '</div>' +
-                                                    '<div class="form-group">' +
-                                                        '<label for="memberList">Edit Anggota</label><br>' +
-                                                        '<select multiple class="form-control" id="edit_divisi_memberList-'+element.data_divisi.id+'" name="members[]">' +
-                                                            '<!-- Tambahkan lebih banyak anggota sesuai kebutuhan -->' +
-                                                        '</select>' +
-                                                    '</div>' +
-                                                    '<button class="btn btn-warning float-right mb-2">save</button>' +
-                                                '</form>' +
-                                            '</div>' +
-                                        '</div>' +
-                                    '</div>' +
-                                '</div>'
-                            );
-                            let users_before = [];
-                            let leader_before = '';
-                            $('#edit_divisiForm-'+element.data_divisi.id+'').submit(function(event) {
-                                event.preventDefault();
-                                var users = $('#edit_divisi_memberList-'+element.data_divisi.id+'').val();
-                                var leader = $('#edit_divisi_leader-'+element.data_divisi.id+'').val()
-
-                                var users_delete = users_before.filter(item=> !users.includes(item));
-                                var users_new = users.filter(item=> !users_before.includes(item));
-                                if (leader_before != leader) {
-                                    $.ajax({
-                                        url: "/api/divisi/"+element.data_divisi.id,
-                                        method: "put", // First change type to method here    
-                                        data: {
-                                            'leader_id': leader
+                                        '</div>'
+                                    );
+                                    let users_before = [];
+                                    let leader_before = '';
+                                    $('#edit_divisiForm-'+element.data_divisi.id+'').submit(function(event) {
+                                        event.preventDefault();
+                                        var users = $('#edit_divisi_memberList-'+element.data_divisi.id+'').val();
+                                        var leader = $('#edit_divisi_leader-'+element.data_divisi.id+'').val()
+        
+                                        var users_delete = users_before.filter(item=> !users.includes(item));
+                                        var users_new = users.filter(item=> !users_before.includes(item));
+                                        if (leader_before != leader) {
+                                            $.ajax({
+                                                url: "/api/divisi/"+element.data_divisi.id,
+                                                method: "put", // First change type to method here    
+                                                data: {
+                                                    'leader_id': leader
+                                                }
+                                            })
                                         }
-                                    })
-                                }
-                                users_new.forEach(user => {
-                                    $.ajax({
-                                        url: "/api/data/"+user,
-                                        method: "POST", // First change type to method here    
-                                        data: {
-                                            'divisi_id': element.data_divisi.id
-                                        }
-                                    })
-                                });
-                                users_delete.forEach(user => {
-                                    $.ajax({
-                                        url: "/api/data/"+user,
-                                        method: "POST", // First change type to method here    
-                                        data: {
-                                            'divisi_id': 1
-                                        }
-                                    })
-                                });
-                                $('#editDivisi-'+element.data_divisi.id+'').modal('hide');
-                            });
-                            $('#edit_divisi_memberList-'+element.data_divisi.id+'').select2({
-                                placeholder: 'Pilih Anggota', // Teks placeholder
-                                allowClear: true // Memungkinkan pengguna menghapus pilihan
-                            });
-                            
-                            $.ajax({
-                                url: "/api/data",
-                                method:'GET',
-                                success: function (response) {
-                                    var data = response.data;
-                                    data.forEach(loop => {
+                                        users_new.forEach(user => {
+                                            $.ajax({
+                                                url: "/api/data/"+user,
+                                                method: "POST", // First change type to method here    
+                                                data: {
+                                                    'divisi_id': element.data_divisi.id
+                                                }
+                                            })
+                                        });
+                                        users_delete.forEach(user => {
+                                            $.ajax({
+                                                url: "/api/data/"+user,
+                                                method: "POST", // First change type to method here    
+                                                data: {
+                                                    'divisi_id': 1
+                                                }
+                                            })
+                                        });
+                                        $('#editDivisi-'+element.data_divisi.id+'').modal('hide');
+                                    });
+                                    $('#edit_divisi_memberList-'+element.data_divisi.id+'').select2({
+                                        placeholder: 'Pilih Anggota', // Teks placeholder
+                                        allowClear: true // Memungkinkan pengguna menghapus pilihan
+                                    });
+                                    dataUsers.forEach(loop => {
                                         if (loop.data_divisi !=null) {
                                             if (loop.data_divisi.id == element.data_divisi.id) {
                                                 if (loop.data_divisi.leader_id != loop.id) {
@@ -553,33 +515,28 @@
                                                         '<option value="'+loop.id+'">'+loop.data_anggota.nama+'</option>'
                                                     )
                                                 }
+                                                if (loop.data_divisi.leader_id == loop.id) {
+                                                    $('#edit_divisi_leader-'+element.data_divisi.id+'').append(
+                                                        '<option value="'+loop.id+'" selected>'+loop.data_anggota.nama+'</option>'
+                                                    )
+                                                    leader_before = $('#edit_divisi_leader-'+element.data_divisi.id+'').val();
+                                                }
                                                 $('#edit_divisi_memberList-'+element.data_divisi.id+'').append(
                                                     '<option value="'+loop.id+'"selected>'+loop.data_anggota.nama+'</option>'
                                                 )
                                             }
-                                        }
-                                        if (loop.data_divisi.id == 1) {
-                                            $('#edit_divisi_memberList-'+element.data_divisi.id+'').append(
-                                                '<option value="'+loop.id+'">'+loop.data_anggota.nama+'</option>'
-                                            )
+                                            if (loop.data_divisi.id == 1) {
+                                                $('#edit_divisi_memberList-'+element.data_divisi.id+'').append(
+                                                    '<option value="'+loop.id+'">'+loop.data_anggota.nama+'</option>'
+                                                )
+                                            }
                                         }
                                     });
                                     users_before = $('#edit_divisi_memberList-'+element.data_divisi.id+'').val();
                                     leader_before = $('#edit_divisi_leader-'+element.data_divisi.id+'').val();
                                 }
-                            });
-                            $.ajax({
-                                url: "/api/divisi/"+element.data_divisi.id,
-                                method:'GET',
-                                success: function (response) {
-                                    var data = response.data;
-                                    $('#edit_divisi_leader-'+element.data_divisi.id+'').append(
-                                        '<option value="'+data.leader_id+'" selected>'+data.data_users.data_anggota.nama+'</option>'
-                                    )
-                                    leader_before = $('#edit_divisi_leader-'+element.data_divisi.id+'').val();
-                                }
-                            });
-                        }
+                            }
+                        });
                     }
                 });
             }
