@@ -137,7 +137,7 @@
                 '</button>'+
               '</div>'+
             '</div>'+
-              '<div id="forum-comment-'+data.data['id']+'" class="card-footer card-comments d-none">'+
+              '<div id="forum-comment-'+data.data['id']+'" class="card-footer card-comments collapse">'+
             '</div>'+
           '</div>'
         );
@@ -298,7 +298,7 @@
                       '</button>' +
                     '</div>' +
                   '</div>' +
-                  '<div id="forum-comment-' + forum.id + '" class="card-footer card-comments d-none">' +
+                  '<div id="forum-comment-' + forum.id + '" class="card-footer card-comments collapse">' +
                   '</div>' +
                 '</div>'
               );
