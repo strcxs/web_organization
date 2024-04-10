@@ -31,6 +31,21 @@ class ProgramController extends Controller
 
         return new AngResource(true,'success create program',$data);
     }
+    public function update(Request $request, $id){
+        $update = Program::find($id)->update([
+            'leader_id'=>$request->leader_id
+        ]);
+
+        return new AngResource(true,'data update',$update);
+    }
+    public  function show($id){
+        $data = Program::with('dataUsers.dataAnggota')
+        ->find($id);
+
+        $data->dataUsers->dataAnggota->nama = ucwords(strtolower($data->dataUsers->dataAnggota->nama));
+
+        return new AngResource(true,'data program',$data);
+    }
     public function destroy($id){
         $data = Program::find($id);
         $data-> delete();

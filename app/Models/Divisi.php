@@ -11,4 +11,8 @@ class divisi extends Model
 
     protected $table = 'divisi';
     protected $guarded = ['id'];
+
+    public function dataUsers(){
+        return $this->hasOne(Users::class,'id','leader_id');
+    }
 }

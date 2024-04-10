@@ -10,5 +10,7 @@ class Program extends Model
     use HasFactory;
     protected $table = 'program';
     protected $guarded = [];
-
+    public function dataUsers(){
+        return $this->hasOne(Users::class,'id','leader_id');
+    }
 }
