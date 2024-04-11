@@ -26,6 +26,8 @@ Route::apiResource("/data","App\Http\Controllers\\AngController");
 Route::post("/data/{id}","App\Http\Controllers\\AngController@update");
 Route::delete("/data/{id}","App\Http\Controllers\\AngController@destroy");
 
+Route::apiResource("/member","App\Http\Controllers\\memberController");
+
 Route::apiResource("/username","App\Http\Controllers\\UserController");
 
 Route::apiResource("/forum","App\Http\Controllers\\forumController");

@@ -29,6 +29,9 @@ class RegisController extends Controller
                         users::create([
                             'username'=> $request->username,
                             'password'=> password_hash($hash_pass, PASSWORD_DEFAULT),
+                            'role_id'=> 2,
+                            'divisi_id'=> 1,
+                            'program_id'=> 1,
                             'updated_at' => now(),
                             'created_at' => now(),
                         ]);

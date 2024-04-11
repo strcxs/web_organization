@@ -245,9 +245,20 @@
 
     var urlParams = new URLSearchParams(window.location.search);
     var connection = urlParams.get('d');
-    var text = connection;
-    $("#header").text(text.toUpperCase());
+    var origin = window.location.origin;
 
+    $.ajax({
+      url: origin+"/api/connection/"+connection,
+      method: "GET",
+      success: function (response) {
+        var data = response.data;
+        if (data.data_divisi != null) {
+            $("#header").html(data.data_divisi.divisi+' <i class="nav-icon fas fa-bolt">')
+        }if (data.data_program != null) {
+          $("#header").html(data.data_program.program+' <i class="nav-icon fas fa-bolt">')
+        }
+      }
+    });
 
     function loadData() {
       if (!isLoading) {

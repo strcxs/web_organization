@@ -6,7 +6,7 @@ use App\Models\Users;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class anggota extends Model
+class Anggota extends Model
 {
     use HasFactory;
     protected $table = "data_anggota";

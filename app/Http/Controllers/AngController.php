@@ -14,12 +14,22 @@ class AngController extends Controller
 {
     public function index(Request $request)
     {   
-        $datas = Users::with('dataAnggota')
-        ->with('dataDivisi')
-        ->with('dataProgram')->get();
-
-        foreach ($datas as $data) {
-            $data->dataAnggota->nama = ucwords(strtolower($data->dataAnggota->nama));
+        $member = $request->input('member',false);
+        if (!$member) {
+            $datas = Users::with('dataAnggota')
+            ->with('dataDivisi')
+            ->with('dataProgram')->get();
+            
+            foreach ($datas as $data) {
+                $data->dataAnggota->nama = ucwords(strtolower($data->dataAnggota->nama));
+            }
+        }else{
+            $datas = Anggota::with('dataUsers.dataDivisi')
+            ->get();
+    
+            foreach ($datas as $data) {
+                $data->nama = ucwords(strtolower($data->nama));
+            }
         }
 
         if (is_null($datas)){

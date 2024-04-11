@@ -33,4 +33,11 @@ class ConnectionController extends Controller
 
         return new AngResource(true,'success create Connection',$data);
     }
+    public function show($id){
+        $data = Connection::with('dataDivisi.dataUsers.dataAnggota')
+        ->with('dataProgram.dataUsers.dataAnggota')
+        ->get();
+
+        return new AngResource(true,'data Connection',$data);
+    }
 }
