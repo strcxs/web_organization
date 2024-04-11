@@ -76,7 +76,7 @@
                             $("tbody").append(
                                 "<tr>"+
                                     "<td>"+element.nama+"</td>"+
-                                    "<td>"+element.nim+"</td>"+
+                                    "<td>"+element.id+"</td>"+
                                     "<td>"+'member'+"</td>"+
                                     "<td>"+element.tahun_akt+"</td>"+
                                 "</tr>"
@@ -85,7 +85,7 @@
                             $("tbody").append(
                                 "<tr>"+
                                     "<td>"+'<a class="text-dark" href="profile/detail?id=' + element.user_id + '">' + element.nama + '</a>'+"</td>"+
-                                    "<td>"+element.nim+"</td>"+
+                                    "<td>"+element.id+"</td>"+
                                     "<td>"+element.data_users.data_divisi.divisi+"</td>"+
                                     "<td>"+element.tahun_akt+"</td>"+
                                 "</tr>"

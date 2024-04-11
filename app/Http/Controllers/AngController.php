@@ -60,16 +60,10 @@ class AngController extends Controller
         if ($validator->fails()){
             return new AngResource(false, "username tidak tersedia", null);
         }
-
-        $user = Anggota::join('users', 'data_anggota.user_id', '=', 'users.id')
-                ->select('data_anggota.id')
-                ->where('data_anggota.user_id',$id)
-                ->first();
-        
-        $old_data = Anggota::find($user['id']);
+        $old_data = Users::find($id);
         $new_data = $request->all();
         $key = collect($new_data)->keys();
-
+        
         for ($i=0;$i<count($key);$i++) { 
             if ($old_data[$key[$i]]!=$new_data[$key[$i]] || $new_data[$key[$i]]!=null){
                 if ($request->hasFile('avatar')) {

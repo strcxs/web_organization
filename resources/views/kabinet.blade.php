@@ -394,7 +394,7 @@
                                                     $('#edit_program_leader-'+element.data_program.id+'').append(
                                                         '<option value="'+loop.id+'" selected>'+loop.data_anggota.nama+'</option>'
                                                     )
-                                                    leader_before = $('#edit_program_leader-'+element.data_program.id+'').val();
+                                                    leader_before_program = $('#edit_program_leader-'+element.data_program.id+'').val();
                                                 }
                                                 $('#edit_program_memberList-'+element.data_program.id+'').append(
                                                     '<option value="'+loop.id+'"selected>'+loop.data_anggota.nama+'</option>'
@@ -407,8 +407,8 @@
                                             }
                                         }
                                     });
-                                    users_before = $('#edit_program_memberList-'+element.data_program.id+'').val();
-                                    leader_before = $('#edit_program_leader-'+element.data_program.id+'').val();
+                                    users_before_program = $('#edit_program_memberList-'+element.data_program.id+'').val();
+                                    leader_before_program = $('#edit_program_leader-'+element.data_program.id+'').val();
                                     
                                 // DIVISI 
                                 }else{
@@ -417,7 +417,7 @@
                                         '<tr id="tr-'+element.data_divisi.id+'">'+
                                             '<td class="text"><a href="{{route('cabinet_discuss')}}?d='+element.id+'">'+contentName+'</a></td>' +
                                             '<td class="text-center">' +
-                                                '<button class="btn btn-warning m-1"data-toggle="modal" data-target="#editDivisi-'+element.data_divisi.id+'"><i class="nav-icon fas fa-pen"></i></button>' +
+                                                '<button class="btn btn-warning m-1" data-toggle="modal" data-target="#editDivisi-'+element.data_divisi.id+'"><i class="nav-icon fas fa-pen"></i></button>' +
                                                 '<button id="del-topic-'+element.data_divisi.id+'" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
                                             '</td>' +
                                         '</tr>'

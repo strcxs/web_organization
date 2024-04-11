@@ -37,11 +37,26 @@ class MemberController extends Controller
     }
     public function destroy($id){
         $image = Anggota::find($id)->user_id;
-        Storage::delete('public/images/users-images/'.Users::find($image)->avatar);
-        
+        if (Users::find($image) != null) {
+            Storage::delete('public/images/users-images/'.Users::find($image)->avatar);   
+        }
         $data = Anggota::find($id);
         $data-> delete();
         
         return new AngResource(true,'success delete a member', $data);
+    }
+    public function update(Request $request, $id){
+        $key = collect($request->all())->keys();
+        $data = Anggota::find($id);
+
+        foreach ($key as $keys => $value) {
+            if ($request->$value != $data->$value) {
+                Anggota::find($id)->update([
+                    $value => $request->$value
+                ]);
+            };
+        }
+        $data = Anggota::find($id);
+        return new AngResource(true,'success update member', $data);
     }
 }

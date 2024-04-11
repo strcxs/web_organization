@@ -41,37 +41,40 @@
                         </div>
                     </div>
                 </div>
-                {{-- modal add member  --}}
-                <div class="modal fade" id="addMember" tabindex="-1" role="dialog" aria-hidden="true">
-                    <div class="modal-dialog modal-lg" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header bg-success">
-                                <h5 id="grafik-title" class="modal-title">Add New Member</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="card-body">
-                                <form id="memberForm">
-                                    <div class="form-group">
-                                        <label for="studentId">Student ID</label>
-                                        <input type="text" class="form-control" id="studentId" name="student_id" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="member">Member Name</label>
-                                        <input type="text" class="form-control" id="memberName" name="member_name" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="batchYear">Batch Year</label>
-                                        <input type="text" class="form-control" id="batchYear" name="batch_year" required>
-                                    </div>
-                                    <button class="btn btn-success float-right mb-2">Submit</button>
-                                </form>
+                <div id="modal">
+
+                    {{-- modal add member  --}}
+                    <div class="modal fade" id="addMember" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header bg-success">
+                                    <h5 id="grafik-title" class="modal-title">Add New Member</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="card-body">
+                                    <form id="memberForm">
+                                        <div class="form-group">
+                                            <label for="studentId">Student ID</label>
+                                            <input type="text" class="form-control" id="studentId" name="student_id" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="member">Member Name</label>
+                                            <input type="text" class="form-control" id="memberName" name="member_name" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="batchYear">Batch Year</label>
+                                            <input type="text" class="form-control" id="batchYear" name="batch_year" required>
+                                        </div>
+                                        <button class="btn btn-success float-right mb-2">Submit</button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    {{-- end modal add member --}}
                 </div>
-                {{-- end modal add member --}}
             </section>
         </div>
         @include('include/footer')
@@ -132,7 +135,7 @@
                                             '</button>' +
                                             '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">' +
                                                 '<button class="dropdown-item" id ="member-delete-'+ element.id +'">Delete</button>' +
-                                                '<button class="dropdown-item" id ="member-edit-'+ element.id +'">Edit</button>' +
+                                                '<button class="dropdown-item" data-toggle="modal" data-target="#editMember-'+element.id+'">Edit</button>' +
                                                 '<button class="dropdown-item" id ="member-deactived-'+ element.id +'">Deactived</button>' +
                                             '</div>' +
                                             '<a class="text-dark" href="profile/detail?id=' + element.user_id + '">'+
@@ -141,7 +144,7 @@
                                             "<span class='border rounded bg-danger ml-1 px-1'>unregistered</span>"+
                                         '</div>' +
                                     "</td>"+
-                                    "<td>"+element.nim+"</td>"+
+                                    "<td>"+element.id+"</td>"+
                                     "<td>"+'member'+"</td>"+
                                     "<td>"+element.tahun_akt+"</td>"+
                                 "</tr>"
@@ -156,7 +159,7 @@
                                             '</button>' +
                                             '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">' +
                                                 '<button class="dropdown-item" id ="member-delete-'+ element.id +'">Delete</button>' +
-                                                '<button class="dropdown-item" id ="member-edit-'+ element.id +'">Edit</button>' +
+                                                '<button class="dropdown-item" data-toggle="modal" data-target="#editMember-'+element.id+'">Edit</button>' +
                                                 '<button class="dropdown-item" id ="member-deactived-'+ element.id +'">Deactived</button>' +
                                             '</div>' +
                                             '<a class="text-dark" href="profile/detail?id=' + element.user_id + '">'+
@@ -165,7 +168,7 @@
                                             "<span class='border rounded bg-success ml-1 px-1'>active</span>"+
                                         '</div>' +
                                     "</td>"+
-                                    "<td>"+element.nim+"</td>"+
+                                    "<td>"+element.id+"</td>"+
                                     "<td>"+element.data_users.data_divisi.divisi+"</td>"+
                                     "<td>"+element.tahun_akt+"</td>"+
                                 "</tr>"
@@ -178,6 +181,53 @@
                             method: 'DELETE',
                             success: function (response) {
                                 $('#tr-'+element.id+'').remove();
+                            }
+                        });
+                    })
+                    // modal edit
+                    $('#modal').append(
+                        '<div>' +
+                            '<div class="modal fade" id="editMember-'+element.id+'" tabindex="-1" role="dialog" aria-hidden="true">' +
+                                '<div class="modal-dialog modal-lg" role="document">' +
+                                    '<div class="modal-content">' +
+                                        '<div class="modal-header bg-warning">' +
+                                            '<h5 id="grafik-title" class="modal-title">Edit Member</h5>' +
+                                            '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                                                '<span aria-hidden="true">&times;</span>' +
+                                            '</button>' +
+                                        '</div>' +
+                                        '<div class="card-body">' +
+                                            '<form id="edit_memberForm-'+element.id+'">' +
+                                                '<div class="form-group">' +
+                                                    '<label for="edit_studentId">Student ID</label>' +
+                                                    '<input type="text" class="form-control" id="edit_studentId-'+element.id+'" name="edit_student_id" value="'+element.id+'">' +
+                                                '</div>' +
+                                                '<div class="form-group">' +
+                                                    '<label for="edit_member">Member Name</label>' +
+                                                    '<input type="text" class="form-control" id="edit_memberName-'+element.id+'" name="edit_member_name" value="'+element.nama+'">' +
+                                                '</div>' +
+                                                '<div class="form-group">' +
+                                                    '<label for="edit_batchYear">Batch Year</label>' +
+                                                    '<input type="text" class="form-control" id="edit_batchYear-'+element.id+'" name="edit_batch_year" value="'+element.tahun_akt+'">' +
+                                                '</div>' +
+                                                '<button class="btn btn-success float-right mb-2">Submit</button>' +
+                                            '</form>' +
+                                        '</div>' +
+                                    '</div>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>'
+                    );
+                    // end modal edit 
+                    $('#edit_memberForm-'+element.id).submit(function(event) {
+                        event.preventDefault();
+                        $.ajax({
+                            url: origin+"/api/member/"+element.id,
+                            method: 'PUT',
+                            data:{
+                                'id': $('#edit_studentId-'+element.id+'').val()||null,
+                                'nama': $('#edit_memberName-'+element.id+'').val().toUpperCase()||null,
+                                'tahun_akt': $('#edit_batchYear-'+element.id+'').val()||null,
                             }
                         });
                     })
