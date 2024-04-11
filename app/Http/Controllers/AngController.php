@@ -14,12 +14,22 @@ class AngController extends Controller
 {
     public function index(Request $request)
     {   
-        $datas = Users::with('dataAnggota')
-        ->with('dataDivisi')
-        ->with('dataProgram')->get();
-
-        foreach ($datas as $data) {
-            $data->dataAnggota->nama = ucwords(strtolower($data->dataAnggota->nama));
+        $member = $request->input('member',false);
+        if (!$member) {
+            $datas = Users::with('dataAnggota')
+            ->with('dataDivisi')
+            ->with('dataProgram')->get();
+            
+            foreach ($datas as $data) {
+                $data->dataAnggota->nama = ucwords(strtolower($data->dataAnggota->nama));
+            }
+        }else{
+            $datas = Anggota::with('dataUsers.dataDivisi')
+            ->get();
+    
+            foreach ($datas as $data) {
+                $data->nama = ucwords(strtolower($data->nama));
+            }
         }
 
         if (is_null($datas)){
@@ -50,16 +60,10 @@ class AngController extends Controller
         if ($validator->fails()){
             return new AngResource(false, "username tidak tersedia", null);
         }
-
-        $user = Anggota::join('users', 'data_anggota.user_id', '=', 'users.id')
-                ->select('data_anggota.id')
-                ->where('data_anggota.user_id',$id)
-                ->first();
-        
-        $old_data = Anggota::find($user['id']);
+        $old_data = Users::find($id);
         $new_data = $request->all();
         $key = collect($new_data)->keys();
-
+        
         for ($i=0;$i<count($key);$i++) { 
             if ($old_data[$key[$i]]!=$new_data[$key[$i]] || $new_data[$key[$i]]!=null){
                 if ($request->hasFile('avatar')) {
@@ -82,34 +86,23 @@ class AngController extends Controller
                         'updated_at' => now(),
                     ]);
                     return new AngResource(true, "data berhasil di ubah", Users::find($id));
-                }
-                else{
-                    if ($key[$i]=='username') {
-                        if ($new_data['username']!=null) {
+                }else{
+                    if ($key[$i]=='username' or $key[$i]=='program_id' or $key[$i]=='divisi_id') {
+                        if ($new_data[$key[$i]]!=null) {
                             $update_user = Users::find($id);
                             $update_user->update([
-                                'username'=> $request->get('username'),
+                                $key[$i]=> $request->get($key[$i]),
+                            ]);
+                        }
+                    }else{
+                        if ($new_data[$key[$i]]!=null) {
+                            $update_user = Anggota::select('*')
+                            ->where('user_id','=',$id)->first();
+                            $update_user->update([
+                                $key[$i]=> $request->get($key[$i]),
                             ]);
                         }
                     }
-                    if ($key[$i]=='avatar') {
-                        if ($new_data['avatar']=='delete') {
-                            Storage::delete('public/images/users-images/'.Users::find($id)->avatar);
-                            Users::find($id)->update([
-                                'avatar'    => null,
-                                'updated_at' => now(),
-                            ]);
-                        }
-                    }
-                    if ($new_data[$key[$i]]!=null) {
-                        if ($key[$i]!='avatar') {
-                            Users::find($id)->update([
-                                $key[$i]    => $request->get($key[$i]),
-                                'updated_at' => now(),
-                            ]);
-                        }
-                    }
-                    
                 }
             }
         };

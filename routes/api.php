@@ -26,6 +26,8 @@ Route::apiResource("/data","App\Http\Controllers\\AngController");
 Route::post("/data/{id}","App\Http\Controllers\\AngController@update");
 Route::delete("/data/{id}","App\Http\Controllers\\AngController@destroy");
 
+Route::apiResource("/member","App\Http\Controllers\\memberController");
+
 Route::apiResource("/username","App\Http\Controllers\\UserController");
 
 Route::apiResource("/forum","App\Http\Controllers\\forumController");
@@ -53,10 +55,8 @@ Route::delete("/topic/{id}","App\Http\Controllers\\TopicController@destroy");
 Route::post("/topic","App\Http\Controllers\\TopicController@store");
 Route::post("/topic/{id}","App\Http\Controllers\\TopicController@update");
 
-// Route::post("/data","App\Http\Controllers\\AngController@update");
+Route::apiResource("/connection","App\Http\Controllers\\ConnectionController");
 
-// Route::get("/data","App\Http\Controllers\\AngController@show");
+Route::apiResource("/program","App\Http\Controllers\\ProgramController");
 
-// Route::prefix('v1')->group(function (){
-//     Route::apiResource('/blog', 'App\Http\Controllers\\AngController');
-// });
+Route::apiResource("/divisi","App\Http\Controllers\\DivisiController");

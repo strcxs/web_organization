@@ -21,16 +21,13 @@
                                 <h3 class="card-title">Member of HMIF</h3>
                             </div>
                             <div class="card-body">
-                                <table id="example1" class="table table-bordered table-striped">
+                                <table id="memberTable" class="table table-bordered table-striped">
                                     <thead>
                                         <tr id="head">
-                                            <th id="head">Nama</th>
-                                            <th id="head">NIM</th>
-                                            <th id="head">Divisi</th>
-                                            <th id="head">tempat lahir</th>
-                                            <th id="head">Tanggal lahir</th>
-                                            <th id="head">Angkatan</th>
-                                            <th id="head">No Telp</th>
+                                            <th id="head">Name</th>
+                                            <th id="head">Student ID</th>
+                                            <th id="head">Departement</th>
+                                            <th id="head">Batch Year</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -49,66 +46,65 @@
 </body>
 @include('include/script')
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.0.0/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.0.0/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.0.0/js/buttons.print.min.js"></script>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.0.0/css/buttons.dataTables.min.css">
+
+<script src="{{asset('storage/js/logincheck.js')}}"></script>
 <script>
     $(document).ready(function(){
         if (sessionStorage.getItem('login')==null) {
         return window.location = '../login';
         }
-        $.ajax({
-            url: "/api/data/"+sessionStorage.getItem('login'),
-            method: "GET", // First change type to method here
-            success: function(response) {
-                var data = response.data;
-                $(".d-block").text(data.nama);
-                $(".c-block").text(data.nama_divisi);
-                if (data.avatar != null) {
-                    $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
-                }
-            },
-            error: function(error){
-
-            }
-        });
+        loginCheck(sessionStorage.getItem('login'));
         $.ajax({
             url: "/api/data",
             method: "GET", // First change type to method here
+            data:{
+                'member':true
+            },
             success: function(response) {
-                var keys = Object.keys(response.data[0]);
-                var karyawan = response.data;
-
-                karyawan.forEach(function(item){
-                    if (item.tanggal_lahir == null) {
-                        item.tanggal_lahir = "-";
-                    }if (item.tempat_lahir == null) {
-                        item.tempat_lahir = "-";
-                    }if (item.no_telp == null) {
-                        item.no_telp = "-";
+                var data = response.data;
+                data.forEach(element => {
+                    if (element.user_id != '64') {
+                        if (element.data_users == null) {
+                            $("tbody").append(
+                                "<tr>"+
+                                    "<td>"+element.nama+"</td>"+
+                                    "<td>"+element.id+"</td>"+
+                                    "<td>"+'member'+"</td>"+
+                                    "<td>"+element.tahun_akt+"</td>"+
+                                "</tr>"
+                            );
+                        }if (element.data_users != null) {
+                            $("tbody").append(
+                                "<tr>"+
+                                    "<td>"+'<a class="text-dark" href="profile/detail?id=' + element.user_id + '">' + element.nama + '</a>'+"</td>"+
+                                    "<td>"+element.id+"</td>"+
+                                    "<td>"+element.data_users.data_divisi.divisi+"</td>"+
+                                    "<td>"+element.tahun_akt+"</td>"+
+                                "</tr>"
+                            );
+                        }
                     }
-                    $("tbody").append(
-                    "<tr>"+
-                        "<td>"+item.nama+"</td>"+
-                        "<td>"+item.nim+"</td>"+
-                        "<td>"+item.nama_divisi+"</td>"+
-                        "<td>"+item.tanggal_lahir+"</td>"+
-                        "<td>"+item.tempat_lahir+"</td>"+
-                        "<td>"+item.tahun_akt+"</td>"+
-                        "<td>"+item.no_telp+"</td>"+
-                    "</tr>"
-                    );
                 });
-                $('#example1').DataTable({
-                    // "dom": "Bfrtip",
+                $('#memberTable').DataTable({
                     "dom": "<'float-right'Bf><'float-left'l><t><p>",
                     "buttons": ['pdf'],
                     "paging": true,
                     "lengthChange": true,
                     "searching": true,
-                    "ordering": true,
+                    "ordering": false,
                     "info": false,
-                    "autoWidth": false,
+                    "autoWidth": true,
                     "responsive": true,
                     "pagingType": "simple",
-                    "lengthMenu": [10,25,50],
+                    "lengthMenu": [20,50],
                     "language": {
                         "search": "search ",
                         "paginate": {
@@ -122,10 +118,6 @@
                     }
                 });
             }
-        });
-        $("#btnLogOut").click(function(){
-            sessionStorage.clear();
-            window.location = '../login';
         });
     });
 </script>

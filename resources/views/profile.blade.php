@@ -30,11 +30,13 @@
                 <h3 class="profile-username text-center" id="profile-name"></h3>
                 <p class="text-muted text-center" id="profile-nim"></p>
                 <ul class="list-group list-group-unbordered mb-3">
-                  <li class="list-group-item">
-                    <b>Angkatan</b> <b class="float-right" id="profile-angkatan"></b>
+                  <li class="list-group-item text-center">
+                    <b class="text-center" id="profile-divisi-2"></b>
                   </li>
-                  <li class="list-group-item">
-                    <b>Divisi</b> <b class="float-right" id="profile-divisi-2"></b>
+                  <li class="list-group-item text-center">
+                    <b>Angkatan </b><b class="text-center" id="profile-angkatan"></b>
+                  </li>
+                  <li class="list-group-item text-center">
                   </li>
                   <div class="btn btn-success" id="btnUpload"><i class="fas fa-upload"></i> Upload new image</div>
                   <input type="file" id="fileToUpload" style="display: none">
@@ -186,8 +188,8 @@
         sessionStorage.clear();
         window.location = '../login';
       });
-      $('#btnUpload').click(function(){
-            $('#fileToUpload').click();
+      $('#btnUpload').click(function(event){
+        $('#fileToUpload').click();
       });
       $('#btnDelete').click(function(){
         $.ajax({
@@ -198,7 +200,6 @@
           },
           success: function(response) {
             var data = response.data;
-            console.log(response);
             $('#user_image').attr('src', `{{asset('storage/images/default/default-user-icon.jpg')}}`);
             $('#profile-avatar').attr('src', `{{asset('storage/images/default/default-user-icon.jpg')}}`);
             
@@ -210,7 +211,6 @@
           var file_avatar = $('#fileToUpload').prop('files')[0];
           var avatar = new FormData();
           avatar.append('avatar', file_avatar);
-          // console.log(file_avatar);
           $.ajax({
           url: "/api/data/"+sessionStorage.getItem('login'),
           method: "POST", // First change type to method here    
@@ -219,7 +219,7 @@
           contentType: false,
           success: function(response) {
             var data = response.data;
-            console.log(data);
+            alert(response.message);
             if (data.avatar != null) {
               $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
               $('#profile-avatar').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
@@ -227,7 +227,7 @@
           }
         });  
       });
-      $("#btnUpdate").click(function(){ 
+      $("#btnUpdate").click(function(event){ 
         var user = $("#username").val();
 
         var tanggal = $("#tanggal_lahir").val();

@@ -46,6 +46,10 @@ Route::get('/dashboard/managevote', function () {
     return view('voteManage');
 })->name('voteManage');
 
+Route::get('/dashboard/managemembers', function () {
+    return view('membersManage');
+})->name('membersManage');
+
 Route::get('/dashboard/cabinet', function () {
     return view('kabinet');
 })->name('cabinet');

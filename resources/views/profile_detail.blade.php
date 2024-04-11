@@ -28,11 +28,11 @@
                 <h3 class="profile-username text-center" id="profile-name"></h3>
                 <p class="text-muted text-center" id="profile-nim"></p>
                 <ul class="list-group list-group-unbordered mb-3">
-                  <li class="list-group-item">
-                    <b>Angkatan</b> <b class="float-right" id="profile-angkatan"></b>
+                  <li class="list-group-item text-center">
+                    <b class="text-center" id="profile-divisi-2"></b>
                   </li>
-                  <li class="list-group-item">
-                    <b>Divisi</b> <b class="float-right" id="profile-divisi-2"></b>
+                  <li class="list-group-item text-center">
+                    <b>Angkatan </b><b class="text-center" id="profile-angkatan"></b>
                   </li>
                 </ul>
               </div>
@@ -97,10 +97,11 @@
   @include('include/footer')
 </div>
 @include('include/script')
+<script src="{{asset('storage/js/logincheck.js')}}"></script>
 <script>
   $(document).ready(function(){
     if (sessionStorage.getItem('login')==null) {
-      return window.location = '../../login';
+      return window.location = window.location.origin+'/login';
     }
     var urlParams = new URLSearchParams(window.location.search);
     var user_detail = urlParams.get('id');
@@ -135,24 +136,8 @@
           }
         }
       });
-      $.ajax({
-        url: "/api/data/"+sessionStorage.getItem('login'),
-        method: "GET", // First change type to method here
-        success: function(response) {
-          var data = response.data;
+      loginCheck(sessionStorage.getItem('login'));
 
-          $(".d-block").text(data.data_anggota.nama);
-          $(".c-block").text(data.data_divisi.divisi);
-
-          if (data.avatar!=null) {
-            $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
-          }
-        }
-      });
-      $("#btnLogOut").click(function(){
-        sessionStorage.clear();
-        window.location = '../login';
-      });
   });
 </script>
 </body>

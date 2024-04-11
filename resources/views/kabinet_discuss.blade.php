@@ -79,12 +79,13 @@
             </div>
         </div>
     </div>
-    </section>
-  </div>
-  @include('include/footer')
+  </section>
+</div>
+@include('include/footer')
 </div>
 @include('include/script')
 <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+<script src="{{asset('storage/js/logincheck.js')}}"></script>
 <script>
     var datasave = [];
     var id_comment = [];
@@ -136,7 +137,7 @@
                 '</button>'+
               '</div>'+
             '</div>'+
-              '<div id="forum-comment-'+data.data['id']+'" class="card-footer card-comments d-none">'+
+              '<div id="forum-comment-'+data.data['id']+'" class="card-footer card-comments collapse">'+
             '</div>'+
           '</div>'
         );
@@ -223,22 +224,7 @@
         }
       });
 
-      $.ajax({
-          url: "/api/data/"+sessionStorage.getItem('login'),
-          method: "GET", // First change type to method here
-          success: function(response) {
-            var data = response.data;
-            $(".d-block").text(data.nama);
-            $(".c-block").text(data.nama_divisi);
-            if (data.avatar != null) {
-                $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
-            }
-          }
-        });
-        $("#btnLogOut").click(function(){
-          sessionStorage.clear();
-          window.location = '../login';
-        });
+    loginCheck(sessionStorage.getItem('login'));
     });
     function deleteForumConfirm(forum_id,content='Are you sure you want to delete this post?') {
       $('#confirmationDeleteForum').modal('show');
@@ -259,9 +245,20 @@
 
     var urlParams = new URLSearchParams(window.location.search);
     var connection = urlParams.get('d');
-    var text = connection;
-    $("#header").text(text.toUpperCase());
+    var origin = window.location.origin;
 
+    $.ajax({
+      url: origin+"/api/connection/"+connection,
+      method: "GET",
+      success: function (response) {
+        var data = response.data;
+        if (data.data_divisi != null) {
+            $("#header").html(data.data_divisi.divisi+' <i class="nav-icon fas fa-bolt">')
+        }if (data.data_program != null) {
+          $("#header").html(data.data_program.program+' <i class="nav-icon fas fa-bolt">')
+        }
+      }
+    });
 
     function loadData() {
       if (!isLoading) {
@@ -312,7 +309,7 @@
                       '</button>' +
                     '</div>' +
                   '</div>' +
-                  '<div id="forum-comment-' + forum.id + '" class="card-footer card-comments d-none">' +
+                  '<div id="forum-comment-' + forum.id + '" class="card-footer card-comments collapse">' +
                   '</div>' +
                 '</div>'
               );

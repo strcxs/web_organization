@@ -55,11 +55,11 @@
                     </a>
                   </div>
                 </div>
-    
+
                 <div class="col-md-12">
                   <div class="card">
                     <div class="card-header bg-primary">
-                      <h3 class="card-title"><i class="nav-icon fas fa-bullhorn"></i> Announcement</h3>
+                      <h3 class="card-title">New Post</h3>
                       <div class="card-tools">
                         <button type="button" class="btn btn-tool" data-card-widget="collapse">
                           <i class="fas fa-minus"></i>
@@ -67,11 +67,11 @@
                       </div>
                     </div>
                     <div class="card-body p-0">
-                      <div class="d-md-flex">
-                        <div id="announcement-content" class="p-1 flex-fill" style="overflow: hidden">
-                          {{-- announcement-content --}}
-                        </div>
-                      </div>
+                      <ul id="forum-content" class="products-list product-list-in-card pl-2 pr-2">
+                      </ul>
+                    </div>
+                    <div class="card-footer text-center">
+                      <a href="{{route('discuss')}}" class="uppercase">View All Post</a>
                     </div>
                   </div>
                 </div>
@@ -80,7 +80,7 @@
             <div class="col-md-4">
               <div class="card">
                 <div class="card-header bg-primary">
-                  <h3 class="card-title">New Post</h3>
+                  <h3 class="card-title"><i class="nav-icon fas fa-bullhorn"></i> Announcement</h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse">
                       <i class="fas fa-minus"></i>
@@ -88,11 +88,11 @@
                   </div>
                 </div>
                 <div class="card-body p-0">
-                  <ul id="forum-content" class="products-list product-list-in-card pl-2 pr-2">
-                  </ul>
-                </div>
-                <div class="card-footer text-center">
-                  <a href="{{route('discuss')}}" class="uppercase">View All Post</a>
+                  <div class="d-md-flex">
+                    <div id="announcement-content" class="p-1 flex-fill" style="overflow: hidden">
+                      {{-- announcement-content --}}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -109,6 +109,7 @@
 <!-- REQUIRED SCRIPTS -->
 @include('include/script')
 <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+<script src="{{asset('storage/js/logincheck.js')}}"></script>
 <script>
   $(document).ready(function(){
     if (sessionStorage.getItem('login')==null) {
@@ -123,8 +124,8 @@
     });
 
     loginCheck(sessionStorage.getItem('login'));
-    fetchDiscuss(3);
-    fetchAnnouncement(3);
+    fetchDiscuss(6);
+    fetchAnnouncement(6);
 
     var pusher = new Pusher("{{ env('PUSHER_APP_KEY') }}", {
         cluster: "{{ env('PUSHER_APP_CLUSTER') }}"
@@ -135,32 +136,13 @@
       fetchAnnouncement(3);
     });
   });
-
   function limitWords(inputString, maxWords) {
       var words = inputString.split(' ');
       var limitedWords = words.slice(0, maxWords);
       var resultString = limitedWords.join(' ');
       return resultString+" <a href='dashboard/discuss'>...read more</a>";
   }
-  function loginCheck(user){
-    $.ajax({
-      url: "/api/data/"+user,
-      method: "GET", // First change type to method here
-      success: function(response) {
-        var data = response.data;
-        if (data.avatar != null) {
-            $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
-            $('#profile-avatar').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
-          }
-        $(".d-block").text(data.data_anggota.nama);
-        $(".c-block").text(data.data_divisi.divisi);
-      },
-    });
-    $("#btnLogOut").click(function(){
-      sessionStorage.clear();
-      window.location = '../login';
-    });
-  }
+  
   function fetchDiscuss(page){
     $.ajax({
       url: "/api/forum",

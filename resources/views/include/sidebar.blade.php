@@ -67,15 +67,21 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="{{route('membersManage')}}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Divisi management</p>
+                  <p>Member management</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="{{route('voteManage')}}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Vote management</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Web management</p>
                 </a>
               </li>
             </ul>

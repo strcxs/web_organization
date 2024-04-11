@@ -40,6 +40,7 @@
 </div>
 @include('include/script')
 <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+<script src="{{asset('storage/js/logincheck.js')}}"></script>
 <script>
     if (sessionStorage.getItem('login') == 64) {
         document.getElementById("admin-div").style.display = "block";
@@ -179,23 +180,7 @@
     $(window).scroll(checkEndOfPage);
     loadData();
 
-    $.ajax({
-        url: "/api/data/"+sessionStorage.getItem('login'),
-        method: "GET", // First change type to method here
-        success: function(response) {
-          var data = response.data;
-          if (data.avatar != null) {
-            $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
-            $('#profile-avatar').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
-          }
-          $(".d-block").text(data.data_anggota.nama);
-          $(".c-block").text(data.data_divisi.divisi);
-        }
-      });
-      $("#btnLogOut").click(function(){
-        sessionStorage.clear();
-        window.location = '../login';
-      });
+    loginCheck(sessionStorage.getItem('login'));
 
       function AnnouncementkeyPress(event){
         if (event.keyCode === 13) {

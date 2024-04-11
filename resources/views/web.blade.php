@@ -20,12 +20,12 @@
 		<link rel="stylesheet" href="{{asset('template/plugins/fontawesome-free/css/all.min.css')}}">
 
 		<style>
-			@media (min-width: 768px) {
+			@media (min-width: 769px) {
 				.hide-on-desktop {
 					display: none !important;
 				}
 			}
-			@media (max-width: 993px) {
+			@media (max-width: 426px) {
 				.header-text h2 {
 					color: #fff;
 					font-size: 30px;
@@ -43,23 +43,23 @@
 				<nav class="navbar navbar-default bootsnav navbar-fixed dark no-background">
 					<div class="container-fluid">
 						<div class="row">
-							<div class="col-12 col-sm-3 col-md-4 col-10">
+							<div class="col-12 col-xs-12 col-sm-12 col-md-6">
 								<div class="container-fluid" id="company">
 									<div class="navbar">
 										<div class="row">
-											<div class="col">
-												<a class="navbar-brand d-flex justify-content-center align-items-center" href="/">
+											<div class="col-xs-4 col-sm-2">
+												<a class="navbar-brand" href="/">
 													<img src="{{asset('storage/images/icon_himaif.png')}}" alt="profile_image" style="width: 55px;">
 												</a>
 											</div>
-											<div class="col">
+											<div class="col-xs-6 col-sm-9">
 												<a class="navbar-brand" href="/">
-													<h1 style="margin-top:21px;">HMIF Nurtanio Bandung</h1>
+													<h1 style="margin-top:21px;text-align: center">HMIF Nurtanio Bandung</h1>
 												</a>
 											</div>
-											<div class="col">
+											<div class="col-xs-2 col-sm-1">
 												<br>
-												<button class="navbar-brand d-flex align-items-center justify-content-center hide-on-desktop" type="button" data-toggle="collapse" data-target="#navbar-menu" style="border: 2px solid #43485c;border-radius: 10px; box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);">
+												<button class="navbar-brand hide-on-desktop" type="button" data-toggle="collapse" data-target="#navbar-menu" style="border: 2px solid #43485c;border-radius: 10px; box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);">
 													<i class="fas fa-bars"></i>
 												</button>
 											</div>											
@@ -67,7 +67,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="col-12 col-sm-9 col-md-8 col-2">
+							<div class="col-12 col-xs-12 col-sm-12 col-md-6">
 								<div class="row">
 									<div class="collapse navbar-collapse menu-ui-design" id="navbar-menu">
 										<ul class="nav navbar-nav navbar-right" data-in="fadeInDown" data-out="fadeOutUp">
