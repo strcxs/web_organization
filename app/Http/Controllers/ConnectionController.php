@@ -28,9 +28,12 @@ class ConnectionController extends Controller
             ]);
         }
 
-        $data = Connection::orderBy('created_at','desc')
+        $data = Connection::with('dataDivisi.dataUsers')
+        ->with('dataProgram.dataUsers')
+        ->orderBy('created_at','desc')
         ->first();
-
+        
+        $this->push('connection', 'new-connection', ['data' => $data]);
         return new AngResource(true,'success create Connection',$data);
     }
     public function show($id){

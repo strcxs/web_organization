@@ -29,6 +29,7 @@ class DivisiController extends Controller
         $data = Divisi::orderBy('created_at','desc')
         ->first();
 
+        $this->push('divisi', 'new-divisi', ['data' => $data]);
         return new AngResource(true,'success create new divisi',$data);
     }
     public function update(Request $request, $id){
@@ -36,6 +37,7 @@ class DivisiController extends Controller
             'leader_id'=>$request->leader_id
         ]);
 
+        $this->push('divisi', 'update-divisi', ['data' => $update]);
         return new AngResource(true,'data update',$update);
     }
     public  function show($id){
@@ -50,6 +52,7 @@ class DivisiController extends Controller
         $data = Divisi::find($id);
         $data-> delete();
         
+        $this->push('divisi', 'delete-divisi', ['data' => $data]);
         return new AngResource(true,'Deleted', $data);
     }
 }

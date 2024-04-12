@@ -137,6 +137,7 @@
 @include('include/script')
 <script src="{{asset('storage/js/logincheck.js')}}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 <script>
     $(document).ready(function(){
         if (sessionStorage.getItem('login')==null) {
@@ -147,6 +148,67 @@
             placeholder: 'Pilih Anggota',
             allowClear: true
         });
+        var pusher = new Pusher("{{ env('PUSHER_APP_KEY') }}", {
+            cluster: "{{ env('PUSHER_APP_CLUSTER') }}"
+        });
+
+        var program_channel = pusher.subscribe('program');
+        var divisi_channel = pusher.subscribe('divisi');
+        var connection_channel = pusher.subscribe('connection');
+
+        program_channel.bind('new-program', function(response) {
+            var data = response.data;
+            $('#memberList').val().forEach(function(element) {
+                submitAjax("/api/data/" + element, {'program_id': data.id});
+            });
+            submitAjax("/api/connection", {'program_id': data.id});
+            $('#addProgram').modal('hide');
+        });
+        program_channel.bind('delete-program', function(response) {
+            $('#tr-' + response.data.id).remove();
+        });
+
+
+        divisi_channel.bind('delete-divisi', function(response) {
+            $('#tr-' + response.data.id).remove();
+        });
+        divisi_channel.bind('new-divisi', function(response) {
+            var data = response.data;
+            $('#divisi_memberList').val().forEach(function(element) {
+                submitAjax("/api/data/" + element, {'divisi_id': data.id});
+            });
+            submitAjax("/api/connection", {'divisi_id': data.id});
+            $('#addDivisi').modal('hide');
+        });
+
+        connection_channel.bind('new-connection', function(response) {
+            console.log(response.data);
+            if (response.data.data_divisi != null) {
+                $('#table-content-divisi').append(
+                    '<tr id="tr-' + response.data.data_divisi.id + '">' +
+                        '<td class="text"><a href="{{route('cabinet_discuss')}}?d=' + response.data.id + '">' + response.data.data_divisi.divisi + '</a></td>' +
+                        '<td class="text-center">' +
+                            '<button class="btn btn-warning m-1"data-toggle="modal" data-target="#editDivisi-' + response.data.data_divisi.id + '"><i class="nav-icon fas fa-pen"></i></button>' +
+                            '<button id="del-divisi-' + response.data.data_divisi.id + '" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
+                        '</td>' +
+                    '</tr>'
+                );
+                deleteProgram('del-divisi-' + response.data.data_divisi.id);
+            }if(response.data.data_program != null){
+                $('#table-content-program').append(
+                    '<tr id="tr-' + response.data.data_program.id + '">' +
+                        '<td class="text"><a href="{{route('cabinet_discuss')}}?d=' + response.data.id + '">' + response.data.data_program.program + '</a></td>' +
+                        '<td class="text-center">' +
+                            '<button class="btn btn-warning m-1"data-toggle="modal" data-target="#editDivisi-' + response.data.data_program.id + '"><i class="nav-icon fas fa-pen"></i></button>' +
+                            '<button id="del-program-' + response.data.data_program.id + '" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
+                        '</td>' +
+                    '</tr>'
+                );
+                deleteProgram('del-program-' + response.data.data_program.id);
+            }
+
+        });
+        
         var previousLeader = '';
         var divisi_previousLeader = '';
 
@@ -192,23 +254,21 @@
                 });
             }
         });
-        function submitAjax(url, formData, successCallback) {
+        function submitAjax(url, formData) {
             $.ajax({
                 url: url,
                 method: "POST",
                 data: formData,
-                success: successCallback
             });
         }
 
         function deleteProgram(id) {
             $('#' + id).on('click', function() {
+                var program = id.split('-')[1];
+                var program_id = id.split('-')[2];
                 $.ajax({
-                    url: "/api/" + id.split('-')[0] + "/" + id.split('-')[1],
-                    method: "DELETE",
-                    success: function(response) {
-                        $('#tr-' + id.split('-')[1]).remove();
-                    }
+                    url: "/api/"+program+"/"+program_id,
+                    method: "DELETE"
                 });
             });
         }
@@ -219,25 +279,7 @@
                 'program': $('#programName').val(),
                 'leader_id': $('#leader').val()
             };
-            submitAjax("/api/program/", formData, function(response) {
-                var data = response.data;
-                $('#memberList').val().forEach(function(element) {
-                    submitAjax("/api/data/" + element, {'program_id': data.id});
-                });
-                submitAjax("/api/connection", {'program_id': data.id}, function(response) {
-                    $('#table-content-program').append(
-                        '<tr id="tr-' + data.id + '">' +
-                            '<td class="text"><a href="{{route('cabinet_discuss')}}?d=' + response.data.id + '">' + data.program + '</a></td>' +
-                            '<td class="text-center">' +
-                                '<button class="btn btn-warning m-1"data-toggle="modal" data-target="#editDivisi-' + data.id + '"><i class="nav-icon fas fa-pen"></i></button>' +
-                                '<button id="del-program-' + data.id + '" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
-                            '</td>' +
-                        '</tr>'
-                    );
-                    deleteProgram('del-program-' + data.id);
-                });
-                $('#addProgram').modal('hide');
-            });
+            submitAjax("/api/program/", formData);
         });
 
         $('#divisiForm').submit(function(event) {
@@ -246,25 +288,7 @@
                 'divisi': $('#divisiName').val(),
                 'leader_id': $('#divisi_leader').val()
             };
-            submitAjax("/api/divisi/", formData, function(response) {
-                var data = response.data;
-                $('#divisi_memberList').val().forEach(function(element) {
-                    submitAjax("/api/data/" + element, {'divisi_id': data.id});
-                });
-                submitAjax("/api/connection", {'divisi_id': data.id}, function(response) {
-                    $('#table-content-divisi').append(
-                        '<tr id="tr-' + data.id + '">' +
-                            '<td class="text"><a href="{{route('cabinet_discuss')}}?d=' + response.data.id + '">' + data.divisi + '</a></td>' +
-                            '<td class="text-center">' +
-                                '<button class="btn btn-warning m-1"data-toggle="modal" data-target="#editDivisi-' + data.id + '"><i class="nav-icon fas fa-pen"></i></button>' +
-                                '<button id="del-divisi-' + data.id + '" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
-                            '</td>' +
-                        '</tr>'
-                    );
-                    deleteProgram('del-divisi-' + data.id);
-                });
-                $('#addDivisi').modal('hide');
-            });
+            submitAjax("/api/divisi/", formData);
         });
 
 
@@ -290,20 +314,12 @@
                                             '<td class="text"><a href="{{route('cabinet_discuss')}}?d='+element.id+'">'+contentName+'</a></td>' +
                                             '<td class="text-center">' +
                                                 '<button class="btn btn-warning m-1"data-toggle="modal" data-target="#editProgram-'+element.data_program.id+'"><i class="nav-icon fas fa-pen"></i></button>' +
-                                                '<button id="del-topic-'+element.data_program.id+'" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
+                                                '<button id="del-program-'+element.data_program.id+'" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
                                             '</td>' +
                                         '</tr>'
                                     );
-                                    $('#del-topic-'+element.data_program.id+'').on('click', function() {
-                                        console.log('cok');
-                                        $.ajax({
-                                            url: "/api/program/"+element.data_program.id,
-                                            method: "delete", // First change type to method here    
-                                            success: function(response) {
-                                                $('#tr-'+element.data_program.id+'').remove();
-                                            }
-                                        });
-                                    });
+                                    deleteProgram('del-program-'+element.data_program.id);
+
                                     $('#modal-save').append(
                                         '<div class="modal fade" id="editProgram-'+element.data_program.id+'" tabindex="-1" role="dialog" aria-hidden="true">' +
                                             '<div class="modal-dialog modal-lg" role="document">' +
@@ -338,6 +354,7 @@
                                             '</div>' +
                                         '</div>'
                                     );
+
                                     let users_before_program = [];
                                     let leader_before_program = '';
                                     $('#edit_programForm-'+element.data_program.id+'').submit(function(event) {
@@ -418,19 +435,12 @@
                                             '<td class="text"><a href="{{route('cabinet_discuss')}}?d='+element.id+'">'+contentName+'</a></td>' +
                                             '<td class="text-center">' +
                                                 '<button class="btn btn-warning m-1" data-toggle="modal" data-target="#editDivisi-'+element.data_divisi.id+'"><i class="nav-icon fas fa-pen"></i></button>' +
-                                                '<button id="del-topic-'+element.data_divisi.id+'" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
+                                                '<button id="del-divisi-'+element.data_divisi.id+'" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
                                             '</td>' +
                                         '</tr>'
                                     );
-                                    $('#del-topic-' + element.data_divisi.id).on('click', function() {
-                                        $.ajax({
-                                            url: "/api/divisi/"+element.data_divisi.id,
-                                            method: "delete", // First change type to method here    
-                                            success: function(response) {
-                                                $('#tr-'+element.data_divisi.id+'').remove();
-                                            }
-                                        });
-                                    });
+                                    deleteProgram('del-divisi-'+element.data_divisi.id);
+                                    
                                     $('#modal-save').append(
                                         '<div class="modal fade" id="editDivisi-'+element.data_divisi.id+'" tabindex="-1" role="dialog" aria-hidden="true">' +
                                             '<div class="modal-dialog modal-lg" role="document">' +

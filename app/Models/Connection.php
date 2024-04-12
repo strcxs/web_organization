@@ -11,6 +11,7 @@ class Connection extends Model
     protected $table = 'connection';
     protected $guarded = [];
     public function dataDivisi(){
+        // return $this->hasOne(divisi::class,'id','divisi_id');
         return $this->hasOne(divisi::class,'id','divisi_id');
     }
     public function dataProgram(){
