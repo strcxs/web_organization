@@ -13,4 +13,7 @@ class Program extends Model
     public function dataUsers(){
         return $this->hasOne(Users::class,'id','leader_id');
     }
+    public function dataConnection(){
+        return $this->hasOne(Connection::class,'program_id','id');
+    }
 }

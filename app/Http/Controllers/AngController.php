@@ -17,8 +17,8 @@ class AngController extends Controller
         $member = $request->input('member',false);
         if (!$member) {
             $datas = Users::with('dataAnggota')
-            ->with('dataDivisi')
-            ->with('dataProgram')->get();
+            ->with('dataDivisi.dataConnection')
+            ->with('dataProgram.dataConnection')->get();
             
             foreach ($datas as $data) {
                 $data->dataAnggota->nama = ucwords(strtolower($data->dataAnggota->nama));
