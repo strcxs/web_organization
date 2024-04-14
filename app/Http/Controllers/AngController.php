@@ -41,8 +41,7 @@ class AngController extends Controller
         $join = Users::with('dataAnggota')
         ->with('dataDivisi')
         ->with('dataProgram')
-        ->where('Users.id',$detail)
-        ->first();
+        ->find($detail);
 
         $join->dataAnggota->nama = ucwords(strtolower($join->dataAnggota->nama));
 

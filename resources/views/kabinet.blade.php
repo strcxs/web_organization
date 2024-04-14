@@ -185,27 +185,30 @@
         });
 
         connection_channel.bind('new-connection', function(response) {
+            console.log(response.data);
             if (response.data.data_divisi != null) {
                 $('#table-content-divisi').append(
                     '<tr id="tr-' + response.data.data_divisi.id + '">' +
                         '<td class="text"><a href="{{route('cabinet_discuss')}}?d=' + response.data.id + '">' + response.data.data_divisi.divisi + '</a></td>' +
                         '<td class="text-center">' +
-                            '<button class="btn btn-warning m-1"data-toggle="modal" data-target="#editDivisi-' + response.data.data_divisi.id + '"><i class="nav-icon fas fa-pen"></i></button>' +
+                            '<button class="btn btn-warning m-1"data-toggle="modal" data-target="#modalEdit-' + response.data.data_divisi.id + '"><i class="nav-icon fas fa-pen"></i></button>' +
                             '<button id="del-divisi-' + response.data.data_divisi.id + '" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
                         '</td>' +
                     '</tr>'
                 );
+                modalEdit('divisi',response.data.data_divisi.id,response.data.data_divisi.leader_id,response.data.data_divisi.divisi);
                 deleteProgram('del-divisi-' + response.data.data_divisi.id);
             }if(response.data.data_program != null){
                 $('#table-content-program').append(
                     '<tr id="tr-' + response.data.data_program.id + '">' +
                         '<td class="text"><a href="{{route('cabinet_discuss')}}?d=' + response.data.id + '">' + response.data.data_program.program + '</a></td>' +
                         '<td class="text-center">' +
-                            '<button class="btn btn-warning m-1"data-toggle="modal" data-target="#editDivisi-' + response.data.data_program.id + '"><i class="nav-icon fas fa-pen"></i></button>' +
+                            '<button class="btn btn-warning m-1"data-toggle="modal" data-target="#modalEdit-' + response.data.data_program.id + '"><i class="nav-icon fas fa-pen"></i></button>' +
                             '<button id="del-program-' + response.data.data_program.id + '" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
                         '</td>' +
                     '</tr>'
                 );
+                modalEdit('program',response.data.data_program.id,response.data.data_program.leader_id,response.data.data_program.program);
                 deleteProgram('del-program-' + response.data.data_program.id);
             }
 
@@ -337,51 +340,34 @@
                 method:'GET',
                 success: function (response) {
                     var data = response.data;
+                    var program = '';
                     // fetch member 
                     data.forEach(member => {
-                        if (member.data_divisi != null) {
-                            if (member.data_divisi.id == id) {
-                                if (member.id == leader_id) {
-                                    $('#modalEdit-leader-'+id+'').append(
-                                        '<option value="'+member.id+'"selected>'+member.data_anggota.nama+'</option>'
-                                    )    
-                                }else{
-                                    $('#modalEdit-leader-'+id+'').append(
-                                        '<option value="'+member.id+'">'+member.data_anggota.nama+'</option>'
-                                    )
-                                }
-                                $('#modalEdit-memberList-'+id+'').append(
-                                    '<option value="'+member.id+'"selected>'+member.data_anggota.nama+'</option>'
-                                )
-                            }
-                            if (member.data_divisi.id != id && member.data_divisi.id == 1){
-                                console.log('divisi',id,member.data_anggota.nama);
-                                $('#modalEdit-memberList-'+id+'').append(
-                                    '<option value="'+member.id+'">'+member.data_anggota.nama+'</option>'
-                                )
-                            }
+                        if (name == 'divisi') {
+                            program = member.data_divisi.id;
                         }
-                        if (member.data_program != null) {
-                            if (member.data_program.id == id) {
-                                if (member.id == leader_id) {
-                                    $('#modalEdit-leader-'+id+'').append(
-                                        '<option value="'+member.id+'"selected>'+member.data_anggota.nama+'</option>'
-                                    )    
-                                }else{
-                                    $('#modalEdit-leader-'+id+'').append(
-                                        '<option value="'+member.id+'">'+member.data_anggota.nama+'</option>'
-                                    )
-                                }
-                                $('#modalEdit-memberList-'+id+'').append(
+                        if (name == 'program') {
+                            program = member.data_program.id;
+                        }
+
+                        if (program == id) {
+                            if (member.id == leader_id) {
+                                $('#modalEdit-leader-'+id+'').append(
                                     '<option value="'+member.id+'"selected>'+member.data_anggota.nama+'</option>'
-                                )
-                            }
-                            if (member.data_program.id != id && member.data_program.id == 1){
-                                console.log('program',id,member.data_anggota.nama);
-                                $('#modalEdit-memberList-'+id+'').append(
+                                )    
+                            }else{
+                                $('#modalEdit-leader-'+id+'').append(
                                     '<option value="'+member.id+'">'+member.data_anggota.nama+'</option>'
                                 )
                             }
+                            $('#modalEdit-memberList-'+id+'').append(
+                                '<option value="'+member.id+'"selected>'+member.data_anggota.nama+'</option>'
+                            )
+                        }
+                        if (program != id && program == 1){
+                            $('#modalEdit-memberList-'+id+'').append(
+                                '<option value="'+member.id+'">'+member.data_anggota.nama+'</option>'
+                            )
                         }
                     });
                     // end fetch member 

@@ -107,29 +107,29 @@
     var user_detail = urlParams.get('id');
 
     $.ajax({
-        url: "/api/data/"+user_detail,
+        url: "/api/member/"+user_detail,
         method: "GET", // First change type to method here
         success: function(response) {
           var data = response.data;
-          if (data.data_anggota.tanggal_lahir == null) {
-              data.data_anggota.tanggal_lahir = "-";
-          }if (data.data_anggota.tempat_lahir == null) {
-              data.data_anggota.tempat_lahir = "-";
-          }if (data.data_anggota.no_telp == null) {
-              data.data_anggota.no_telp = "-";
+          if (data.tanggal_lahir == null) {
+              data.tanggal_lahir = "-";
+          }if (data.tempat_lahir == null) {
+              data.tempat_lahir = "-";
+          }if (data.no_telp == null) {
+              data.no_telp = "-";
           }
-          $("#profile-name").text(data.data_anggota.nama); 
-          $("#profile-nim").text(data.data_anggota.nim);
-          $("#profile-divisi-2").text(data.data_divisi.divisi);
-          $("#profile-angkatan").text(data.data_anggota.tahun_akt);
+          $("#profile-name").text(data.nama); 
+          $("#profile-nim").text(data.id);
+          $("#profile-divisi-2").text(data.data_users.data_divisi.divisi);
+          $("#profile-angkatan").text(data.tahun_akt);
 
-          $("#name-profile").text(data.data_anggota.nama);
-          $("#nim-profile").text(data.data_anggota.nim);
-          $("#angkatan-profile").text(data.data_anggota.tahun_akt);
+          $("#name-profile").text(data.nama);
+          $("#nim-profile").text(data.id);
+          $("#angkatan-profile").text(data.tahun_akt);
           
-          $("#tanggal_lahir-profile").text(data.data_anggota.tanggal_lahir);
-          $("#tempat_lahir-profile").text(data.data_anggota.tempat_lahir);
-          $("#telp-profile").text(data.data_anggota.no_telp);
+          $("#tanggal_lahir-profile").text(data.tanggal_lahir);
+          $("#tempat_lahir-profile").text(data.tempat_lahir);
+          $("#telp-profile").text(data.no_telp);
 
           if (data.avatar!=null) {
             $('#profile-avatar').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
