@@ -50,39 +50,39 @@
                   <div class="tab-pane active" id="profile">
                     <form class="form-horizontal">
                       <div class="form-group row">
-                        <label for="inputName" class="col-sm-2 col-form-label">Nama</label>
+                        <label for="inputName" class="col-sm-2 col-form-label">Name</label>
                         <div class="col-sm-10">
                           <p class="col-form-label" id="name-profile"></p>
                         </div>
                       </div>
                       <div class="form-group row">
-                        <label for="inputEmail" class="col-sm-2 col-form-label">Nim</label>
+                        <label for="inputEmail" class="col-sm-2 col-form-label">Student ID</label>
                         <div class="col-sm-10">
                           <p class="col-form-label" id="nim-profile"></p>
                         </div>
                       </div>
                       <div class="form-group row">
-                        <label for="inputName2" class="col-sm-2 col-form-label">Tanggal lahir</label>
+                        <label for="inputName2" class="col-sm-2 col-form-label">Date of birth</label>
                         <div class="col-sm-10">
                           <p class="col-form-label" id="tanggal_lahir-profile"></p>
                         </div>
                       </div>
                       <div class="form-group row">
-                        <label for="inputExperience" class="col-sm-2 col-form-label">Tempat lahir</label>
+                        <label for="inputExperience" class="col-sm-2 col-form-label">born of birth</label>
                         <div class="col-sm-10">
                           <p class="col-form-label" id="tempat_lahir-profile"></p>
                         </div>
                       </div>
                       <div class="form-group row">
-                        <label for="inputSkills" class="col-sm-2 col-form-label">Angkatan</label>
+                        <label for="inputSkills" class="col-sm-2 col-form-label">Phone</label>
                         <div class="col-sm-10">
-                          <p class="col-form-label" id="angkatan-profile"></p>
+                          <p class="col-form-label" id="telp-profile"></p>
                         </div>
                       </div>
                       <div class="form-group row">
-                        <label for="inputSkills" class="col-sm-2 col-form-label">Telepon</label>
+                        <label for="inputSkills" class="col-sm-2 col-form-label">Gender</label>
                         <div class="col-sm-10">
-                          <p class="col-form-label" id="telp-profile"></p>
+                          <p class="col-form-label" id="gender-profile"></p>
                         </div>
                       </div>
                     </form>
@@ -117,6 +117,10 @@
               data.tempat_lahir = "-";
           }if (data.no_telp == null) {
               data.no_telp = "-";
+          }if (data.gender == 'M') {
+              data.gender = "Male";
+          }else{
+            data.gender = "Female  ";
           }
           $("#profile-name").text(data.nama); 
           $("#profile-nim").text(data.id);
@@ -125,7 +129,7 @@
 
           $("#name-profile").text(data.nama);
           $("#nim-profile").text(data.id);
-          $("#angkatan-profile").text(data.tahun_akt);
+          $("#gender-profile").text(data.gender);
           
           $("#tanggal_lahir-profile").text(data.tanggal_lahir);
           $("#tempat_lahir-profile").text(data.tempat_lahir);

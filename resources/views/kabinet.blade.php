@@ -25,7 +25,7 @@
                     <table id="myTable" class="table">
                         <thead>
                             <tr>
-                                <th class="bg-primary">DIVISI</th>
+                                <th class="bg-primary">DEPARTEMENT</th>
                                 <th class="text-center bg-primary"></th>
                             </tr>
                         </thead>
@@ -42,7 +42,7 @@
                     <table id="myTable" class="table">
                         <thead>
                             <tr>
-                                <th class="bg-primary">PROGRAM KERJA</th>
+                                <th class="bg-primary">CURSE WORK</th>
                                 <th class="text-center bg-primary"></th>
                             </tr>
                         </thead>
@@ -320,7 +320,7 @@
                                         '</select>' +
                                     '</div>' +
                                     '<div class="form-group">' +
-                                        '<label for="memberList">Edit Anggota</label><br>' +
+                                        '<label for="memberList">Edit Member</label><br>' +
                                         '<select multiple class="form-control" id="modalEdit-memberList-'+id+'" name="members[]">' +
                                         '</select>' +
                                     '</div>' +

@@ -72,13 +72,13 @@
 									<div class="collapse navbar-collapse menu-ui-design" id="navbar-menu">
 										<ul class="nav navbar-nav navbar-right" data-in="fadeInDown" data-out="fadeOutUp">
 											<li class="nav-item">
-												<a class="nav-link" href="#about">Tentang kami</a>
+												<a class="nav-link" href="#about">About</a>
 											</li>
 											<li class="nav-item">
-												<a class="nav-link" href="#portfolio">proker</a>
+												<a class="nav-link" href="#portfolio">Activity</a>
 											</li>
 											<li class="nav-item">
-												<a class="nav-link" href="#contact">kontak</a>
+												<a class="nav-link" href="#contact">Contact</a>
 											</li>
 											<li class="nav-item">
 												<a class="nav-link" href="/login">login</a>
@@ -108,7 +108,7 @@
 
 		<section id="about" class="about">
 			<div class="section-heading text-center">
-				<h2>Tentang kami</h2>
+				<h2>About</h2>
 			</div>
 			<div class="container">
 				<div class="about-content">
@@ -190,7 +190,7 @@
 		<section id="portfolio" class="portfolio">
 			<div class="portfolio-details">
 				<div class="section-heading text-center">
-					<h2>Program kerja dan kegiatan</h2>
+					<h2>Our Activity's</h2>
 				</div>
 				<div class="container">
 					<div class="portfolio-content">
@@ -263,7 +263,7 @@
 		</section>
 		<section id="contact" class="contact">
 			<div class="section-heading text-center">
-				<h2>kontak</h2>
+				<h2>Contact</h2>
 			</div>
 			<div class="container">
 				<div class="contact-content">

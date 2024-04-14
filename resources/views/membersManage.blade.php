@@ -37,7 +37,8 @@
                                     </table>
                                     <hr>
                                     <button class="btn btn-success"  data-toggle="modal" data-target="#addMember"><i class="fas fa-solid fa-plus"></i>  Add new member</button>
-                                    <button class="btn btn-success"  data-toggle="modal" data-target="#addMember"><i class="fas fa-solid fa-file-import"></i>  CSV file</button>
+                                    <button class="btn btn-success" id="csv-import"><i class="fas fa-solid fa-file-import"></i>  CSV file</button>
+                                    <input type="file" id="csv-file" name="csv-file" class="d-none">
                                 </div>
                             </div>
                         </div>
@@ -104,10 +105,31 @@
 <script src="{{asset('storage/js/logincheck.js')}}"></script>
 <script>
     $(document).ready(function(){
+        var origin = window.location.origin;
         if (sessionStorage.getItem('login')==null) {
             return window.location = '../login';
         }
         loginCheck(sessionStorage.getItem('login'));
+        $('#csv-import').click(function(){
+            $('#csv-file').click();
+        })
+        $('#csv-file').change(function(){
+            var csv = $('#csv-file').prop('files')[0];
+            var csv_file = new FormData();
+
+            csv_file.append('csv',csv);
+
+            $.ajax({
+                url: origin+"/api/csv",
+                method: 'POST',
+                data: csv_file,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    
+                }
+            });
+        })
         $('#memberForm').submit(function(event) {
             event.preventDefault();
             var origin = window.location.origin;

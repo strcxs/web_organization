@@ -60,3 +60,6 @@ Route::apiResource("/connection","App\Http\Controllers\\ConnectionController");
 Route::apiResource("/program","App\Http\Controllers\\ProgramController");
 
 Route::apiResource("/divisi","App\Http\Controllers\\DivisiController");
+
+
+Route::apiResource("/csv","App\Http\Controllers\\CsvController");
