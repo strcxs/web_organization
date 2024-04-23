@@ -34,7 +34,7 @@
                     <b class="text-center" id="profile-divisi-2"></b>
                   </li>
                   <li class="list-group-item text-center">
-                    <b>Angkatan </b><b class="text-center" id="profile-angkatan"></b>
+                    <b class="text-center" id="profile-angkatan"></b>
                   </li>
                   <li class="list-group-item text-center">
                   </li>
@@ -65,39 +65,39 @@
                         </div>
                       </div>
                       <div class="form-group row">
-                        <label for="inputName" class="col-sm-2 col-form-label">Nama</label>
+                        <label for="inputName" class="col-sm-2 col-form-label">Name</label>
                         <div class="col-sm-10">
                           <p class="col-form-label" id="name-profile"></p>
                         </div>
                       </div>
                       <div class="form-group row">
-                        <label for="inputEmail" class="col-sm-2 col-form-label">Nim</label>
+                        <label for="inputEmail" class="col-sm-2 col-form-label">Student ID</label>
                         <div class="col-sm-10">
                           <p class="col-form-label" id="nim-profile"></p>
                         </div>
                       </div>
                       <div class="form-group row">
-                        <label for="inputName2" class="col-sm-2 col-form-label">Tanggal lahir</label>
+                        <label for="inputName2" class="col-sm-2 col-form-label">Date of birth</label>
                         <div class="col-sm-10">
                           <p class="col-form-label" id="tanggal_lahir-profile"></p>
                         </div>
                       </div>
                       <div class="form-group row">
-                        <label for="inputExperience" class="col-sm-2 col-form-label">Tempat lahir</label>
+                        <label for="inputExperience" class="col-sm-2 col-form-label">Birthplace</label>
                         <div class="col-sm-10">
                           <p class="col-form-label" id="tempat_lahir-profile"></p>
                         </div>
                       </div>
                       <div class="form-group row">
-                        <label for="inputSkills" class="col-sm-2 col-form-label">Angkatan</label>
+                        <label for="inputSkills" class="col-sm-2 col-form-label">Phone</label>
                         <div class="col-sm-10">
-                          <p class="col-form-label" id="angkatan-profile"></p>
+                          <p class="col-form-label" id="telp-profile"></p>
                         </div>
                       </div>
                       <div class="form-group row">
-                        <label for="inputSkills" class="col-sm-2 col-form-label">Telepon</label>
+                        <label for="inputSkills" class="col-sm-2 col-form-label">Gender</label>
                         <div class="col-sm-10">
-                          <p class="col-form-label" id="telp-profile"></p>
+                          <p class="col-form-label" id="gender-profile"></p>
                         </div>
                       </div>
                     </form>
@@ -111,20 +111,20 @@
                         </div>
                       </div>
                       <div class="form-group row">
-                        <label for="input_tanggal_lahir" class="col-sm-2 col-form-label">Tanggal lahir</label>
+                        <label for="input_tanggal_lahir" class="col-sm-2 col-form-label">Date of birth</label>
                         <div class="col-sm-10">
-                          <input type="date" class="form-control" id="tanggal_lahir" placeholder="tanggal_lahir">
+                          <input type="date" class="form-control" id="tanggal_lahir" placeholder="Date of birth">
                         </div>
                       </div><div class="form-group row">
-                        <label for="input_tempat_lahir" class="col-sm-2 col-form-label">Tempat lahir</label>
+                        <label for="input_tempat_lahir" class="col-sm-2 col-form-label">Birthplace</label>
                         <div class="col-sm-10">
-                          <input type="text" class="form-control" id="tempat_lahir" placeholder="Tempat lahir">
+                          <input type="text" class="form-control" id="tempat_lahir" placeholder="Birthplace">
                         </div>
                       </div>
                       <div class="form-group row">
-                        <label for="input" class="col-sm-2 col-form-label">Telepon</label>
+                        <label for="input" class="col-sm-2 col-form-label">Phone</label>
                         <div class="col-sm-10">
-                          <input type="text" class="form-control" id="telepon" placeholder="telepon">
+                          <input type="text" class="form-control" id="telepon" placeholder="Phone">
                         </div>
                       </div>
                       <div class="form-group row">
@@ -161,18 +161,22 @@
               data.data_anggota.tempat_lahir = "-";
           }if (data.data_anggota.no_telp == null) {
               data.data_anggota.no_telp = "-";
+          }if (data.data_anggota.gender == 'M') {
+              data.data_anggota.gender = "Male";
+          }else{
+            data.data_anggota.gender = "Female  ";
           }
           $(".d-block").text(data.data_anggota.nama);
           $("#profile-name").text(data.data_anggota.nama);
-          $("#profile-nim").text(data.data_anggota.nim);
+          $("#profile-nim").text(data.data_anggota.id);
           $("#profile-divisi-2").text(data.data_divisi.divisi);
           $("#profile-angkatan").text(data.data_anggota.tahun_akt);
           $(".c-block").text(data.data_divisi.divisi);
           
           $("#username-profile").text(data.username);
           $("#name-profile").text(data.data_anggota.nama);
-          $("#nim-profile").text(data.data_anggota.nim);
-          $("#angkatan-profile").text(data.data_anggota.tahun_akt);
+          $("#nim-profile").text(data.data_anggota.id);
+          $("#gender-profile").text(data.data_anggota.gender);
 
           $("#tanggal_lahir-profile").text(data.data_anggota.tanggal_lahir);
           $("#tempat_lahir-profile").text(data.data_anggota.tempat_lahir);

@@ -23,13 +23,13 @@
           <div class="col">
             <div class="card mb-3">
               <div class="card-header bg-primary">
-                <h3 class="card-title"><i class="nav-icon fas fa-bolt"></i> Mari Bersuara!</h3>
+                <h3 class="card-title"><i class="nav-icon fas fa-bolt"></i> Speaker!</h3>
                 <div class="card-tools">
                 </div>
               </div>
               <div class="post p-3">
                 <div class="row">
-                  <input id="send-post" class="form-control col-10" type="text" placeholder="suarakan pikiranmu disini.." onkeydown=PostkeyPress(event)>
+                  <input id="send-post" class="form-control col-10" type="text" onkeydown=PostkeyPress(event)>
                   <button id="sent-post" class="btn btn-primary form-control col-2">
                     <i class="nav-icon fas fa-paper-plane"></i>
                   </button>

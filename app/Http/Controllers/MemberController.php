@@ -19,7 +19,8 @@ class MemberController extends Controller
     public function store(Request $request){
         $validator = Validator::make($request->all(),[
             'nama'=>'required',
-            'nim'=>'required',
+            'gender'=>'required',
+            'id'=>'required',
             'tahun_akt'=>'required'
         ]);
         if ($validator->fails()) {
@@ -27,18 +28,29 @@ class MemberController extends Controller
         }
         Anggota::create([
             'nama'=> $request->nama,
-            'nim'=> $request->nim,
+            'gender'=> $request->gender,
+            'id'=> $request->id,
             'tahun_akt'=> $request->tahun_akt,
         ]);
         $data = Anggota::orderBy('created_at','desc')
         ->first();
 
         return new AngResource(true,'success add new member',$data); 
+
+    }
+    public function show($id){
+        $data = Anggota::with('dataUsers.dataDivisi')
+        ->find($id);
+
+        $data->nama = ucwords(strtolower($data->nama));
+
+        return new AngResource(true,'data members',$data);
     }
     public function destroy($id){
-        $image = Anggota::find($id)->user_id;
-        if (Users::find($image) != null) {
-            Storage::delete('public/images/users-images/'.Users::find($image)->avatar);   
+        $data = Anggota::find($id)->id;
+        $image = Users::where('member_id','=',$data)->first();
+        if ($image != null) {
+            Storage::delete('public/images/users-images/'.$image->avatar);   
         }
         $data = Anggota::find($id);
         $data-> delete();

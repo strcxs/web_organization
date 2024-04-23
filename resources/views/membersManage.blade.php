@@ -25,6 +25,7 @@
                                         <thead>
                                             <tr id="head">
                                                 <th id="head">Name</th>
+                                                <th id="head">Gender</th>
                                                 <th id="head">Student ID</th>
                                                 <th id="head">Departement</th>
                                                 <th id="head">Batch Year</th>
@@ -36,6 +37,8 @@
                                     </table>
                                     <hr>
                                     <button class="btn btn-success"  data-toggle="modal" data-target="#addMember"><i class="fas fa-solid fa-plus"></i>  Add new member</button>
+                                    <button class="btn btn-success" id="csv-import"><i class="fas fa-solid fa-file-import"></i>  CSV file</button>
+                                    <input type="file" id="csv-file" name="csv-file" class="d-none">
                                 </div>
                             </div>
                         </div>
@@ -58,6 +61,14 @@
                                         <div class="form-group">
                                             <label for="studentId">Student ID</label>
                                             <input type="text" class="form-control" id="studentId" name="student_id" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="gender">Gender</label>
+                                            <select class="form-control" id="gender" name="gender">
+                                                <option disabled selected>select</option>
+                                                <option value="M">Male</option>
+                                                <option value="F">Female</option>
+                                            </select>
                                         </div>
                                         <div class="form-group">
                                             <label for="member">Member Name</label>
@@ -94,10 +105,31 @@
 <script src="{{asset('storage/js/logincheck.js')}}"></script>
 <script>
     $(document).ready(function(){
+        var origin = window.location.origin;
         if (sessionStorage.getItem('login')==null) {
-        return window.location = '../login';
+            return window.location = '../login';
         }
         loginCheck(sessionStorage.getItem('login'));
+        $('#csv-import').click(function(){
+            $('#csv-file').click();
+        })
+        $('#csv-file').change(function(){
+            var csv = $('#csv-file').prop('files')[0];
+            var csv_file = new FormData();
+
+            csv_file.append('csv',csv);
+
+            $.ajax({
+                url: origin+"/api/csv",
+                method: 'POST',
+                data: csv_file,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    
+                }
+            });
+        })
         $('#memberForm').submit(function(event) {
             event.preventDefault();
             var origin = window.location.origin;
@@ -107,12 +139,10 @@
                 method: "POST",
                 data: {
                     'nama': $('#memberName').val(),
-                    'nim': $('#studentId').val(),
+                    'gender': $('#gender').val(),
+                    'id': $('#studentId').val(),
                     'tahun_akt': $('#batchYear').val()
                 },
-                success: function(response){
-                    console.log(response);
-                }
             });
         });
         $.ajax({
@@ -124,32 +154,41 @@
             success: function(response) {
                 var data = response.data;
                 data.forEach(element => {
-                    if (element.user_id != '64') {
-                        if (element.data_users == null) {
-                            $("tbody").append(
-                                "<tr id = 'tr-"+ element.id +"'>"+
-                                    "<td>"+
-                                        '<div class="dropdown">' +
-                                            '<button class="btn btn-secondary dropdown-toggle mr-1 btn-xs" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
-                                                // 'Actions' +
-                                            '</button>' +
-                                            '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">' +
-                                                '<button class="dropdown-item" id ="member-delete-'+ element.id +'">Delete</button>' +
-                                                '<button class="dropdown-item" data-toggle="modal" data-target="#editMember-'+element.id+'">Edit</button>' +
-                                                '<button class="dropdown-item" id ="member-deactived-'+ element.id +'">Deactived</button>' +
-                                            '</div>' +
-                                            '<a class="text-dark" href="profile/detail?id=' + element.user_id + '">'+
-                                                element.nama + 
-                                            '</a>'+
-                                            "<span class='border rounded bg-danger ml-1 px-1'>unregistered</span>"+
+                    var gender;
+                    if (element.gender == 'M') {
+                        gender = 'Male';
+                    }else{
+                        gender = 'female'
+                    }
+                    if (element.data_users == null) {
+                        $("tbody").append(
+                            "<tr id = 'tr-"+ element.id +"'>"+
+                                "<td>"+
+                                    '<div class="dropdown">' +
+                                        '<button class="btn btn-secondary dropdown-toggle mr-1 btn-xs" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+                                            // 'Actions' +
+                                        '</button>' +
+                                        '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">' +
+                                            '<button class="dropdown-item" id ="member-delete-'+ element.id +'">Delete</button>' +
+                                            '<button class="dropdown-item" data-toggle="modal" data-target="#editMember-'+element.id+'">Edit</button>' +
+                                            '<button class="dropdown-item" id ="member-deactived-'+ element.id +'">Deactived</button>' +
                                         '</div>' +
-                                    "</td>"+
-                                    "<td>"+element.id+"</td>"+
-                                    "<td>"+'member'+"</td>"+
-                                    "<td>"+element.tahun_akt+"</td>"+
-                                "</tr>"
-                            );
-                        }if (element.data_users != null) {
+                                        '<a class="text-dark">'+
+                                            element.nama + 
+                                        '</a>'+
+                                        // "<i class='fas fa-lock ml-1 px-1 text-danger' title='unregistered'></i>"+
+                                        "<i class='fas fa-times ml-1 px-1 text-danger' title='unregistered'></i>"+
+                                    '</div>' +
+                                "</td>"+
+                                "<td class='text-center'>"+gender+"</td>"+
+                                "<td class='text-center'>"+element.id+"</td>"+
+                                "<td class='text-center'>"+'member'+"</td>"+
+                                "<td class='text-center'>"+element.tahun_akt+"</td>"+
+                            "</tr>"
+                        );
+                    }
+                    if (element.data_users != null) {
+                        if (element.data_users.id != 64) {
                             $("tbody").append(
                                 "<tr id = 'tr-"+ element.id +"'>"+
                                     "<td>"+
@@ -162,15 +201,16 @@
                                                 '<button class="dropdown-item" data-toggle="modal" data-target="#editMember-'+element.id+'">Edit</button>' +
                                                 '<button class="dropdown-item" id ="member-deactived-'+ element.id +'">Deactived</button>' +
                                             '</div>' +
-                                            '<a class="text-dark" href="profile/detail?id=' + element.user_id + '">'+
+                                            '<a class="text-dark" href="profile/detail?id=' + element.id + '">'+
                                                 element.nama + 
                                             '</a>'+
                                             "<span class='border rounded bg-success ml-1 px-1'>active</span>"+
                                         '</div>' +
                                     "</td>"+
-                                    "<td>"+element.id+"</td>"+
-                                    "<td>"+element.data_users.data_divisi.divisi+"</td>"+
-                                    "<td>"+element.tahun_akt+"</td>"+
+                                    "<td class='text-center'>"+gender+"</td>"+
+                                    "<td class='text-center'>"+element.id+"</td>"+
+                                    "<td class='text-center'>"+element.data_users.data_divisi.divisi+"</td>"+
+                                    "<td class='text-center'>"+element.tahun_akt+"</td>"+
                                 "</tr>"
                             );
                         }
@@ -203,6 +243,12 @@
                                                     '<input type="text" class="form-control" id="edit_studentId-'+element.id+'" name="edit_student_id" value="'+element.id+'">' +
                                                 '</div>' +
                                                 '<div class="form-group">' +
+                                                    '<label for="edit_studentId">Gender</label>' +
+                                                    '<select class="form-control" id="edit_gender-'+element.id+'" name="gender">' +
+                                                        '<option disabled selected>select</option>'+
+                                                    '</select>'+
+                                                '</div>' +
+                                                '<div class="form-group">' +
                                                     '<label for="edit_member">Member Name</label>' +
                                                     '<input type="text" class="form-control" id="edit_memberName-'+element.id+'" name="edit_member_name" value="'+element.nama+'">' +
                                                 '</div>' +
@@ -218,6 +264,17 @@
                             '</div>' +
                         '</div>'
                     );
+                    if (element.gender == 'M') {
+                        $('#edit_gender-'+element.id).append(
+                            '<option value="M" selected>Male</option>'+
+                            '<option value="F">Female</option>'  
+                        );
+                    }else{
+                        $('#edit_gender-'+element.id).append(
+                            '<option value="M">Male</option>'+
+                            '<option value="F" selected>Female</option>'  
+                        );
+                    }
                     // end modal edit 
                     $('#edit_memberForm-'+element.id).submit(function(event) {
                         event.preventDefault();
@@ -226,6 +283,7 @@
                             method: 'PUT',
                             data:{
                                 'id': $('#edit_studentId-'+element.id+'').val()||null,
+                                'gender': $('#edit_gender-'+element.id+'').val()||null,
                                 'nama': $('#edit_memberName-'+element.id+'').val().toUpperCase()||null,
                                 'tahun_akt': $('#edit_batchYear-'+element.id+'').val()||null,
                             }
@@ -238,7 +296,7 @@
                     "paging": true,
                     "lengthChange": true,
                     "searching": true,
-                    "ordering": false,
+                    "ordering": true,
                     "info": false,
                     "autoWidth": true,
                     "responsive": true,

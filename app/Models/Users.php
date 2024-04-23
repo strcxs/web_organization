@@ -14,7 +14,7 @@ class Users extends Model
     protected $guarded = ['id'];
     protected $hidden = ['password'];
     public function dataAnggota(){
-        return $this->belongsTo(Anggota::class,'member_id','id')->select('id','nama','tahun_akt','tanggal_lahir','tempat_lahir','no_telp');
+        return $this->belongsTo(Anggota::class,'member_id','id')->select('id','nama','tahun_akt','tanggal_lahir','tempat_lahir','no_telp','gender');
     }
     public function dataDivisi(){
         return $this->belongsTo(divisi::class,'divisi_id','id')->select('id','divisi','leader_id');
