@@ -176,7 +176,8 @@
                                         '<a class="text-dark">'+
                                             element.nama + 
                                         '</a>'+
-                                        "<span class='border rounded bg-danger ml-1 px-1'>unregistered</span>"+
+                                        // "<i class='fas fa-lock ml-1 px-1 text-danger' title='unregistered'></i>"+
+                                        "<i class='fas fa-times ml-1 px-1 text-danger' title='unregistered'></i>"+
                                     '</div>' +
                                 "</td>"+
                                 "<td class='text-center'>"+gender+"</td>"+

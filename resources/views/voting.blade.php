@@ -56,7 +56,7 @@
             data: {
                 labels: [],
                 datasets: [{
-                    label: 'Jumlah Suara',
+                    label: [],
                     data: [],
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
@@ -79,67 +79,27 @@
                 }
             }
         });
-        function realtime() {
-            $.ajax({
-                url: "/api/result/1",
-                method: "GET", // First change type to method here
-                success: function(response) {
-                    const numbers = response.data.map(item => item.number);
-                    const results = response.data.map(item => {
-                        return{
-                            label: item.number,
-                            value: item.result
-                        }
-                    });
-                    if (response.data.length!=0) {
-                        $.ajax({
-                            url: "/api/vote/"+response.data[0]['id_vote_topic'],
-                            method: "GET", // First change type to method here
-                            success: function(response) {
-                                const number = response.data.map(item => item.number);
-                                if (numbers.length!=response.data.length) {
-                                    const filter = number.filter(value => !numbers.includes(value));
-                                    const number_combine = numbers.concat(filter).sort();
-                                    for (let index = 0; index < number_combine.length; index++) {
-                                        if (number_combine[index]==filter) {
-                                            myChart.data.labels = number_combine;
-                                            myChart.data.datasets[0].data[index] = 0;
-                                            myChart.update();
-                                        }
-                                        for (let indexx = 0; indexx < results.length; indexx++) {
-                                            if(number_combine[index]==results[indexx]['label']){
-                                                myChart.data.labels = number_combine;
-                                                myChart.data.datasets[0].data[index] = results[indexx]['value'];
-                                                myChart.update();
-                                            }
-                                        }
-                                    }
-                                }else{
-                                    for (let index = 0; index < numbers.length; index++) {
-                                        myChart.data.labels = numbers;
-                                        myChart.data.datasets[0].data[index] = results[index]['value'];
-                                        myChart.update();
-                                    }
-                                }
-                            }
-                        });
-                    }
-                }
-            });
-        }
 
-        realtime();
-        // setInterval(realtime, 10000)
+        function updateDataForLabel(label, newData) {
+            var labelIndex = myChart.data.labels.indexOf(label); // find label
+            // update data label
+            myChart.data.datasets.forEach((dataset) => {
+                dataset.data[labelIndex] = newData;
+            });
+            myChart.update();
+        }
         
         if (sessionStorage.getItem('login')==null) {
             return window.location = '../login';
         }
         loginCheck(sessionStorage.getItem('login'));
         $.ajax({
-            url: "/api/voting",
+            url: "/api/candidate",
             method: "GET", // First change type to method here
             success: function(response) {
-                for (let index = 0; index < response.data.length; index++) {
+                var data = response.data;
+                var nomor = '1';
+                data.forEach(element => {
                     var src = "https://democaleg28.nyaleg.id/dirmember/00000001/democaleg28/profile-90.png"; //respon image
                     var card_style = "font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; color: rgb(98, 104, 126)";
                     var number_style = "font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif";
@@ -154,51 +114,69 @@
                             '</div>'+
                             '<div>'+
                                 '<div class="card" style='+card_style+'>'+
-                                    '<h1 class="text-center text-lg pt-3">'+response.data[index]['value']+'</h1>'+
+                                    '<h1 class="text-center text-lg pt-3">'+element.data_users.data_anggota.nama+'</h1>'+
                                     '<hr class="mx-3" style="border-top:1px solid">'+
-                                    '<p class="text-center mx-3">'+response.data[index]['topic_information']+'</p>'+
-                                    '<p class="display-3 text-center" style='+number_style+'>'+response.data[index]['number']+'</p>'+
-                                    '<button id="view-'+response.data[index]['id']+'" class="btn mx-3 mb-1" style="background-color: rgb(98, 104, 126); color: white">'+
+                                    '<p class="text-center mx-3">'+element.data_vote.description+'</p>'+
+                                    // '<p class="display-3 text-center" style='+number_style+'>'+nomor+'</p>'+
+                                    '<button id="view-'+element.id+'" class="btn mx-3 mb-1" style="background-color: rgb(98, 104, 126); color: white">'+
                                         'View Visi & Misi'+
-                                    '</button><button name="vote" id="vote-'+response.data[index]['id']+'" class="btn btn-primary mx-3 mb-3">'+
+                                    '</button><button name="vote" id="vote-'+element.id+'" class="btn btn-primary mx-3 mb-3">'+
                                         'VOTE'+
                                     '</button>'+
                                 '</div>'+
                             '</div>'+
                         '</div>'
                     );
-                    $('#view-'+response.data[index]['id']+'').on('click', function() {
-                        window.location.href = 'vote/view?v='+response.data[index]['id']+''
+                    myChart.data.labels.push(element.data_users.data_anggota.nama);
+                    $('#view-'+element.id+'').on('click', function() {
+                        window.location.href = 'vote/view?v='+element.id+''
                     });
-                    $('#vote-'+response.data[index]['id']+'').on('click', function() {
+                    $('#vote-'+element.id+'').on('click', function() {
                         $.ajax({
-                            url: "/api/check",
+                            url: "/api/ballot",
                             method: "POST",
                             data: {
-                                'id_user': sessionStorage.getItem('login'),
-                                'id_vote_topic':response.data[index]['id_vote_topic'],
-                                'id_voting':response.data[index]['id']
+                                'user_id': sessionStorage.getItem('login'),
+                                'id_candidate':element.id,
                             },
                             success: function(response) {
-                                console.log(response);
                                 $('button[name="vote"]').attr('disabled',true) 
                                 $('button[name="vote"]').text("you've already voted") 
                             }
                         });
                     });
                     $.ajax({
-                        url: "/api/check/"+response.data[index]['id_vote_topic'],
+                        url: "/api/ballot",
                         success: function(response) {
-                            for (let index = 0; index < response.data.length; index++) {
-                                if (response.data[index]['id_user']==sessionStorage.getItem('login')) {
+                            var data = response.data;
+                            data.forEach(element => {
+                                if (element.user_id == sessionStorage.getItem('login')) {
                                     $('button[name="vote"]').attr('disabled',true) 
                                     $('button[name="vote"]').text("you've already voted") 
-                                    
                                 }
-                            }
+                            });
                         }
                     });
-                }
+                });
+            }
+        });
+
+        $.ajax({
+            url: "/api/ballot/",
+            method: "GET", // First change type to method here
+            success: function(response) {
+                var data = response.data;
+                var countId = {};
+                data.forEach(vote => {
+                    if (!countId[vote.id_candidate]) {
+                        countId[vote.id_candidate] = 1;
+                    }else{
+                        countId[vote.id_candidate]++;
+                    }
+                    if (vote.data_candidate.id == vote.id_candidate) {
+                        updateDataForLabel(vote.data_candidate.data_users.data_anggota.nama,countId[vote.id_candidate]);
+                    }
+                });
             }
         });
     });
