@@ -10,4 +10,8 @@ class Vote extends Model
     use HasFactory;
     protected $table = 'vote';
     protected $guarded = [];
+
+    public function dataTeam(){
+        return $this->hasMany(Team::class,'id_vote','id');
+    }
 }

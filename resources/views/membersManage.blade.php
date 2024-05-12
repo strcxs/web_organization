@@ -37,7 +37,7 @@
                                     </table>
                                     <hr>
                                     <button class="btn btn-success"  data-toggle="modal" data-target="#addMember"><i class="fas fa-solid fa-plus"></i>  Add new member</button>
-                                    <button class="btn btn-success" id="csv-import"><i class="fas fa-solid fa-file-import"></i>  CSV file</button>
+                                    <button class="btn btn-success" id="csv-import"><i class="fas fa-solid fa-file-import"></i>  import CSV</button>
                                     <input type="file" id="csv-file" name="csv-file" class="d-none">
                                 </div>
                             </div>
@@ -173,11 +173,14 @@
                                             '<button class="dropdown-item" data-toggle="modal" data-target="#editMember-'+element.id+'">Edit</button>' +
                                             '<button class="dropdown-item" id ="member-deactived-'+ element.id +'">Deactived</button>' +
                                         '</div>' +
+                                        "<i class='fas fa-power-off px-1 text-danger' title='active'></i>"+
                                         '<a class="text-dark">'+
                                             element.nama + 
                                         '</a>'+
-                                        // "<i class='fas fa-lock ml-1 px-1 text-danger' title='unregistered'></i>"+
-                                        "<i class='fas fa-times ml-1 px-1 text-danger' title='unregistered'></i>"+
+                                        "<i class='fas fa-exclamation-triangle px-1 text-warning' title='unregistered'></i>"+
+                                        // "<i class='fas fa-user-check px-1 text-success' title='registered'></i>"+
+                                        // "<i class='fas fa-user-slash px-1 text-danger' title='deactived'></i>"+
+                                        // "<i class='fas fa-user-shield px-1 text-primary' title='limited'></i>"+
                                     '</div>' +
                                 "</td>"+
                                 "<td class='text-center'>"+gender+"</td>"+
@@ -201,10 +204,11 @@
                                                 '<button class="dropdown-item" data-toggle="modal" data-target="#editMember-'+element.id+'">Edit</button>' +
                                                 '<button class="dropdown-item" id ="member-deactived-'+ element.id +'">Deactived</button>' +
                                             '</div>' +
+                                            "<i class='fas fa-power-off px-1 text-success' title='active'></i>"+
                                             '<a class="text-dark" href="profile/detail?id=' + element.id + '">'+
                                                 element.nama + 
                                             '</a>'+
-                                            "<span class='border rounded bg-success ml-1 px-1'>active</span>"+
+                                            "<i class='fas fa-user-check px-1 text-success' title='registered'></i>"+
                                         '</div>' +
                                     "</td>"+
                                     "<td class='text-center'>"+gender+"</td>"+

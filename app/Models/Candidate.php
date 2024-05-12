@@ -15,10 +15,7 @@ class Candidate extends Model
     public function dataUsers(){
         return $this->hasOne(Users::class,'id','user_id');
     }
-    public function dataDetail(){
-        return $this->hasOne(Detail::class,'id','detail_id');
-    }
-    public function dataVote(){
-        return $this->hasOne(Vote::class,'id','vote_id');
+    public function dataTeam(){
+        return $this->hasOne(Team::class,'id','id_team');
     }
 }
