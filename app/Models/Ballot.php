@@ -13,7 +13,7 @@ class Ballot extends Model
     public function dataUsers(){
         return $this->hasOne(Users::class,'id','user_id');
     }
-    public function dataCandidate(){
-        return $this->hasOne(Candidate::class,'id','id_candidate');
+    public function dataTeam(){
+        return $this->hasOne(Team::class,'id','id_team');
     }
 }

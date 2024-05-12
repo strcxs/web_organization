@@ -38,7 +38,7 @@ Route::get('/dashboard/vote', function () {
     return view('voting');
 })->name('voting');
 
-Route::get('/dashboard/vote/view', function () {
+Route::get('/dashboard/vote/detail', function () {
     return view('visimisi');
 })->name('visimisi');
 
@@ -70,17 +70,3 @@ Route::get('/dashboard/profile/detail', function () {
 Route::get('/', function () {
     return view('web');
 });
-
-// Route::apiResource("/xxx","App\Http\Controllers\\LoginController");
-// Route::apiResource("/xxx","App\Http\Controllers\\AngController");
-
-// Route::get("/",[AngController::class,'show']);
-// Route::middleware([
-//     'auth:sanctum',
-//     config('jetstream.auth_session'),
-//     'verified',
-// ])->group(function () {
-//     Route::get('/dashboard', function () {
-//         return view('dashboard');
-//     })->name('dashboard');
-// });

@@ -18,36 +18,39 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-// Route::apiResource("/data",AngController::class);
-Route::apiResource("/login","App\Http\Controllers\\LoginController");
-Route::apiResource("/regis","App\Http\Controllers\\RegisController");
+Route::group(['namespace' => 'App\Http\Controllers'], function () {
+    Route::apiResources([
+        '/login' => 'LoginController',
+        '/regis' => 'RegisController',
+        '/data' => 'AngController',
+        '/forum' => 'ForumController',
+        '/announcement' => 'AnnController',
+        '/connection' => 'ConnectionController',
+        '/program' => 'ProgramController',
+        '/divisi' => 'DivisiController',
+        '/csv' => 'CsvController',
+        '/member' => 'MemberController',
+        '/username' => 'UserController',
+        '/candidate' => 'CandidateController',
+        '/vote' => 'VoteController',
+        '/ballot' => 'BallotController',
+        '/team' => 'TeamController',
+        '/detail' => 'DetailController',
+    ]);
 
-Route::apiResource("/data","App\Http\Controllers\\AngController");
-Route::post("/data/{id}","App\Http\Controllers\\AngController@update");
-Route::delete("/data/{id}","App\Http\Controllers\\AngController@destroy");
-
-
-Route::apiResource("/forum","App\Http\Controllers\\forumController");
-Route::delete("/forum/{id}","App\Http\Controllers\\forumController@destroy");
-
-Route::apiResource("/announcement","App\Http\Controllers\\AnnController");
-Route::post("/announcement","App\Http\Controllers\\AnnController@store");
-Route::delete("/announcement/{id}","App\Http\Controllers\\AnnController@destroy");
-
-Route::get("/comment/{id}","App\Http\Controllers\\comController@show");
-Route::post("/comment","App\Http\Controllers\\comController@store");
-Route::delete("/comment/{id}","App\Http\Controllers\\comController@destroy");
-
-Route::get("/topic","App\Http\Controllers\\TopicController@index");
-Route::delete("/topic/{id}","App\Http\Controllers\\TopicController@destroy");
-Route::post("/topic","App\Http\Controllers\\TopicController@store");
-Route::post("/topic/{id}","App\Http\Controllers\\TopicController@update");
-
-Route::apiResource("/connection","App\Http\Controllers\\ConnectionController");
-
-Route::apiResource("/program","App\Http\Controllers\\ProgramController");
-
-Route::apiResource("/divisi","App\Http\Controllers\\DivisiController");
+    Route::post('/data/{id}', 'AngController@update');
+    Route::delete('/data/{id}', 'AngController@destroy');
+    Route::delete('/forum/{id}', 'ForumController@destroy');
+    Route::post('/announcement', 'AnnController@store');
+    Route::delete('/announcement/{id}', 'AnnController@destroy');
+    Route::get('/comment/{id}', 'ComController@show');
+    Route::post('/comment', 'ComController@store');
+    Route::delete('/comment/{id}', 'ComController@destroy');
+    Route::get('/topic', 'TopicController@index');
+    Route::delete('/topic/{id}', 'TopicController@destroy');
+    Route::post('/topic', 'TopicController@store');
+    Route::post('/topic/{id}', 'TopicController@update');
+});
 
 Route::apiResource("/csv","App\Http\Controllers\\CsvController");
 

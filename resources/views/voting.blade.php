@@ -93,70 +93,105 @@
             return window.location = '../login';
         }
         loginCheck(sessionStorage.getItem('login'));
+        var data_vote = 1;
         $.ajax({
-            url: "/api/candidate",
+            url: "/api/team/"+data_vote,
             method: "GET", // First change type to method here
             success: function(response) {
                 var data = response.data;
-                var nomor = '1';
                 data.forEach(element => {
-                    var src = "https://democaleg28.nyaleg.id/dirmember/00000001/democaleg28/profile-90.png"; //respon image
                     var card_style = "font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; color: rgb(98, 104, 126)";
                     var number_style = "font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif";
-                    var col = 12/response.data.length;
-                    
-                    $('#voting-content').append(
-                        '<div class="col-12 col-md-'+col+'">'+
-                            '<div>'+
-                                '<div class="text-center">'+
-                                    '<img class="img-fluid rounded" src='+src+' alt="" width="70%">'+
-                                '</div>'+
-                            '</div>'+
-                            '<div>'+
-                                '<div class="card" style='+card_style+'>'+
-                                    '<h1 class="text-center text-lg pt-3">'+element.data_users.data_anggota.nama+'</h1>'+
-                                    '<hr class="mx-3" style="border-top:1px solid">'+
-                                    '<p class="text-center mx-3">'+element.data_vote.description+'</p>'+
-                                    // '<p class="display-3 text-center" style='+number_style+'>'+nomor+'</p>'+
-                                    '<button id="view-'+element.id+'" class="btn mx-3 mb-1" style="background-color: rgb(98, 104, 126); color: white">'+
-                                        'View Visi & Misi'+
-                                    '</button><button name="vote" id="vote-'+element.id+'" class="btn btn-primary mx-3 mb-3">'+
-                                        'VOTE'+
-                                    '</button>'+
-                                '</div>'+
-                            '</div>'+
-                        '</div>'
-                    );
-                    myChart.data.labels.push(element.data_users.data_anggota.nama);
-                    $('#view-'+element.id+'').on('click', function() {
-                        window.location.href = 'vote/view?v='+element.id+''
-                    });
-                    $('#vote-'+element.id+'').on('click', function() {
-                        $.ajax({
-                            url: "/api/ballot",
-                            method: "POST",
-                            data: {
-                                'user_id': sessionStorage.getItem('login'),
-                                'id_candidate':element.id,
-                            },
-                            success: function(response) {
-                                $('button[name="vote"]').attr('disabled',true) 
-                                $('button[name="vote"]').text("you've already voted") 
-                            }
+                    if (element.id_vote == data_vote) {
+                        var col = 12/data.length;
+                        var candidate = "";
+                        element.data_candidate.forEach(loopCandidate => {
+                            candidate += loopCandidate.data_users.data_anggota.nama+"<br> "
                         });
-                    });
-                    $.ajax({
-                        url: "/api/ballot",
-                        success: function(response) {
-                            var data = response.data;
-                            data.forEach(element => {
-                                if (element.user_id == sessionStorage.getItem('login')) {
+                        $('#voting-content').append(
+                            '<div class="col-12 col-md-'+col+'">'+
+                                '<div>'+
+                                    '<div class="text-center">'+
+                                        '<img id="banner-'+element.id+'" class="img-fluid rounded" src='+element.banner_image+' alt="" width="70%">'+
+                                    '</div>'+
+                                '</div>'+
+                                '<div>'+
+                                    '<div class="card" style='+card_style+'>'+
+                                        '<h1 class="text-center text-lg pt-3">'+element.name+'</h1>'+
+    
+                                        '<h3 class="text-center text-md ">'+candidate+'</h3>'+
+    
+                                        '<hr class="mx-3" style="border-top:1px solid">'+
+                                        '<p class="text-center mx-3">'+element.data_vote.description+'</p>'+
+                                        // '<p class="display-3 text-center" style='+number_style+'>'+nomor+'</p>'+
+                                        '<button class="btn mx-3 mb-1" data-toggle="modal" data-target="#visimisi-modal-'+element.id+'" style="background-color: rgb(98, 104, 126); color: white">'+
+                                            'View Visi & Misi'+
+                                        '</button><button name="vote" id="vote-'+element.id+'" class="btn btn-primary mx-3 mb-3">'+
+                                            'VOTE'+
+                                        '</button>'+
+                                    '</div>'+
+                                '</div>'+
+                            '</div>'+
+                            '<div>'+
+                                '<div class="modal fade" id="visimisi-modal-'+element.id+'" tabindex="-1" role="dialog" aria-labelledby="visimisi-label" aria-hidden="true">' +
+                                    '<div class="modal-dialog modal-lg" role="document">' +
+                                        '<div class="modal-content">' +
+                                            '<div class="modal-header" style="background-color: rgb(98, 104, 126); color: white">' +
+                                                '<h5 class="modal-title">Visi & Misi</h5>' +
+                                                '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                                                    '<span aria-hidden="true">&times;</span>' +
+                                                '</button>' +
+                                            '</div>' +
+                                            '<div class="modal-body">' +
+                                                '<h6>Visi:</h6>' +
+                                                '<p>'+element.visi+'</p>' +
+                                                '<h6>Misi:</h6>' +
+                                                '<p>'+element.misi+'</p>' +
+                                            '</div>' +
+                                            '<div class="modal-footer">' +
+                                                '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
+                                            '</div>' +
+                                        '</div>' +
+                                    '</div>' +
+                                '</div>' +
+                            '</div>'
+                        );
+                        if (element.banner_image!=null) {
+                            $('#banner-'+element.id+'').attr('src', `{{asset('storage/images/banner/${element.banner_image}')}}`);
+                        }
+    
+                        myChart.data.labels.push(element.name);
+    
+                        $('#vote-'+element.id+'').on('click', function() {
+                            $.ajax({
+                                url: "/api/ballot",
+                                method: "POST",
+                                data: {
+                                    'user_id': sessionStorage.getItem('login'),
+                                    'id_team':element.id,
+                                    'id_vote':data_vote
+                                },
+                                success: function(response) {
                                     $('button[name="vote"]').attr('disabled',true) 
                                     $('button[name="vote"]').text("you've already voted") 
                                 }
                             });
-                        }
-                    });
+                        });
+                        $.ajax({
+                            url: "/api/ballot",
+                            success: function(response) {
+                                var data = response.data;
+                                data.forEach(check => {
+                                    if (check.data_team.id_vote == data_vote) {
+                                        if (check.user_id == sessionStorage.getItem('login')) {
+                                            $('button[name="vote"]').attr('disabled',true) 
+                                            $('button[name="vote"]').text("you've already voted") 
+                                        }
+                                    } 
+                                });
+                            }
+                        });
+                    }
                 });
             }
         });
@@ -168,13 +203,13 @@
                 var data = response.data;
                 var countId = {};
                 data.forEach(vote => {
-                    if (!countId[vote.id_candidate]) {
-                        countId[vote.id_candidate] = 1;
+                    if (!countId[vote.id_team]) {
+                        countId[vote.id_team] = data_vote;
                     }else{
-                        countId[vote.id_candidate]++;
+                        countId[vote.id_team]++;
                     }
-                    if (vote.data_candidate.id == vote.id_candidate) {
-                        updateDataForLabel(vote.data_candidate.data_users.data_anggota.nama,countId[vote.id_candidate]);
+                    if (vote.data_team.id == vote.id_team) {
+                        updateDataForLabel(vote.data_team.name,countId[vote.id_team]);
                     }
                 });
             }
