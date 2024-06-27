@@ -29,14 +29,14 @@
               </div>
               <div class="post p-3">
                 <div class="row">
-                  <input id="send-post" class="form-control col-10" type="text" onkeydown=PostkeyPress(event)>
+                  <input id="send-post" class="form-control col-10" type="text" onkeydown=PostkeyPress(event) placeholder="Text your ideas !">
                   <button id="sent-post" class="btn btn-primary form-control col-2">
                     <i class="nav-icon fas fa-paper-plane"></i>
                   </button>
                 </div>
               </div>
             </div>
-            <div class="card">
+            <div class="card"> 
               <div id="forum-content">
             </div>
           </div>
@@ -90,10 +90,11 @@
     var datasave = [];
     var id_comment = [];
     $(document).ready(function(){
-      if (sessionStorage.getItem('login')==null) {
-        return window.location = '../login';
+      if (sessionStorage.getItem('session')==null) {
+        return window.location = window.location.origin+'/login';
       }
-      
+      sessionCheck(sessionStorage.getItem('id'));
+        
       var pusher = new Pusher("{{ env('PUSHER_APP_KEY') }}", {
         cluster: "{{ env('PUSHER_APP_CLUSTER') }}"
       });
@@ -141,7 +142,7 @@
             '</div>'+
           '</div>'
         );
-        if (sessionStorage.getItem('login') == 64) {
+        if (sessionStorage.getItem('session') == 1) {
                   document.getElementById('btnDelete-'+ data.data['id']).style.display = "block";
         } else {
             document.getElementById('btnDelete-'+ data.data['id']).style.display = "none";
@@ -179,7 +180,7 @@
                 '</div>'
               );
               var commentContainer = $('#forum-comment-' + data.data['id_forum']);
-              if (sessionStorage.getItem('login') == data.data['user_id']) {
+              if (sessionStorage.getItem('id') == data.data['user_id']) {
                 $('#forum-comment-'+data.data['id_forum']).removeClass().addClass("card-footer card-comments ");
               }
               comments.forEach(function(comment) {
@@ -224,7 +225,7 @@
         }
       });
 
-      loginCheck(sessionStorage.getItem('login'));
+      loginCheck(sessionStorage.getItem('id'));
     });
     function deleteForumConfirm(forum_id,content='Are you sure you want to delete this post?') {
       $('#confirmationDeleteForum').modal('show');
@@ -274,7 +275,7 @@
                       '</div>' +
                       '<img class="img-circle img-bordered-sm" src=' + img + ' alt="user image" style="width: 43px; height: 43px; object-fit: cover; border-radius: 50%;" >' +
                       '<span class="username">' +
-                        '<a href="profile/detail?id=' + forum.data_users.id + '">' + forum.data_users.data_anggota.nama + '</a>' +
+                        '<a href="profile/detail?id=' + forum.data_users.member_id + '">' + forum.data_users.data_anggota.nama + '</a>' +
                       '</span>' +
                       '<span class="description">' + forum.formatted_created_at + '</span>' +
                     '</div>' +
@@ -297,7 +298,7 @@
               );
               
               //admin only
-              if (sessionStorage.getItem('login') == 64) {
+              if (sessionStorage.getItem('session') == 1) {
                   document.getElementById('btnDelete-'+ forum.id).style.display = "block";
               } else {
                   document.getElementById('btnDelete-'+ forum.id).style.display = "none";
@@ -388,7 +389,7 @@
         method: 'POST',
         data: {
           "id_forum": forumId,
-          "user_id": sessionStorage.getItem('login'),
+          "user_id": sessionStorage.getItem('id'),
           "content": content
         },
         success: function(response) {
@@ -417,7 +418,7 @@
         url: "/api/forum",
         method: 'POST',
         data: {
-          "user_id": sessionStorage.getItem('login'),
+          "user_id": sessionStorage.getItem('id'),
           "content": content
         },
         success: function(response) {
@@ -475,7 +476,7 @@
       }
 
       //admin only
-      if (sessionStorage.getItem('login') == 64) {
+      if (sessionStorage.getItem('session') == 1) {
           document.getElementById('btnDeletecomment-'+ comment.id).style.display = "block";
       } else {
           document.getElementById('btnDeletecomment-'+ comment.id).style.display = "none";
@@ -492,6 +493,9 @@
       $.ajax({
         url: "/api/forum/" + forumId,
         method: "DELETE",
+        data:{
+          "user_id":sessionStorage.getItem('id')
+        },
         success: function(response) {
           var data = response.data;
           $('#card-content-' + forumId).remove();

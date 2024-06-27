@@ -90,10 +90,16 @@
     var datasave = [];
     var id_comment = [];
     $(document).ready(function(){
-      if (sessionStorage.getItem('login')==null) {
-        return window.location = '../login';
-      }
-      
+      getLeaderID().then(({ leader_id, id })=>{
+        getUser().then(({ divisi_id, role_id })=>{
+          if (role_id != 1) {
+            if (sessionStorage.getItem('session')==null || sessionStorage.getItem('session')==2 || divisi_id != id) {
+              return window.location = window.location.origin+'/login';
+            }
+          }
+        });
+      });
+      sessionCheck(sessionStorage.getItem('id'));
       var pusher = new Pusher("{{ env('PUSHER_APP_KEY') }}", {
         cluster: "{{ env('PUSHER_APP_CLUSTER') }}"
       });
@@ -111,7 +117,7 @@
             '<div class="post p-2">'+
               '<div class="user-block">'+
                 '<div id="delete" class="card-tools float-right">'+
-                  '<button id="btnDelete-'+data.data['id']+'" type="button" class="btn btn-tool">'+
+                  '<button id="btnDelete-'+data.data['id']+'" type="button" class="btn btn-tool" style="display: none">'+
                     '<i class="fa-solid fa-x">X</i>'+
                   '</button>'+
                 '</div>'+
@@ -141,11 +147,14 @@
             '</div>'+
           '</div>'
         );
-        if (sessionStorage.getItem('login') == 64) {
-                  document.getElementById('btnDelete-'+ data.data['id']).style.display = "block";
-        } else {
-            document.getElementById('btnDelete-'+ data.data['id']).style.display = "none";
-        }
+        getLeaderID().then(({ leader_id, id })=>{
+          if (sessionStorage.getItem('session') == 1 || sessionStorage.getItem('id') == leader_id) {
+                    document.getElementById('btnDelete-'+ data.data['id']).style.display = "block";
+          } else {
+              document.getElementById('btnDelete-'+ data.data['id']).style.display = "none";
+          }
+        });
+
         $('#btnDelete-' + data.data['id']).on('click', function() {
           deleteForumConfirm(data.data['id']);
         });
@@ -179,7 +188,7 @@
                 '</div>'
               );
               var commentContainer = $('#forum-comment-' + data.data['id_forum']);
-              if (sessionStorage.getItem('login') == data.data['user_id']) {
+              if (sessionStorage.getItem('id') == data.data['user_id']) {
                 $('#forum-comment-'+data.data['id_forum']).removeClass().addClass("card-footer card-comments ");
               }
               comments.forEach(function(comment) {
@@ -224,7 +233,7 @@
         }
       });
 
-    loginCheck(sessionStorage.getItem('login'));
+    loginCheck(sessionStorage.getItem('id'));
     });
     function deleteForumConfirm(forum_id,content='Are you sure you want to delete this post?') {
       $('#confirmationDeleteForum').modal('show');
@@ -286,7 +295,7 @@
                   '<div class="post p-2">' +
                     '<div class="user-block">' +
                       '<div id="delete" class="card-tools float-right">' +
-                        '<button id="btnDelete-' + forum.id + '" type="button" class="btn btn-tool">' +
+                        '<button id="btnDelete-' + forum.id + '" type="button" class="btn btn-tool" style="display: none">' +
                           '<i class="fa-solid fa-x">X</i>' +
                         '</button>' +
                       '</div>' +
@@ -315,11 +324,13 @@
               );
               
               //admin only
-              if (sessionStorage.getItem('login') == 64) {
+              getLeaderID().then(({ leader_id, divisi_id })=>{
+                if (sessionStorage.getItem('session') == 1 || sessionStorage.getItem('id') == leader_id) {
                   document.getElementById('btnDelete-'+ forum.id).style.display = "block";
-              } else {
+                } else {
                   document.getElementById('btnDelete-'+ forum.id).style.display = "none";
-              }
+                }
+              });
 
               // Delete forum
               $('#btnDelete-' + forum.id).on('click', function() {
@@ -406,7 +417,7 @@
         method: 'POST',
         data: {
           "id_forum": forumId,
-          "user_id": sessionStorage.getItem('login'),
+          "user_id": sessionStorage.getItem('id'),
           "content": content
         },
         success: function(response) {
@@ -435,7 +446,7 @@
         url: "/api/forum",
         method: 'POST',
         data: {
-          "user_id": sessionStorage.getItem('login'),
+          "user_id": sessionStorage.getItem('id'),
           "content": content,
           'connection':connection
         },
@@ -459,7 +470,7 @@
         container.prepend(
           '<div class="card-comment" id="card-comment-' + comment.id + '">' +
             '<div id="delete" class="card-tools float-right">' +
-              '<button id="btnDeletecomment-' + comment.id + '" type="button" class="btn btn-tool">' +
+              '<button id="btnDeletecomment-' + comment.id + '" type="button" class="btn btn-tool" style="display: none">' +
                 '<i class="fa-solid fa-x">X</i>' +
               '</button>' +
             '</div>' +
@@ -477,7 +488,7 @@
         container.append(
           '<div class="card-comment" id="card-comment-' + comment.id + '">' +
             '<div id="delete" class="card-tools float-right">' +
-              '<button id="btnDeletecomment-' + comment.id + '" type="button" class="btn btn-tool">' +
+              '<button id="btnDeletecomment-' + comment.id + '" type="button" class="btn btn-tool style="display: none"">' +
                 '<i class="fa-solid fa-x">X</i>' +
               '</button>' +
             '</div>' +
@@ -494,23 +505,67 @@
       }
 
       //admin only
-      if (sessionStorage.getItem('login') == 64) {
+      getLeaderID().then(({ leader_id, divisi_id })=>{
+        if (sessionStorage.getItem('session') == 1 || sessionStorage.getItem('id') == leader_id) {
           document.getElementById('btnDeletecomment-'+ comment.id).style.display = "block";
-      } else {
+        } else {
           document.getElementById('btnDeletecomment-'+ comment.id).style.display = "none";
-      }
+        }
+      });
 
       // Delete comment
       $('#btnDeletecomment-' + comment.id).on('click', function() {
         deleteCommentConfirm(comment.id, forumId);
       });
     }
-
+    function getLeaderID(){
+      return new Promise((resolve)=>{
+        $.ajax({
+          url: "/api/connection/" + urlParams.get('d'),
+          method: "GET",
+          success: function(response) {
+            var data = response.data;
+            if (data.data_divisi != null) {
+              resolve({ leader_id: data.data_divisi.leader_id, id: data.data_divisi.id });
+            }
+            if (data.data_program != null) {
+              resolve({ leader_id: data.data_program.leader_id, id: data.data_program.id });
+            }
+          }
+        });
+      })
+    }
+    function getUser(){
+      return new Promise((resolve)=>{
+        $.ajax({
+          url: "/api/data/" + sessionStorage.getItem('id'),
+          method: "GET",
+          success: function(response) {
+            var data = response.data;
+            if (data.divisi_id != 1) {
+              resolve({ divisi_id: data.divisi_id, role_id: data.role_id });
+            }
+            if (data.program_id != 1) {
+              resolve({ divisi_id: data.program_id, role_id: data.role_id });
+            }
+            if (data.divisi_id == 1) {
+              resolve({ divisi_id: null, role_id: data.role_id });
+            }
+            if (data.program_id == 1) {
+              resolve({ divisi_id: null, role_id: data.role_id });
+            }
+          }
+        });
+      })
+    }
     // Function to delete a forum
     function deleteForum(forumId) {
       $.ajax({
         url: "/api/forum/" + forumId,
         method: "DELETE",
+        data:{
+          "user_id":sessionStorage.getItem('id')
+        },
         success: function(response) {
           var data = response.data;
           $('#card-content-' + forumId).remove();
@@ -527,6 +582,9 @@
       $.ajax({
         url: "/api/comment/" + commentId,
         method: "DELETE",
+        data:{
+          "user_id":sessionStorage.getItem('id')
+        },
         success: function(response) {
           var data = response.data;
           $('#card-comment-' + commentId).remove();

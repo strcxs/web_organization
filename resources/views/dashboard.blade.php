@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dashboard •</title>
+  <link rel="shortcut icon" type="image/icon" href="{{asset('storage/images/icon_himaif.png')}}"/>
+  <title>Dashboard</title>
   @include('include/link')
 </head>
 <body class="hold-transition light-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
@@ -112,8 +113,8 @@
 <script src="{{asset('storage/js/logincheck.js')}}"></script>
 <script>
   $(document).ready(function(){
-    if (sessionStorage.getItem('login')==null) {
-      return window.location = '../login';
+    if (sessionStorage.getItem('session')==null) {
+      return window.location = window.location.origin+'/login';
     }
     $.ajax({
       url: "/api/data/",
@@ -122,8 +123,8 @@
         $('#members-count').text(response.data.length)
       }
     });
-
-    loginCheck(sessionStorage.getItem('login'));
+    loginCheck(sessionStorage.getItem('id'));
+    sessionCheck(sessionStorage.getItem('id'));
     fetchDiscuss(6);
     fetchAnnouncement(6);
 

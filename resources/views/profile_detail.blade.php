@@ -97,7 +97,6 @@
   @include('include/footer')
 </div>
 @include('include/script')
-<script src="{{asset('storage/js/logincheck.js')}}"></script>
 <script>
   $(document).ready(function(){
     if (sessionStorage.getItem('login')==null) {
@@ -105,7 +104,7 @@
     }
     var urlParams = new URLSearchParams(window.location.search);
     var user_detail = urlParams.get('id');
-
+    sessionCheck(sessionStorage.getItem('login'));
     $.ajax({
         url: "/api/member/"+user_detail,
         method: "GET", // First change type to method here
@@ -135,8 +134,8 @@
           $("#tempat_lahir-profile").text(data.tempat_lahir);
           $("#telp-profile").text(data.no_telp);
 
-          if (data.avatar!=null) {
-            $('#profile-avatar').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
+          if (data.data_users.avatar!=null) {
+            $('#profile-avatar').attr('src', `{{asset('storage/images/users-images/${data.data_users.avatar}')}}`);
           }
         }
       });

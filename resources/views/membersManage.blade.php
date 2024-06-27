@@ -106,10 +106,11 @@
 <script>
     $(document).ready(function(){
         var origin = window.location.origin;
-        if (sessionStorage.getItem('login')==null) {
-            return window.location = '../login';
+        if (sessionStorage.getItem('session')==null) {
+            return window.location = window.location.origin+'/login';
         }
-        loginCheck(sessionStorage.getItem('login'));
+        sessionCheck(sessionStorage.getItem('id'));
+        loginCheck(sessionStorage.getItem('id'));
         $('#csv-import').click(function(){
             $('#csv-file').click();
         })
@@ -131,7 +132,7 @@
             });
         })
         $('#memberForm').submit(function(event) {
-            event.preventDefault();
+            // event.preventDefault();
             var origin = window.location.origin;
 
             $.ajax({
@@ -281,7 +282,7 @@
                     }
                     // end modal edit 
                     $('#edit_memberForm-'+element.id).submit(function(event) {
-                        event.preventDefault();
+                        // event.preventDefault();
                         $.ajax({
                             url: origin+"/api/member/"+element.id,
                             method: 'PUT',

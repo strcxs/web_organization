@@ -39,7 +39,8 @@ class ConnectionController extends Controller
     public function show($id){
         $data = Connection::with('dataDivisi.dataUsers.dataAnggota')
         ->with('dataProgram.dataUsers.dataAnggota')
-        ->get();
+        ->where('id',$id)
+        ->first();
 
         return new AngResource(true,'data Connection',$data);
     }

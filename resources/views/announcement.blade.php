@@ -42,14 +42,16 @@
 <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 <script src="{{asset('storage/js/logincheck.js')}}"></script>
 <script>
-    if (sessionStorage.getItem('login') == 64) {
+    if (sessionStorage.getItem('session') == 1) {
         document.getElementById("admin-div").style.display = "block";
     } else {
         document.getElementById("admin-div").style.display = "none";
     }
+    sessionCheck(sessionStorage.getItem('id'));
+
     $(document).ready(function(){
-      if (sessionStorage.getItem('login')==null) {
-        return window.location = '../login';
+      if (sessionStorage.getItem('session')==null) {
+        return window.location = window.location.origin+'/login';
       }
 
       var pusher = new Pusher("{{ env('PUSHER_APP_KEY') }}", {
@@ -88,7 +90,7 @@
                 '</div>'+
             '</div>'           
         );
-        if (sessionStorage.getItem('login') == 64) {
+        if (sessionStorage.getItem('session') == 1) {
             document.getElementById('btnDelete-'+ data.data['id']).style.display = "block";
         } else {
             document.getElementById('btnDelete-'+ data.data['id']).style.display = "none";
@@ -153,7 +155,7 @@
                   '</div>'+
                 '</div>'
               );
-              if (sessionStorage.getItem('login') == 64) {
+              if (sessionStorage.getItem('session') == 1) {
                   document.getElementById('btnDelete-'+ announcement['id']).style.display = "block";
               } else {
                   document.getElementById('btnDelete-'+ announcement['id']).style.display = "none";
@@ -180,7 +182,7 @@
     $(window).scroll(checkEndOfPage);
     loadData();
 
-    loginCheck(sessionStorage.getItem('login'));
+    loginCheck(sessionStorage.getItem('id'));
 
       function AnnouncementkeyPress(event){
         if (event.keyCode === 13) {
@@ -192,7 +194,10 @@
       function deleteAnnouncement(id) {
         $.ajax({
           url: "/api/announcement/"+id,
-          method: "delete"
+          method: "delete",
+          data:{
+            "user_id": sessionStorage.getItem('id')
+          }
         });
       }
 
@@ -207,7 +212,7 @@
           url: "/api/announcement",
           method: "POST", // First change type to method here
           data: {
-              "user_id": sessionStorage.getItem('login'),
+              "user_id": sessionStorage.getItem('id'),
               "content": content
           },
           complete: function(){

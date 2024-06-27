@@ -89,10 +89,11 @@
             myChart.update();
         }
         
-        if (sessionStorage.getItem('login')==null) {
-            return window.location = '../login';
+        if (sessionStorage.getItem('session')==null) {
+            return window.location = window.location.origin+'/login';
         }
-        loginCheck(sessionStorage.getItem('login'));
+        sessionCheck(sessionStorage.getItem('id'));
+        loginCheck(sessionStorage.getItem('id'));
         var data_vote = 1;
         $.ajax({
             url: "/api/team/"+data_vote,
@@ -167,7 +168,7 @@
                                 url: "/api/ballot",
                                 method: "POST",
                                 data: {
-                                    'user_id': sessionStorage.getItem('login'),
+                                    'user_id': sessionStorage.getItem('id'),
                                     'id_team':element.id,
                                     'id_vote':data_vote
                                 },
@@ -183,7 +184,7 @@
                                 var data = response.data;
                                 data.forEach(check => {
                                     if (check.data_team.id_vote == data_vote) {
-                                        if (check.user_id == sessionStorage.getItem('login')) {
+                                        if (check.user_id == sessionStorage.getItem('id')) {
                                             $('button[name="vote"]').attr('disabled',true) 
                                             $('button[name="vote"]').text("you've already voted") 
                                         }
