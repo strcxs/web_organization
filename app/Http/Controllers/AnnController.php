@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\Users;
 use App\Models\Announcement;
 use Illuminate\Http\Request;
 use App\Http\Resources\AngResource;
@@ -41,14 +42,15 @@ class AnnController extends Controller
         if ($validator->fails()) {
             return new AngResource(false,"input is missing", null);
         }
+        $role = Users::select('role_id')->where('id',$request->user_id)->first();
+        if ($role->role_id != 1) {
+            return new AngResource(false,"You don't have access", null);
+        }
         Announcement::create([
             'user_id'=> $request->user_id,
             'title'=> $request->content
         ]);
 
-        if ($request->user_id != 64) {
-            return new AngResource(false,"You're not an admin.", null);
-        }
 
         $announcement = Announcement::with(['dataUsers.dataAnggota'])
         ->select('id','user_id','title','created_at')
@@ -61,7 +63,11 @@ class AnnController extends Controller
         $this->push('announcement', 'sent-announcement', ['data' => $announcement]);
         return new AngResource(true,"announcement send successfully", $announcement);
     }
-    public function destroy($id){
+    public function destroy(Request $request,$id){
+        $role = Users::select('role_id')->where('id',$request->user_id)->first();
+        if ($role->role_id != 1) {
+            return new AngResource(false,"You don't have access", null);
+        }
         $data = Announcement::find($id);
         $data-> delete();
         

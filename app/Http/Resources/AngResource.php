@@ -14,11 +14,12 @@ class AngResource extends JsonResource
      */
 
     public $status, $message;
-    public function __construct($status, $message, $resource,$session = null)
+    public function __construct($status, $message, $resource,$id=null,$session = null)
     {
         parent::__construct($resource);
         $this->status  = $status;
         $this->message = $message;
+        $this->id  = $id;
         $this->session  = $session;
     }
     public function toArray(Request $request): array
@@ -28,6 +29,7 @@ class AngResource extends JsonResource
             "success"=> $this->status,
             "message"=> $this->message,
             "session"=> $this->session,
+            "id"=> $this->id,
             "data"=> $this->resource
         ];
     }

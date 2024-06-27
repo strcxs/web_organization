@@ -20,7 +20,7 @@
   <div class="content-wrapper">
     <section class="content">
         <div class="container-fluid py-3">
-            <div class="card">
+            <div class="card" id="table-divisi" style="display: none">
                 <div class="table-responsive-sm p-3 p-3">
                     <table id="myTable" class="table">
                         <thead>
@@ -34,10 +34,10 @@
                         </tbody>
                     </table>
 
-                    <button class="btn btn-success"  data-toggle="modal" data-target="#addDivisi"><i class="fas fa-solid fa-plus"></i>  Add new</button>
+                    <button style="display: none" id="new_data_divisi" class="btn btn-success"  data-toggle="modal" data-target="#addDivisi"><i class="fas fa-solid fa-plus"></i>  Add new</button>
                 </div>
             </div>
-            <div class="card">
+            <div class="card" id="table-program" style="display: none">
                 <div class="table-responsive-sm p-3">
                     <table id="myTable" class="table">
                         <thead>
@@ -51,7 +51,7 @@
                         </tbody>
                     </table>
 
-                    <button class="btn btn-success"  data-toggle="modal" data-target="#addProgram"><i class="fas fa-solid fa-plus"></i>  Add new</button>
+                    <button style="display: none" class="btn btn-success"  id="new_data_program" data-toggle="modal" data-target="#addProgram"><i class="fas fa-solid fa-plus"></i>  Add new</button>
                 </div>
             </div>
             <div id="modal-save">
@@ -140,11 +140,11 @@
 <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 <script>
     $(document).ready(function(){
-        var origin = window.location.origin;
-        if (sessionStorage.getItem('login')==null) {
-            return window.location = '../login';
+        if (sessionStorage.getItem('session')==null || sessionStorage.getItem('session')==2 ) {
+            return window.location = window.location.origin+'/login';
         }
-        loginCheck(sessionStorage.getItem('login'));
+        loginCheck(sessionStorage.getItem('id'));
+        sessionCheck(sessionStorage.getItem('id'));
         $('#memberList, #divisi_memberList').select2({
             placeholder: 'Pilih Anggota',
             allowClear: true
@@ -169,9 +169,6 @@
             $('#tr-' + response.data.id).remove();
         });
 
-
-
-
         divisi_channel.bind('delete-divisi', function(response) {
             $('#tr-' + response.data.id).remove();
         });
@@ -185,13 +182,12 @@
         });
 
         connection_channel.bind('new-connection', function(response) {
-            console.log(response.data);
             if (response.data.data_divisi != null) {
                 $('#table-content-divisi').append(
                     '<tr id="tr-' + response.data.data_divisi.id + '">' +
                         '<td class="text"><a href="{{route('cabinet_discuss')}}?d=' + response.data.id + '">' + response.data.data_divisi.divisi + '</a></td>' +
                         '<td class="text-center">' +
-                            '<button class="btn btn-warning m-1"data-toggle="modal" data-target="#modalEdit-' + response.data.data_divisi.id + '"><i class="nav-icon fas fa-pen"></i></button>' +
+                            '<button id="edit-divisi-' + response.data.data_divisi.id + '" class="btn btn-warning m-1"data-toggle="modal" data-target="#modalEdit-' + response.data.data_divisi.id + '"><i class="nav-icon fas fa-pen"></i></button>' +
                             '<button id="del-divisi-' + response.data.data_divisi.id + '" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
                         '</td>' +
                     '</tr>'
@@ -203,15 +199,23 @@
                     '<tr id="tr-' + response.data.data_program.id + '">' +
                         '<td class="text"><a href="{{route('cabinet_discuss')}}?d=' + response.data.id + '">' + response.data.data_program.program + '</a></td>' +
                         '<td class="text-center">' +
-                            '<button class="btn btn-warning m-1"data-toggle="modal" data-target="#modalEdit-' + response.data.data_program.id + '"><i class="nav-icon fas fa-pen"></i></button>' +
+                            '<button id="edit-program-' + response.data.data_program.id + '" class="btn btn-warning m-1"data-toggle="modal" data-target="#modalEdit-' + response.data.data_program.id + '"><i class="nav-icon fas fa-pen"></i></button>' +
                             '<button id="del-program-' + response.data.data_program.id + '" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
                         '</td>' +
                     '</tr>'
                 );
+                getLeaderID().then(({ leader_id, id })=>{
+                    if (sessionStorage.getItem('session') == 1 || sessionStorage.getItem('id') == leader_id) {
+                       document.getElementById('edit-program-' + response.data.data_program.id).style.display = "block";
+                       document.getElementById('del-program-' + response.data.data_program.id).style.display = "block";
+                    } else {
+                        document.getElementById('del-program-' + response.data.data_program.id).style.display = "none";
+                        document.getElementById('edit-program-' + response.data.data_program.id).style.display = "none";
+                    }
+                });
                 modalEdit('program',response.data.data_program.id,response.data.data_program.leader_id,response.data.data_program.program);
                 deleteProgram('del-program-' + response.data.data_program.id);
             }
-
         });
         
         var previousLeader = '';
@@ -279,7 +283,7 @@
         }
 
         $('#programForm').submit(function(event) {
-            event.preventDefault();
+            // event.preventDefault();
             var formData = {
                 'program': $('#programName').val(),
                 'leader_id': $('#leader').val()
@@ -288,7 +292,7 @@
         });
 
         $('#divisiForm').submit(function(event) {
-            event.preventDefault();
+            // event.preventDefault();
             var formData = {
                 'divisi': $('#divisiName').val(),
                 'leader_id': $('#divisi_leader').val()
@@ -381,7 +385,7 @@
                     var old_leader = $('#modalEdit-leader-'+id).val();
                     var old_member = JSON.stringify($('#modalEdit-memberList-'+id).val());
                     $('#modalEdit-form-'+id).submit(function(event){
-                        event.preventDefault();
+                        // event.preventDefault();
                         var new_leader = $('#modalEdit-leader-'+id).val();
                         var new_member = JSON.stringify($('#modalEdit-memberList-'+id).val());
                         if (new_leader != old_leader) {
@@ -407,7 +411,8 @@
                                         url: "/api/data/"+user,
                                         method: "POST", // First change type to method here    
                                         data: {
-                                            divisi_id: id
+                                            divisi_id: id,
+                                            role_id:4
                                         },
                                         success: function(){
                                             old_member = new_member;
@@ -419,7 +424,9 @@
                                         url: "/api/data/"+user,
                                         method: "POST", // First change type to method here    
                                         data: {
-                                            divisi_id : 1
+                                            divisi_id : 1,
+                                            role_id:2
+
                                         },
                                         success: function(){
                                             old_member = new_member;
@@ -433,7 +440,8 @@
                                         url: "/api/data/"+user,
                                         method: "POST", // First change type to method here    
                                         data: {
-                                            program_id: id
+                                            program_id: id,
+                                            role_id:4
                                         },
                                         success: function(){
                                             old_member = new_member;
@@ -445,7 +453,8 @@
                                         url: "/api/data/"+user,
                                         method: "POST", // First change type to method here    
                                         data: {
-                                            program_id : 1
+                                            program_id : 1,
+                                            role_id:2
                                         },
                                         success: function(){
                                             old_member = new_member;
@@ -465,37 +474,102 @@
             success: function (response) {
                 var data = response.data;
                 data.forEach(connection => {
-                    if (!(connection.divisi_id == null && connection.program_id == null)) {
-                        if (connection.data_divisi != null) {
-                            $('#table-content-divisi').append(
-                                '<tr id="tr-'+connection.data_divisi.id+'">'+
-                                    '<td class="text"><a href="{{route('cabinet_discuss')}}?d='+connection.id+'">'+connection.data_divisi.divisi+'</a></td>' +
-                                    '<td class="text-center">' +
-                                        '<button class="btn btn-warning m-1" data-toggle="modal" data-target="#modalEdit-'+connection.data_divisi.id+'"><i class="nav-icon fas fa-pen"></i></button>' +
-                                        '<button id="del-divisi-'+connection.data_divisi.id+'" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
-                                    '</td>' +
-                                '</tr>'
-                            );
-                            modalEdit('divisi',connection.data_divisi.id,connection.data_divisi.leader_id,connection.data_divisi.divisi);
-                            deleteProgram('del-divisi-'+connection.data_divisi.id);
+                    getUser().then(({ divisi_id,program_id,role_id })=>{
+                        if (!(connection.divisi_id == null && connection.program_id == null)) {
+                            if (role_id == 1) {
+                                if (connection.data_divisi != null) {
+                                    $('#table-content-divisi').append(
+                                        '<tr id="tr-'+connection.data_divisi.id+'">'+
+                                            '<td class="text"><a href="{{route('cabinet_discuss')}}?d='+connection.id+'">'+connection.data_divisi.divisi+'</a></td>' +
+                                            '<td class="text-center">' +
+                                                '<button id="edit-divisi-'+connection.data_divisi.id+'" class="btn btn-warning m-1" data-toggle="modal" data-target="#modalEdit-'+connection.data_divisi.id+'"><i class="nav-icon fas fa-pen"></i></button>' +
+                                                '<button id="del-divisi-'+connection.data_divisi.id+'" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
+                                            '</td>' +
+                                        '</tr>'
+                                    );
+                                    modalEdit('divisi',connection.data_divisi.id,connection.data_divisi.leader_id,connection.data_divisi.divisi);
+                                    deleteProgram('del-divisi-'+connection.data_divisi.id);
+                                };
+                                if (connection.data_program != null) {
+                                    $('#table-content-program').append(
+                                        '<tr id="tr-'+connection.data_program.id+'">'+
+                                            '<td class="text"><a href="{{route('cabinet_discuss')}}?d='+connection.id+'">'+connection.data_program.program+'</a></td>' +
+                                            '<td class="text-center">' +
+                                                '<button id="edit-program-'+connection.data_program.id+'" class="btn btn-warning m-1"data-toggle="modal" data-target="#modalEdit-'+connection.data_program.id+'"><i class="nav-icon fas fa-pen"></i></button>' +
+                                                '<button id="del-program-'+connection.data_program.id+'" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
+                                            '</td>' +
+                                        '</tr>'
+                                    );
+                                    modalEdit('program',connection.data_program.id,connection.data_program.leader_id,connection.data_program.program);
+                                    deleteProgram('del-program-'+connection.data_program.id);
+                                };
+                                document.getElementById('new_data_divisi').style.display = "block";
+                                document.getElementById('new_data_program').style.display = "block";
+                            } else{
+                                if (connection.data_divisi != null) {
+                                    if (connection.data_divisi.id == divisi_id) {
+                                        $('#table-content-divisi').append(
+                                            '<tr id="tr-'+connection.data_divisi.id+'">'+
+                                                '<td class="text"><a href="{{route('cabinet_discuss')}}?d='+connection.id+'">'+connection.data_divisi.divisi+'</a></td>' +
+                                                '<td class="text-center" id="edit-divisi-'+connection.data_divisi.id+'">' +
+                                                    '<button class="btn btn-warning m-1" data-toggle="modal" data-target="#modalEdit-'+connection.data_divisi.id+'"><i class="nav-icon fas fa-pen"></i></button>' +
+                                                    '<button id="del-divisi-'+connection.data_divisi.id+'" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
+                                                '</td>' +
+                                            '</tr>'
+                                        );
+                                        if (sessionStorage.getItem('session') == 1 || sessionStorage.getItem('id') == connection.data_divisi.leader_id) {
+                                            document.getElementById('edit-divisi-'+connection.data_divisi.id).style.display = "block";
+                                        } else {
+                                            document.getElementById('edit-divisi-' + connection.data_divisi.id).style.display = "none";
+                                        }
+                                        document.getElementById('table-divisi').style.display = "block";
+                                        modalEdit('divisi',connection.data_divisi.id,connection.data_divisi.leader_id,connection.data_divisi.divisi);
+                                        deleteProgram('del-divisi-'+connection.data_divisi.id);
+                                    }
+                                };
+                                if (connection.data_program != null) {
+                                    if (connection.data_program.id == program_id) {
+                                        $('#table-content-program').append(
+                                            '<tr id="tr-'+connection.data_program.id+'">'+
+                                                '<td class="text"><a href="{{route('cabinet_discuss')}}?d='+connection.id+'">'+connection.data_program.program+'</a></td>' +
+                                                '<td class="text-center" id="edit-program-'+connection.data_program.id+'">' +
+                                                    '<button style="display:none" class="btn btn-warning m-1"data-toggle="modal" data-target="#modalEdit-'+connection.data_program.id+'"><i class="nav-icon fas fa-pen"></i></button>' +
+                                                    '<button id="del-program-'+connection.data_program.id+'" style="display:none" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
+                                                '</td>' +
+                                            '</tr>'
+                                        );
+                                        if (sessionStorage.getItem('session') == 1 || sessionStorage.getItem('id') == connection.data_program.leader_id) {
+                                            document.getElementById('edit-program-' + connection.data_program.id).style.display = "block";
+                                        } else {
+                                            document.getElementById('del-program-' + connection.data_program.id).style.display = "none";
+                                        }
+                                        document.getElementById('table-program').style.display = "block";
+                                        modalEdit('program',connection.data_program.id,connection.data_program.leader_id,connection.data_program.program);
+                                        deleteProgram('del-program-'+connection.data_program.id);
+                                    }
+                                };
+                            }
                         };
-                        if (connection.data_program != null) {
-                            $('#table-content-program').append(
-                                '<tr id="tr-'+connection.data_program.id+'">'+
-                                    '<td class="text"><a href="{{route('cabinet_discuss')}}?d='+connection.id+'">'+connection.data_program.program+'</a></td>' +
-                                    '<td class="text-center">' +
-                                        '<button class="btn btn-warning m-1"data-toggle="modal" data-target="#modalEdit-'+connection.data_program.id+'"><i class="nav-icon fas fa-pen"></i></button>' +
-                                        '<button id="del-program-'+connection.data_program.id+'" class="btn btn-danger"><i class="nav-icon fas fa-trash"></i></button>' +
-                                    '</td>' +
-                                '</tr>'
-                            );
-                            modalEdit('program',connection.data_program.id,connection.data_program.leader_id,connection.data_program.program);
-                            deleteProgram('del-program-'+connection.data_program.id);
-                        };
-                    };
+                    });
                 });
+                if (sessionStorage.getItem('session') == 1) {
+                    document.getElementById('table-divisi').style.display = "block";
+                    document.getElementById('table-program').style.display = "block";
+                }
             }
         });
+        function getUser(){
+            return new Promise((resolve)=>{
+                $.ajax({
+                url: "/api/data/" + sessionStorage.getItem('id'),
+                method: "GET",
+                success: function(response) {
+                    var data = response.data;
+                    resolve({ divisi_id: data.divisi_id, program_id:data.program_id, role_id: data.role_id });
+                }
+                });
+            })
+        }
     });
 </script>
 </body>

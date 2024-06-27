@@ -76,10 +76,11 @@
 <script src="{{asset('storage/js/logincheck.js')}}"></script>
 <script>
     $(document).ready(function(){
-        if (sessionStorage.getItem('login')==null) {
-            return window.location = '../login';
+        if (sessionStorage.getItem('session')==null) {
+            return window.location = window.location.origin+'/login';
         }
-        loginCheck(sessionStorage.getItem('login'));
+        sessionCheck(sessionStorage.getItem('id'));
+        loginCheck(sessionStorage.getItem('id'));
         var team = 1;
         $('#form-add-team').on('click',function(){
             if (team == 5) {

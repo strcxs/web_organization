@@ -42,7 +42,7 @@ class MemberController extends Controller
         $data = Anggota::with('dataUsers.dataDivisi')
         ->find($id);
 
-        $data->nama = ucwords(strtolower($data->nama));
+        // $data->nama = ucwords(strtolower($data->nama));
 
         return new AngResource(true,'data members',$data);
     }

@@ -59,8 +59,9 @@
 <script>
     $(document).ready(function(){
         if (sessionStorage.getItem('login')==null) {
-        return window.location = '../login';
+            return window.location = window.location.origin+'/login';
         }
+        sessionCheck(sessionStorage.getItem('id'));
         loginCheck(sessionStorage.getItem('login'));
         $.ajax({
             url: "/api/data",

@@ -148,8 +148,9 @@
 <script>
   $(document).ready(function(){
     if (sessionStorage.getItem('login')==null) {
-      return window.location = '../login';
+      return window.location = window.location.origin+'/login';
     }
+    sessionCheck(sessionStorage.getItem('id'));
     $.ajax({
         url: "/api/data/"+sessionStorage.getItem('login'),
         method: "GET", // First change type to method here

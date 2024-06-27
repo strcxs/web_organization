@@ -3,7 +3,12 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\Forum;
+use App\Models\Users;
+use App\Models\divisi;
 use App\Models\comment;
+use App\Models\Program;
+use App\Models\Connection;
 use Illuminate\Http\Request;
 use App\Http\Resources\AngResource;
 use Illuminate\Support\Facades\Validator;
@@ -51,7 +56,26 @@ class comController extends Controller
         
         return new AngResource(true,"comment send successfully", $comment);
     }
-    public function destroy($id){
+    public function destroy(Request $request,$id){
+        
+        $role = Users::select('*')->where('id',$request->user_id)->first();
+        $comm = comment::find($id);
+        $data = Forum::find($comm->id_forum);
+        
+        $connection = Connection::select('*')->where('id',$data->connection_id)->first();
+
+        $divisi = divisi::select('*')->where('id',$connection->divisi_id)->first();
+        $Program = Program::select('*')->where('id',$connection->program_id)->first();
+        if ($divisi != null) {
+            $leader = $divisi->leader_id;
+        }
+        if ($Program != null){
+            $leader = $Program->leader_id;
+        }
+
+        if ($role->role_id != 1 && $role->id != $leader) {
+            return new AngResource(false,"You don't have access", null);
+        }
         $data = comment::find($id);
         $data-> delete();
 

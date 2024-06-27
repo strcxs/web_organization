@@ -100,7 +100,7 @@
     $('#sign-alert').hide();
     
     $(document).ready(function () { 
-      if (sessionStorage.getItem('login')!=null) {
+      if (sessionStorage.getItem('session')!=null) {
         return window.location = 'dashboard';
       }
       $("#btnSubmit").click(function(){
@@ -115,7 +115,8 @@
           },
           success: function(response) {
           if (response.success === true){
-            sessionStorage.setItem('login',response.session);
+            sessionStorage.setItem('session',response.session);
+            sessionStorage.setItem('id',response.id);
             window.location.href = 'dashboard';
           }
           else if(response.message === 'password anda salah'){

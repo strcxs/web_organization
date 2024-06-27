@@ -86,7 +86,7 @@ class AngController extends Controller
                     ]);
                     return new AngResource(true, "data berhasil di ubah", Users::find($id));
                 }else{
-                    if ($key[$i]=='username' or $key[$i]=='program_id' or $key[$i]=='divisi_id') {
+                    if ($key[$i]=='username' or $key[$i]=='program_id' or $key[$i]=='divisi_id' or $key[$i]=='role_id') {
                         if ($new_data[$key[$i]]!=null) {
                             $update_user = Users::find($id);
                             $update_user->update([
