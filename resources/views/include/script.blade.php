@@ -9,4 +9,7 @@
 <script src="{{asset('template/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js')}}"></script>
 {{-- time ago --}}
 <script src="{{asset('template/dist/js/jquery.timeago.js')}}"></script>
+{{-- logincheck --}}
 <script src="{{asset('storage/js/logincheck.js')}}"></script>
+{{-- RealTime pusher  --}}
+<script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>

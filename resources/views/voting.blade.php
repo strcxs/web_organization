@@ -95,6 +95,27 @@
         sessionCheck(sessionStorage.getItem('id'));
         loginCheck(sessionStorage.getItem('id'));
         var data_vote = 1;
+
+        var pusher = new Pusher("{{ env('PUSHER_APP_KEY') }}", {
+            cluster: "{{ env('PUSHER_APP_CLUSTER') }}"
+        });
+
+        var channel = pusher.subscribe('vote');
+
+        channel.bind('vote-success', function(data) {
+            var data = data.data;
+            for (let index = 0; index < myChart.data.labels.length; index++) {
+                if (myChart.data.labels[index]==data.data_team.name) {
+                    if (myChart.data.datasets[0].data[index]==undefined) {
+                        myChart.data.datasets[0].data[index] = 0;
+                    }
+                    myChart.data.datasets[0].data[index] = myChart.data.datasets[0].data[index]+1     
+                    break;  
+                }
+            }
+            myChart.update();
+        });
+
         $.ajax({
             url: "/api/team/"+data_vote,
             method: "GET", // First change type to method here
@@ -196,22 +217,18 @@
                 });
             }
         });
-
         $.ajax({
-            url: "/api/ballot/",
+            url: "/api/ballot/"+data_vote,
             method: "GET", // First change type to method here
             success: function(response) {
                 var data = response.data;
-                var countId = {};
+                var ballotCount = {};
                 data.forEach(vote => {
-                    if (!countId[vote.id_team]) {
-                        countId[vote.id_team] = data_vote;
-                    }else{
-                        countId[vote.id_team]++;
+                    if (isNaN(ballotCount[vote.data_team.name])) {
+                        ballotCount[vote.data_team.name] = 0;
                     }
-                    if (vote.data_team.id == vote.id_team) {
-                        updateDataForLabel(vote.data_team.name,countId[vote.id_team]);
-                    }
+                    ballotCount[vote.data_team.name] += 1;
+                    updateDataForLabel(vote.data_team.name,ballotCount[vote.data_team.name]);
                 });
             }
         });

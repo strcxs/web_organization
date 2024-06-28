@@ -55,7 +55,7 @@
               </p>
             </a>
           </li>
-          <li class="nav-item" id="admin">
+          <li class="nav-item" id="admin" style="display: none">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-solid fa-briefcase"></i>
               <p>
@@ -91,9 +91,10 @@
   <script>
     if (sessionStorage.getItem('session') == 1 || sessionStorage.getItem('session') != 2) {
         document.getElementById('cabinet').style.display = "block";
-        document.getElementById('admin').style.display = "block";
     } else {
         document.getElementById('cabinet').style.display = "none";
-        document.getElementById('admin').style.display = "none";
+    }
+    if (sessionStorage.getItem('session') == 1) {
+        document.getElementById('admin').style.display = "block";
     }
   </script>
