@@ -117,7 +117,7 @@
       return window.location = window.location.origin+'/login';
     }
     $.ajax({
-      url: "/api/data/",
+      url: "/api/data?member=true",
       method: "GET", // First change type to method here
       success: function(response) {
         $('#members-count').text(response.data.length)
@@ -138,10 +138,12 @@
     });
   });
   function limitWords(inputString, maxWords) {
-      var words = inputString.split(' ');
-      var limitedWords = words.slice(0, maxWords);
-      var resultString = limitedWords.join(' ');
-      return resultString+" <a href='dashboard/discuss'>...read more</a>";
+    if (inputString.length > 50) {
+        inputString = inputString.substring(0, 50); // Memotong string jika lebih panjang dari yang diinginkan
+        inputString += " <a href='dashboard/discuss'>...read more</a>";
+    }
+
+    return inputString;
   }
   
   function fetchDiscuss(page){
@@ -168,7 +170,7 @@
                 '<span class="description">'+data[index]['formatted_created_at']+'</span>'+
               '</div>'+
               '<p>'+
-                limitWords(data[index]['content'],7)+
+                limitWords(data[index]['content'],3)+
               '</p>'+
             '</div>'
           );

@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\Validator;
 class ProgramController extends Controller
 {
     public function index(){
-        $data = Program::get();
+        $data = Program::with('dataUsers')
+        ->get();
 
         return new AngResource(true,'data Program',$data);
     }

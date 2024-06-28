@@ -93,15 +93,6 @@
 </body>
 @include('include/script')
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.0.0/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.0.0/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.0.0/js/buttons.print.min.js"></script>
-
-<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.0.0/css/buttons.dataTables.min.css">
-
 <script src="{{asset('storage/js/logincheck.js')}}"></script>
 <script>
     $(document).ready(function(){
@@ -200,10 +191,14 @@
                                             '<button class="btn btn-secondary dropdown-toggle mr-1 btn-xs" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
                                                 // 'Actions' +
                                             '</button>' +
-                                            '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">' +
+                                            '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="dropdown-'+element.id+'">' +
                                                 '<button class="dropdown-item" id ="member-delete-'+ element.id +'">Delete</button>' +
                                                 '<button class="dropdown-item" data-toggle="modal" data-target="#editMember-'+element.id+'">Edit</button>' +
                                                 '<button class="dropdown-item" id ="member-deactived-'+ element.id +'">Deactived</button>' +
+                                                (element.data_users.role_id == 1 ?
+                                                    '<button class="dropdown-item" id="member-demote-'+ element.id +'">Demote</button>' :
+                                                    '<button class="dropdown-item" id="member-promote-'+ element.id +'">Promote</button>'
+                                                ) +
                                             '</div>' +
                                             '<a class="text-dark" href="profile/detail?id=' + element.id + '">'+
                                                 element.nama + 
@@ -226,6 +221,54 @@
                             method: 'DELETE',
                             success: function (response) {
                                 $('#tr-'+element.id+'').remove();
+                            }
+                        });
+                    })
+                    $('#member-promote-'+element.id).on('click',function(){
+                        confirm("Jadikan "+element.nama+" Admin ?");
+                        $.ajax({
+                            url: origin+"/api/data/"+element.data_users.id,
+                            method: 'POST',
+                            data:{
+                                'role_id':1
+                            },
+                            success: function (response) {
+                                $('#dropdown-'+element.id+'').append(
+                                    '<button class="dropdown-item" id ="member-demote-'+ element.id +'">Demote</button>'
+                                );
+                                $('#member-promote-'+element.id+'').remove();
+                            }
+                        });
+                    })
+                    $('#member-demote-'+element.id).on('click',function(){
+                        confirm("Menghapus "+element.nama+" dari Admin ?");
+                        var role = 2;
+                        if (element.data_users.divisi_id!=1) {
+                            if (element.data_users.data_divisi.leader_id == element.data_users.id) {
+                                role = 3
+                            }else{
+                                role = 4
+                            }
+                        }else if (element.data_users.program_id!=1) {
+                            if (element.data_users.data_program.leader_id == element.data_users.id) {
+                                role = 3
+                            }else{
+                                role = 4
+                            }
+                        }else{
+                            role = 2
+                        }
+                        $.ajax({
+                            url: origin+"/api/data/"+element.data_users.id,
+                            method: 'POST',
+                            data:{
+                                'role_id':role
+                            },
+                            success: function (response) {
+                                $('#dropdown-'+element.id+'').append(
+                                    '<button class="dropdown-item" id ="member-promote-'+ element.id +'">Promote</button>'
+                                );
+                                $('#member-demote-'+element.id+'').remove();
                             }
                         });
                     })
@@ -295,30 +338,30 @@
                         });
                     })
                 });
-                $('#editMemberTable').DataTable({
-                    "dom": "<'float-right'Bf><'float-left'l><t><p>",
-                    "buttons": ['pdf'],
-                    "paging": true,
-                    "lengthChange": true,
-                    "searching": true,
-                    "ordering": true,
-                    "info": false,
-                    "autoWidth": true,
-                    "responsive": true,
-                    "pagingType": "simple",
-                    "lengthMenu": [5,20,50],
-                    "language": {
-                        "search": "search ",
-                        "paginate": {
-                            "next": "<button type='button' class='btn btn-tool' style='font-size: 17px ;background-color: transparent; border: none; padding: 20; margin: 0;color: blue'> next</button>",
-                            "previous": "<button type='button' class='btn btn-tool' style='font-size: 17px ;background-color: transparent; border: none; padding: 20; margin: 0;color: blue' >previous </button>"    
-                        },
-                        // "lengthMenu": "Display _MENU_ records per page",
-                        "zeroRecords": "Not found",
-                        "info": "Showing page _PAGE_ of _PAGES_",
-                        "infoEmpty": "No records available",
-                    }
-                });
+            }
+        });
+        $('#editMemberTable').DataTable({
+            "dom": "<'float-right'Bf><'float-left'l><t><p>",
+            "buttons": ['pdf'],
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": false,
+            "autoWidth": true,
+            "responsive": true,
+            "pagingType": "simple",
+            "lengthMenu": [5,20,50],
+            "language": {
+                "search": "search ",
+                "paginate": {
+                    "next": "<button type='button' class='btn btn-tool' style='font-size: 17px ;background-color: transparent; border: none; padding: 20; margin: 0;color: blue'> next</button>",
+                    "previous": "<button type='button' class='btn btn-tool' style='font-size: 17px ;background-color: transparent; border: none; padding: 20; margin: 0;color: blue' >previous </button>"    
+                },
+                // "lengthMenu": "Display _MENU_ records per page",
+                "zeroRecords": "Not found",
+                "info": "Showing page _PAGE_ of _PAGES_",
+                "infoEmpty": "No records available",
             }
         });
     });

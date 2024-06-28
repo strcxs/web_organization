@@ -159,10 +159,10 @@
 
         program_channel.bind('new-program', function(response) {
             var data = response.data;
+            // submitAjax("/api/connection", {'program_id': data.id});
             $('#memberList').val().forEach(function(element) {
                 submitAjax("/api/data/" + element, {'program_id': data.id});
             });
-            submitAjax("/api/connection", {'program_id': data.id});
             $('#addProgram').modal('hide');
         });
         program_channel.bind('delete-program', function(response) {
@@ -174,10 +174,10 @@
         });
         divisi_channel.bind('new-divisi', function(response) {
             var data = response.data;
+            // submitAjax("/api/connection", {'divisi_id': data.id});
             $('#divisi_memberList').val().forEach(function(element) {
                 submitAjax("/api/data/" + element, {'divisi_id': data.id});
             });
-            submitAjax("/api/connection", {'divisi_id': data.id});
             $('#addDivisi').modal('hide');
         });
 
@@ -280,6 +280,21 @@
                     method: "DELETE"
                 });
             });
+            $.ajax({
+                url: "/api/data/",
+                method: "GET",
+                success:function(response){
+                    if (response.data.program_id == program_id) {
+                        $.ajax({
+                            url: "/api/data/"+response.data.id,
+                            method: "POST",
+                            data:{
+                                "program_id":1
+                            }
+                        });
+                    }
+                }
+            });
         }
 
         $('#programForm').submit(function(event) {
@@ -289,6 +304,8 @@
                 'leader_id': $('#leader').val()
             };
             submitAjax("/api/program/", formData);
+            submitAjax("/api/connection", {'program_id': data.id});
+
         });
 
         $('#divisiForm').submit(function(event) {
@@ -298,6 +315,7 @@
                 'leader_id': $('#divisi_leader').val()
             };
             submitAjax("/api/divisi/", formData);
+            submitAjax("/api/connection", {'divisi_id': data.id});
         });
 
         // create modal 

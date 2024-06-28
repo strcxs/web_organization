@@ -77,8 +77,8 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="{{ request()->routeIs('#') ? 'fas' : 'far' }} fa-circle nav-icon"></i>
+                <a href="{{route('admin')}}" class="nav-link">
+                  <i class="{{ request()->routeIs('admin') ? 'fas' : 'far' }} fa-circle nav-icon"></i>
                   <p>Web management</p>
                 </a>
               </li>
