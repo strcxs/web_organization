@@ -17,7 +17,7 @@
           <div class="col">
             <div class="card">
               <div class="card-header bg-primary">
-                <h5>GRAFIK FORUM</h5>
+                <h5>Contribution Chart</h5>
               </div>
               <div class="card-header"> 
                 <canvas id="lineChart" style="height:250px"></canvas>

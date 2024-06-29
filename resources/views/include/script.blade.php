@@ -17,11 +17,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
 
 {{-- dataTable  --}}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.0.0/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.0.0/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.0.0/js/buttons.print.min.js"></script>
 
-<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.0.0/css/buttons.dataTables.min.css">
+{{-- <script src="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css"></script>
+<script src="https://cdn.datatables.net/buttons/2.0.0/css/buttons.dataTables.min.css"></script> --}}

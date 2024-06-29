@@ -196,8 +196,10 @@
                                                 '<button class="dropdown-item" data-toggle="modal" data-target="#editMember-'+element.id+'">Edit</button>' +
                                                 '<button class="dropdown-item" id ="member-deactived-'+ element.id +'">Deactived</button>' +
                                                 (element.data_users.role_id == 1 ?
-                                                    '<button class="dropdown-item" id="member-demote-'+ element.id +'">Demote</button>' :
-                                                    '<button class="dropdown-item" id="member-promote-'+ element.id +'">Promote</button>'
+                                                    '<button class="dropdown-item" id="member-demote-'+ element.id +'" style ="display:block">Demote</button>' +
+                                                    '<button class="dropdown-item" id="member-promote-'+ element.id +'" style ="display:none">Promote</button>' :
+                                                    '<button class="dropdown-item" id="member-demote-'+ element.id +'" style ="display:none">Demote</button>' +
+                                                    '<button class="dropdown-item" id="member-promote-'+ element.id +'" style ="display:block">Promote</button>'
                                                 ) +
                                             '</div>' +
                                             '<a class="text-dark" href="profile/detail?id=' + element.id + '">'+
@@ -225,52 +227,56 @@
                         });
                     })
                     $('#member-promote-'+element.id).on('click',function(){
-                        confirm("Jadikan "+element.nama+" Admin ?");
-                        $.ajax({
-                            url: origin+"/api/data/"+element.data_users.id,
-                            method: 'POST',
-                            data:{
-                                'role_id':1
-                            },
-                            success: function (response) {
-                                $('#dropdown-'+element.id+'').append(
-                                    '<button class="dropdown-item" id ="member-demote-'+ element.id +'">Demote</button>'
-                                );
-                                $('#member-promote-'+element.id+'').remove();
-                            }
-                        });
+                        if (confirm("Jadikan "+element.nama+" Admin ?")) {
+                            $.ajax({
+                                url: origin+"/api/data/"+element.data_users.id,
+                                method: 'POST',
+                                data:{
+                                    'role_id':1
+                                },
+                                success: function (response) {
+                                    // $('#dropdown-'+element.id+'').append(
+                                    //     '<button class="dropdown-item" id ="member-demote-'+ element.id +'">Demote</button>'
+                                    // );
+                                    $('#member-demote-'+element.id+'').show();
+                                    $('#member-promote-'+element.id+'').hide();
+                                }
+                            });
+                        }
                     })
                     $('#member-demote-'+element.id).on('click',function(){
-                        confirm("Menghapus "+element.nama+" dari Admin ?");
-                        var role = 2;
-                        if (element.data_users.divisi_id!=1) {
-                            if (element.data_users.data_divisi.leader_id == element.data_users.id) {
-                                role = 3
+                        if (confirm("Menghapus "+element.nama+" dari Admin ?")) {
+                            var role = 2;
+                            if (element.data_users.divisi_id!=1) {
+                                if (element.data_users.data_divisi.leader_id == element.data_users.id) {
+                                    role = 3
+                                }else{
+                                    role = 4
+                                }
+                            }else if (element.data_users.program_id!=1) {
+                                if (element.data_users.data_program.leader_id == element.data_users.id) {
+                                    role = 3
+                                }else{
+                                    role = 4
+                                }
                             }else{
-                                role = 4
+                                role = 2
                             }
-                        }else if (element.data_users.program_id!=1) {
-                            if (element.data_users.data_program.leader_id == element.data_users.id) {
-                                role = 3
-                            }else{
-                                role = 4
-                            }
-                        }else{
-                            role = 2
+                            $.ajax({
+                                url: origin+"/api/data/"+element.data_users.id,
+                                method: 'POST',
+                                data:{
+                                    'role_id':role
+                                },
+                                success: function (response) {
+                                    // $('#dropdown-'+element.id+'').append(
+                                    //     '<button class="dropdown-item" id ="member-promote-'+ element.id +'">Promote</button>'
+                                    // );
+                                    $('#member-promote-'+element.id+'').show();
+                                    $('#member-demote-'+element.id+'').hide();
+                                }
+                            });
                         }
-                        $.ajax({
-                            url: origin+"/api/data/"+element.data_users.id,
-                            method: 'POST',
-                            data:{
-                                'role_id':role
-                            },
-                            success: function (response) {
-                                $('#dropdown-'+element.id+'').append(
-                                    '<button class="dropdown-item" id ="member-promote-'+ element.id +'">Promote</button>'
-                                );
-                                $('#member-demote-'+element.id+'').remove();
-                            }
-                        });
                     })
                     // modal edit
                     $('#modal').append(
@@ -338,30 +344,30 @@
                         });
                     })
                 });
-            }
-        });
-        $('#editMemberTable').DataTable({
-            "dom": "<'float-right'Bf><'float-left'l><t><p>",
-            "buttons": ['pdf'],
-            "paging": true,
-            "lengthChange": true,
-            "searching": true,
-            "ordering": true,
-            "info": false,
-            "autoWidth": true,
-            "responsive": true,
-            "pagingType": "simple",
-            "lengthMenu": [5,20,50],
-            "language": {
-                "search": "search ",
-                "paginate": {
-                    "next": "<button type='button' class='btn btn-tool' style='font-size: 17px ;background-color: transparent; border: none; padding: 20; margin: 0;color: blue'> next</button>",
-                    "previous": "<button type='button' class='btn btn-tool' style='font-size: 17px ;background-color: transparent; border: none; padding: 20; margin: 0;color: blue' >previous </button>"    
-                },
-                // "lengthMenu": "Display _MENU_ records per page",
-                "zeroRecords": "Not found",
-                "info": "Showing page _PAGE_ of _PAGES_",
-                "infoEmpty": "No records available",
+                $('#editMemberTable').DataTable({
+                    "dom": "<'float-right'Bf><'float-left'l><t><p>",
+                    "buttons": ['pdf'],
+                    "paging": true,
+                    "lengthChange": true,
+                    "searching": true,
+                    "ordering": true,
+                    "info": false,
+                    "autoWidth": true,
+                    "responsive": true,
+                    "pagingType": "simple",
+                    "lengthMenu": [5,20,50],
+                    "language": {
+                        "search": "search ",
+                        "paginate": {
+                            "next": "<button type='button' class='btn btn-tool' style='font-size: 17px ;background-color: transparent; border: none; padding: 20; margin: 0;color: blue'> next</button>",
+                            "previous": "<button type='button' class='btn btn-tool' style='font-size: 17px ;background-color: transparent; border: none; padding: 20; margin: 0;color: blue' >previous </button>"    
+                        },
+                        // "lengthMenu": "Display _MENU_ records per page",
+                        "zeroRecords": "Not found",
+                        "info": "Showing page _PAGE_ of _PAGES_",
+                        "infoEmpty": "No records available",
+                    }
+                });
             }
         });
     });
