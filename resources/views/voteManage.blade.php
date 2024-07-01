@@ -136,7 +136,7 @@
             }
         });
         $('#saveVote').on('click',function(event){
-            event.preventDefault();
+            // event.preventDefault();
             var loopCount = 0;
             var vote_name = $('#voteName').val(); 
 
@@ -238,7 +238,7 @@
                     );
                     var team = vote.data_team.length;                  
                     $('#edit-vote-'+vote.id).on('click',function(event){
-                        event.preventDefault();
+                        // event.preventDefault();
                         var loopCount = 0;
                         var vote_name = $('#voteName-'+vote.id).val();
                         var array_candidate = [];

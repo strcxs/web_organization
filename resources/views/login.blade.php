@@ -7,9 +7,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="{{asset('/css/login.css')}}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      @media (max-width: 430px) {
+          .img-background {
+              display: none; /* Sembunyikan gambar pada layar mobile */
+          }
+      }
+    </style>
    </head>
    <body >
-      <img class="img-blur" src="{{asset('storage/images/adhisti.jpg')}}" style="position: absolute;" alt="">
+      <img class="img-background" src="{{asset('storage/images/adhisti.jpg')}}"alt="">
       <div class="container">
         <input type="checkbox" id="flip">
         <div class="cover">

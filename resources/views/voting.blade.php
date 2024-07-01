@@ -16,7 +16,7 @@
         <div class="container-fluid">
             <div class="text-right container pt-2 pb-3">
                 <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#resultVoting">
-                    Detail Hasil E-voting
+                    Voting Result
                 </button>
             </div>
             <div class="row" id="voting-content">
@@ -26,7 +26,7 @@
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 id="grafik-title" class="modal-title" id="modalCandidate1Label">Hasil E-Voting (RealTime)</h5>
+                            <h5 id="grafik-title" class="modal-title" id="modalCandidate1Label">Voting Result (RealTime)</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -57,7 +57,7 @@
                 labels: [],
                 datasets: [{
                     label: [],
-                    data: [],
+                    data: [0,0,0,0,0,0,0,0],
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(54, 162, 235, 0.2)',
@@ -83,10 +83,14 @@
         function updateDataForLabel(label, newData) {
             var labelIndex = myChart.data.labels.indexOf(label); // find label
             // update data label
-            myChart.data.datasets.forEach((dataset) => {
-                dataset.data[labelIndex] = newData;
-            });
-            myChart.update();
+            if (labelIndex !== -1) {
+                // Jika label ditemukan, update data
+                myChart.data.datasets.forEach((dataset) => {
+                    dataset.data[labelIndex] = newData;
+                });
+
+                myChart.update(); // Perbarui grafik
+            }
         }
         
         if (sessionStorage.getItem('session')==null) {
@@ -214,21 +218,23 @@
                             }
                         });
                     }
-                });
-            }
-        });
-        $.ajax({
-            url: "/api/ballot/"+data_vote,
-            method: "GET", // First change type to method here
-            success: function(response) {
-                var data = response.data;
-                var ballotCount = {};
-                data.forEach(vote => {
-                    if (isNaN(ballotCount[vote.data_team.name])) {
-                        ballotCount[vote.data_team.name] = 0;
-                    }
-                    ballotCount[vote.data_team.name] += 1;
-                    updateDataForLabel(vote.data_team.name,ballotCount[vote.data_team.name]);
+                    $.ajax({
+                        url: "/api/ballot/"+data_vote,
+                        method: "GET", // First change type to method here
+                        success: function(response) {
+                            var data = response.data;
+                            var ballotCount = {};
+                            data.forEach(vote => {
+                                if (isNaN(ballotCount[vote.data_team.name])) {
+                                    ballotCount[vote.data_team.name] = 0;
+                                }
+                                ballotCount[vote.data_team.name] += 1;
+                                // updateDataForLabel(vote.data_team.name,ballotCount[vote.data_team.name]);
+                            });
+                            updateDataForLabel('01',2);
+                            updateDataForLabel('02',4);
+                        }
+                    });
                 });
             }
         });

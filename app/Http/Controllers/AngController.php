@@ -65,6 +65,14 @@ class AngController extends Controller
         
         for ($i=0;$i<count($key);$i++) { 
             if ($old_data[$key[$i]]!=$new_data[$key[$i]] || $new_data[$key[$i]]!=null){
+                if ($request->avatar == "delete") {
+                    Storage::delete('public/images/users-images/'.Users::find($id)->avatar);
+                    Users::find($id)->update([
+                        "avatar" => null,
+                        'updated_at' => now(),
+                    ]);
+                    return new AngResource(true, "data berhasil di ubah", Users::find($id));
+                }
                 if ($request->hasFile('avatar')) {
                     $validator = Validator::make($request->all(),[
                         'avatar'     => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -75,7 +83,6 @@ class AngController extends Controller
                     //upload image
                     $avatar = $request->file('avatar');
                     $avatar->storeAs('public/images/users-images/', $avatar->hashName());
-                    
                     //delete old image
                     Storage::delete('public/images/users-images/'.Users::find($id)->avatar);
                     
@@ -96,7 +103,7 @@ class AngController extends Controller
                     }else{
                         if ($new_data[$key[$i]]!=null) {
                             $update_user = Anggota::select('*')
-                            ->where('user_id','=',$id)->first();
+                            ->where('id','=',Users::find($id)->member_id)->first();
                             $update_user->update([
                                 $key[$i]=> $request->get($key[$i]),
                             ]);

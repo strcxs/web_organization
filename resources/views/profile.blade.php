@@ -207,7 +207,6 @@
             var data = response.data;
             $('#user_image').attr('src', `{{asset('storage/images/default/default-user-icon.jpg')}}`);
             $('#profile-avatar').attr('src', `{{asset('storage/images/default/default-user-icon.jpg')}}`);
-            
           }
         });
       });
@@ -234,7 +233,6 @@
       });
       $("#btnUpdate").click(function(event){ 
         var user = $("#username").val();
-
         var tanggal = $("#tanggal_lahir").val();
         var tempat = $("#tempat_lahir").val();
         var telp = $("#telepon").val();
