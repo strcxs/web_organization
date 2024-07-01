@@ -76,7 +76,7 @@
 <script src="{{asset('storage/js/logincheck.js')}}"></script>
 <script>
     $(document).ready(function(){
-        if (sessionStorage.getItem('session')==null || sessionStorage.getItem('session')!=1 ) {
+        if (sessionStorage.getItem('session')==null) {
             return window.location = window.location.origin+'/login';
         }
         sessionCheck(sessionStorage.getItem('id'));

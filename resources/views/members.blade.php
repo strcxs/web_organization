@@ -58,11 +58,11 @@
 <script src="{{asset('storage/js/logincheck.js')}}"></script>
 <script>
     $(document).ready(function(){
-        if (sessionStorage.getItem('id')==null) {
+        if (sessionStorage.getItem('login')==null) {
             return window.location = window.location.origin+'/login';
         }
         sessionCheck(sessionStorage.getItem('id'));
-        loginCheck(sessionStorage.getItem('id'));
+        loginCheck(sessionStorage.getItem('login'));
         $.ajax({
             url: "/api/data",
             method: "GET", // First change type to method here

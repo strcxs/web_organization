@@ -104,8 +104,7 @@
     }
     var urlParams = new URLSearchParams(window.location.search);
     var user_detail = urlParams.get('id');
-    sessionCheck(sessionStorage.getItem('id'));
-    loginCheck(sessionStorage.getItem('id'));
+    sessionCheck(sessionStorage.getItem('login'));
     $.ajax({
         url: "/api/member/"+user_detail,
         method: "GET", // First change type to method here

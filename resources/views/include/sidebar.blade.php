@@ -55,7 +55,7 @@
               </p>
             </a>
           </li>
-          <li class="nav-item" id="admin" style="display: none">
+          <li class="nav-item" id="admin">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-solid fa-briefcase"></i>
               <p>
@@ -77,8 +77,8 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="{{route('admin')}}" class="nav-link">
-                  <i class="{{ request()->routeIs('admin') ? 'fas' : 'far' }} fa-circle nav-icon"></i>
+                <a href="#" class="nav-link">
+                  <i class="{{ request()->routeIs('#') ? 'fas' : 'far' }} fa-circle nav-icon"></i>
                   <p>Web management</p>
                 </a>
               </li>
@@ -91,10 +91,9 @@
   <script>
     if (sessionStorage.getItem('session') == 1 || sessionStorage.getItem('session') != 2) {
         document.getElementById('cabinet').style.display = "block";
+        document.getElementById('admin').style.display = "block";
     } else {
         document.getElementById('cabinet').style.display = "none";
-    }
-    if (sessionStorage.getItem('session') == 1) {
-        document.getElementById('admin').style.display = "block";
+        document.getElementById('admin').style.display = "none";
     }
   </script>

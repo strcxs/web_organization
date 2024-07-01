@@ -147,7 +147,7 @@
 @include('include/script')
 <script>
   $(document).ready(function(){
-    if (sessionStorage.getItem('id')==null) {
+    if (sessionStorage.getItem('login')==null) {
       return window.location = window.location.origin+'/login';
     }
     sessionCheck(sessionStorage.getItem('id'));
