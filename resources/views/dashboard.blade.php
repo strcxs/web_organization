@@ -116,6 +116,10 @@
     if (sessionStorage.getItem('session')==null) {
       return window.location = window.location.origin+'/login';
     }
+    if (Notification.permission !== 'granted') {
+      Notification.requestPermission();
+    }
+    
     $.ajax({
       url: "/api/data?member=true",
       method: "GET", // First change type to method here

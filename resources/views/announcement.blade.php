@@ -41,6 +41,7 @@
 @include('include/script')
 <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 <script src="{{asset('storage/js/logincheck.js')}}"></script>
+<script src="{{asset('storage/js/notif.js')}}"></script>
 <script>
     if (sessionStorage.getItem('session') == 1) {
         document.getElementById("admin-div").style.display = "block";
@@ -48,7 +49,6 @@
         document.getElementById("admin-div").style.display = "none";
     }
     sessionCheck(sessionStorage.getItem('id'));
-
     $(document).ready(function(){
       if (sessionStorage.getItem('session')==null) {
         return window.location = window.location.origin+'/login';
@@ -66,6 +66,9 @@
         else{
             var img = "{{asset('storage/images/default/default-user-icon.jpg')}}"
         }
+        var text = data.data.data_users.data_anggota['nama'];
+        var lower = text.toLowerCase().replace(/_/g, ' ').replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
+        
         $('#new-announcement').val("");
         $('#announcement-content').prepend(
             '<div class="card p-3" id="card-announcement-'+data.data['id']+'">'+
@@ -80,7 +83,7 @@
 
                         '<img class="img-circle img-bordered-sm" src='+img+' alt="user image">'+
                         '<span class="username">'+
-                            '<a href="#">'+data.data.data_users.data_anggota['nama']+'</a>'+
+                            '<a href="#">'+lower+'</a>'+
                         '</span>'+
                         '<span class="description">'+data.data['formatted_created_at']+'</span>'+
                     '</div>'+
@@ -206,7 +209,7 @@
         if (progres_forum) {
           return;
         };
-
+        
         progres_forum = true;
         $.ajax({
           url: "/api/announcement",

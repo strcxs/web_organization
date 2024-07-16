@@ -88,6 +88,8 @@
       </nav>
     </div>
   </aside>
+  <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+  <script src="{{asset('storage/js/notif.js')}}"></script>
   <script>
     if (sessionStorage.getItem('session') == 1 || sessionStorage.getItem('session') != 2) {
         document.getElementById('cabinet').style.display = "block";
@@ -97,4 +99,28 @@
     if (sessionStorage.getItem('session') == 1) {
         document.getElementById('admin').style.display = "block";
     }
+    var pusher = new Pusher("{{ env('PUSHER_APP_KEY') }}", {
+      cluster: "{{ env('PUSHER_APP_CLUSTER') }}"
+    });
+    
+    pusher.subscribe('discuss').bind('sent-discuss', function(data) {
+      var text = data.data.data_users.data_anggota['nama'];
+      var lower = text.toLowerCase().replace(/_/g, ' ').replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
+      
+      createNotif(lower+" in Discuss",data.data['content']);
+    });
+
+    pusher.subscribe('discuss').bind('sent-comment', function(data) {
+      var text = data.data.data_users.data_anggota['nama'];
+      var lower = text.toLowerCase().replace(/_/g, ' ').replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
+      
+      createNotif(lower+" Comment",data.data['content']);
+    });
+
+    pusher.subscribe('announcement').bind('sent-announcement', function(data) {
+      var text = data.data.data_users.data_anggota['nama'];
+      var lower = text.toLowerCase().replace(/_/g, ' ').replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
+      
+      createNotif(lower+" in Announcement",data.data['title']);
+    });
   </script>
