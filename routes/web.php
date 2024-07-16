@@ -54,6 +54,10 @@ Route::get('/dashboard/cabinet', function () {
     return view('kabinet');
 })->name('cabinet');
 
+Route::get('/dashboard/admin', function () {
+    return view('admin');
+})->name('admin');
+
 Route::get('/dashboard/cabinet/discuss', function () {
     return view('kabinet_discuss');
 })->name('cabinet_discuss');

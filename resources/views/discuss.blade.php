@@ -84,7 +84,6 @@
 @include('include/footer')
 </div>
 @include('include/script')
-<script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 <script src="{{asset('storage/js/logincheck.js')}}"></script>
 <script>
     var datasave = [];
@@ -235,7 +234,7 @@
     function deleteCommentConfirm(comment_id,forum_id,content='Are you sure you want to delete this comment?') {
       $('#confirmationDeleteComment').modal('show');
       $('#confirmationDeleteComment').find('.modal-body').html(content);
-      $('#confirmationDeleteComment').find('.btn-danger').attr('id', comment_id+','+forum_id);
+      $('#confirmationDeleteComment').find('.btn-danger').attr('id', comment_id);
     }
 
     //fetch data forum
@@ -512,6 +511,9 @@
       $.ajax({
         url: "/api/comment/" + commentId,
         method: "DELETE",
+        data:{
+          "user_id":sessionStorage.getItem('id')
+        },
         success: function(response) {
           var data = response.data;
           $('#card-comment-' + commentId).remove();

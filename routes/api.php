@@ -36,6 +36,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
         '/ballot' => 'BallotController',
         '/team' => 'TeamController',
         '/detail' => 'DetailController',
+        '/dateFilter' => 'DateFilter',
     ]);
 
     Route::post('/data/{id}', 'AngController@update');

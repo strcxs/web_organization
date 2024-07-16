@@ -99,12 +99,13 @@
 @include('include/script')
 <script>
   $(document).ready(function(){
-    if (sessionStorage.getItem('login')==null) {
+    if (sessionStorage.getItem('id')==null) {
       return window.location = window.location.origin+'/login';
     }
     var urlParams = new URLSearchParams(window.location.search);
     var user_detail = urlParams.get('id');
-    sessionCheck(sessionStorage.getItem('login'));
+    sessionCheck(sessionStorage.getItem('id'));
+    loginCheck(sessionStorage.getItem('id'));
     $.ajax({
         url: "/api/member/"+user_detail,
         method: "GET", // First change type to method here
@@ -139,8 +140,6 @@
           }
         }
       });
-      loginCheck(sessionStorage.getItem('login'));
-
   });
 </script>
 </body>

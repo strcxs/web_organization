@@ -147,12 +147,12 @@
 @include('include/script')
 <script>
   $(document).ready(function(){
-    if (sessionStorage.getItem('login')==null) {
+    if (sessionStorage.getItem('id')==null) {
       return window.location = window.location.origin+'/login';
     }
     sessionCheck(sessionStorage.getItem('id'));
     $.ajax({
-        url: "/api/data/"+sessionStorage.getItem('login'),
+        url: "/api/data/"+sessionStorage.getItem('id'),
         method: "GET", // First change type to method here
         success: function(response) {
           var data = response.data;
@@ -198,7 +198,7 @@
       });
       $('#btnDelete').click(function(){
         $.ajax({
-          url: "/api/data/"+sessionStorage.getItem('login'),
+          url: "/api/data/"+sessionStorage.getItem('id'),
           method: "POST", // First change type to method here    
           data: {
             "avatar": "delete"
@@ -207,7 +207,6 @@
             var data = response.data;
             $('#user_image').attr('src', `{{asset('storage/images/default/default-user-icon.jpg')}}`);
             $('#profile-avatar').attr('src', `{{asset('storage/images/default/default-user-icon.jpg')}}`);
-            
           }
         });
       });
@@ -217,7 +216,7 @@
           var avatar = new FormData();
           avatar.append('avatar', file_avatar);
           $.ajax({
-          url: "/api/data/"+sessionStorage.getItem('login'),
+          url: "/api/data/"+sessionStorage.getItem('id'),
           method: "POST", // First change type to method here    
           data: avatar,
           processData: false,
@@ -234,12 +233,11 @@
       });
       $("#btnUpdate").click(function(event){ 
         var user = $("#username").val();
-
         var tanggal = $("#tanggal_lahir").val();
         var tempat = $("#tempat_lahir").val();
         var telp = $("#telepon").val();
         $.ajax({
-          url: "/api/data/"+sessionStorage.getItem('login'),
+          url: "/api/data/"+sessionStorage.getItem('id'),
           method: "POST", // First change type to method here    
           data: {
               "username": user,

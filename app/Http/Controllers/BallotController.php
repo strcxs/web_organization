@@ -17,6 +17,17 @@ class BallotController extends Controller
 
         return new AngResource(true,'data ballots',$data);
     }
+    public function show($id){
+        $data = Ballot::with('dataUsers.dataAnggota')
+        ->with('dataTeam.dataVote')
+        ->with('dataTeam.dataCandidate.dataUsers.dataAnggota')
+        ->whereHas('dataTeam', function ($query) use ($id) {
+            $query->where('id_vote', $id);
+        })
+        ->get();
+
+        return new AngResource(true,'data ballots',$data);
+    }
     public function store(Request $request){
         $validator = Validator::make($request->all(), [
             'user_id' => 'required',
@@ -38,10 +49,13 @@ class BallotController extends Controller
         if($check){
             return new AngResource(false,"you already vote!", $check);
         }
-        Ballot::create([
+        $vote = Ballot::create([
             'user_id'=> $request->user_id,
             'id_team'=> $request->id_team,
         ]);
-        return new AngResource(true,"voting successfully", $check);
+        $vote->load('dataTeam');
+
+        $this->push('vote', 'vote-success', ['data' => $vote]);
+        return new AngResource(true,"voting successfully", $vote);
     }
 }

@@ -93,20 +93,11 @@
 </body>
 @include('include/script')
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.0.0/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.0.0/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.0.0/js/buttons.print.min.js"></script>
-
-<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.0.0/css/buttons.dataTables.min.css">
-
 <script src="{{asset('storage/js/logincheck.js')}}"></script>
 <script>
     $(document).ready(function(){
         var origin = window.location.origin;
-        if (sessionStorage.getItem('session')==null) {
+        if (sessionStorage.getItem('session')==null || sessionStorage.getItem('session')!=1 ) {
             return window.location = window.location.origin+'/login';
         }
         sessionCheck(sessionStorage.getItem('id'));
@@ -174,11 +165,11 @@
                                             '<button class="dropdown-item" data-toggle="modal" data-target="#editMember-'+element.id+'">Edit</button>' +
                                             '<button class="dropdown-item" id ="member-deactived-'+ element.id +'">Deactived</button>' +
                                         '</div>' +
-                                        "<i class='fas fa-power-off px-1 text-danger' title='active'></i>"+
                                         '<a class="text-dark">'+
                                             element.nama + 
                                         '</a>'+
                                         "<i class='fas fa-exclamation-triangle px-1 text-warning' title='unregistered'></i>"+
+                                        // "<i class='fas fa-power-off px-1 text-danger' title='active'></i>"+
                                         // "<i class='fas fa-user-check px-1 text-success' title='registered'></i>"+
                                         // "<i class='fas fa-user-slash px-1 text-danger' title='deactived'></i>"+
                                         // "<i class='fas fa-user-shield px-1 text-primary' title='limited'></i>"+
@@ -200,16 +191,22 @@
                                             '<button class="btn btn-secondary dropdown-toggle mr-1 btn-xs" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
                                                 // 'Actions' +
                                             '</button>' +
-                                            '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">' +
+                                            '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="dropdown-'+element.id+'">' +
                                                 '<button class="dropdown-item" id ="member-delete-'+ element.id +'">Delete</button>' +
                                                 '<button class="dropdown-item" data-toggle="modal" data-target="#editMember-'+element.id+'">Edit</button>' +
                                                 '<button class="dropdown-item" id ="member-deactived-'+ element.id +'">Deactived</button>' +
+                                                (element.data_users.role_id == 1 ?
+                                                    '<button class="dropdown-item" id="member-demote-'+ element.id +'" style ="display:block">Demote</button>' +
+                                                    '<button class="dropdown-item" id="member-promote-'+ element.id +'" style ="display:none">Promote</button>' :
+                                                    '<button class="dropdown-item" id="member-demote-'+ element.id +'" style ="display:none">Demote</button>' +
+                                                    '<button class="dropdown-item" id="member-promote-'+ element.id +'" style ="display:block">Promote</button>'
+                                                ) +
                                             '</div>' +
-                                            "<i class='fas fa-power-off px-1 text-success' title='active'></i>"+
                                             '<a class="text-dark" href="profile/detail?id=' + element.id + '">'+
                                                 element.nama + 
                                             '</a>'+
                                             "<i class='fas fa-user-check px-1 text-success' title='registered'></i>"+
+                                            // "<i class='fas fa-power-off px-1 text-success' title='active'></i>"+
                                         '</div>' +
                                     "</td>"+
                                     "<td class='text-center'>"+gender+"</td>"+
@@ -228,6 +225,58 @@
                                 $('#tr-'+element.id+'').remove();
                             }
                         });
+                    })
+                    $('#member-promote-'+element.id).on('click',function(){
+                        if (confirm("Jadikan "+element.nama+" Admin ?")) {
+                            $.ajax({
+                                url: origin+"/api/data/"+element.data_users.id,
+                                method: 'POST',
+                                data:{
+                                    'role_id':1
+                                },
+                                success: function (response) {
+                                    // $('#dropdown-'+element.id+'').append(
+                                    //     '<button class="dropdown-item" id ="member-demote-'+ element.id +'">Demote</button>'
+                                    // );
+                                    $('#member-demote-'+element.id+'').show();
+                                    $('#member-promote-'+element.id+'').hide();
+                                }
+                            });
+                        }
+                    })
+                    $('#member-demote-'+element.id).on('click',function(){
+                        if (confirm("Menghapus "+element.nama+" dari Admin ?")) {
+                            var role = 2;
+                            if (element.data_users.divisi_id!=1) {
+                                if (element.data_users.data_divisi.leader_id == element.data_users.id) {
+                                    role = 3
+                                }else{
+                                    role = 4
+                                }
+                            }else if (element.data_users.program_id!=1) {
+                                if (element.data_users.data_program.leader_id == element.data_users.id) {
+                                    role = 3
+                                }else{
+                                    role = 4
+                                }
+                            }else{
+                                role = 2
+                            }
+                            $.ajax({
+                                url: origin+"/api/data/"+element.data_users.id,
+                                method: 'POST',
+                                data:{
+                                    'role_id':role
+                                },
+                                success: function (response) {
+                                    // $('#dropdown-'+element.id+'').append(
+                                    //     '<button class="dropdown-item" id ="member-promote-'+ element.id +'">Promote</button>'
+                                    // );
+                                    $('#member-promote-'+element.id+'').show();
+                                    $('#member-demote-'+element.id+'').hide();
+                                }
+                            });
+                        }
                     })
                     // modal edit
                     $('#modal').append(

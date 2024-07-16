@@ -84,6 +84,7 @@
 @include('include/footer')
 </div>
 @include('include/script')
+
 <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 <script src="{{asset('storage/js/logincheck.js')}}"></script>
 <script>
