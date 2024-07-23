@@ -85,7 +85,7 @@
                         }if (element.data_users != null) {
                             $("tbody").append(
                                 "<tr>"+
-                                    "<td>"+'<a class="text-dark" href="profile/detail?id=' + element.user_id + '">' + element.nama + '</a>'+"</td>"+
+                                    "<td>"+'<a class="text-dark" href="profile/detail?id=' + element.data_users.member_id + '">' + element.nama + '</a>'+"</td>"+
                                     "<td>"+element.id+"</td>"+
                                     "<td>"+element.data_users.data_divisi.divisi+"</td>"+
                                     "<td>"+element.tahun_akt+"</td>"+

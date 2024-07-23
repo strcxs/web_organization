@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Connection;
-use App\Models\divisi;
+use App\Models\Divisi;
 use App\Models\Program;
-use Carbon\Carbon;
-use App\Models\Forum;
 use App\Models\Users;
+use App\Models\Forum;
+
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Resources\AngResource;
 use Illuminate\Support\Facades\Validator;

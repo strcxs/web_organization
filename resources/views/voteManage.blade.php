@@ -52,6 +52,7 @@
                                     </div>
                 
                                     <div class="form-group" id="teamVote">
+
                                     </div>
                 
                                     <label for="topicInfo">add team</label>
@@ -89,31 +90,22 @@
             }
             else{
                 $('#teamVote').append(
-                    '<input type="text" class="form-control" id="teamName-'+team+'" name="team_name" placeholder="Team Name" style="border:none">' +
-                    '<select multiple class="form-control" id="vote-candidate-'+team+'"></select>' 
-                    // '<button class="btn btn-success mt-2" id="banner-upload-'+team+'"><i class="fas fa-solid fa-file-import"></i>  upload image banner</button>'+
-                    // '<input type="file" id="banner-file-'+team+'" class="form-control d-none" id="teamBanner-'+team+'" name="team_banner">' 
+                    '<div class="form-group" id="dataTeam-'+team+'">'+
+                        '<input type="text" class="form-control" id="teamName-'+team+'" name="team_name" placeholder="Team Name" style="border:none">' +
+                        '<select multiple class="form-control" id="vote-candidate-'+team+'"></select>' +
+    
+                        '<input type="text" class="form-control mt-1" id="visi-'+team+'" name="team_name" placeholder="Visi Team">' +
+                        '<input type="text" class="form-control mt-1" id="misi-'+team+'" name="team_name" placeholder="Misi Team">' +
+    
+                        '<button class="btn btn-success mt-2" id="banner-upload-'+team+'"><i class="fas fa-solid fa-file-import"></i>  upload image banner</button>'+
+                        '<input type="file" id="banner-file-'+team+'" class="form-control d-none" id="teamBanner-'+team+'" name="team_banner">' +
+                    '</div>'
                 )
-                // $('#banner-upload-'+team+'').click(function(event){
-                //     event.preventDefault();
-                //     var id = team-1
-                //     $('#banner-file-'+id+'').click();
-                // })
-                // $('#banner-file-'+team+'').change(function(){
-                //     var image = $('#banner-file-'+team+'').prop('files')[0];
-                //     var csv_file = new FormData();
-
-                //     csv_file.append('image',image);
-
-                //     console.log('tets');
-                    // $.ajax({
-                    //     url: origin+"/api/csv",
-                    //     method: 'POST',
-                    //     data: csv_file,
-                    //     processData: false,
-                    //     contentType: false,
-                    // });
-                // })
+                $('#banner-upload-'+team+'').click(function(event){
+                    event.preventDefault();
+                    var id = team-1;
+                    $('#banner-file-'+id+'').click();
+                })
 
                 $('#vote-candidate-'+team+'').select2({
                     placeholder: 'Select candidate', // Teks placeholder
@@ -136,10 +128,8 @@
             }
         });
         $('#saveVote').on('click',function(event){
-            // event.preventDefault();
-            var loopCount = 0;
+            event.preventDefault();
             var vote_name = $('#voteName').val(); 
-
             $.ajax({
                 url: "/api/vote",
                 method: 'POST',
@@ -147,46 +137,58 @@
                     "description": vote_name,
                 },
                 success:function(response){
-                    $('#teamVote input').each(function() {
-                        var elementId = $(this).attr('id'); 
-                        var team = $(this).val();
-                        if (!team) {
-                            return;
-                        }
-                        if (elementId != undefined) {
-                            $.ajax({
-                                url: "/api/team",
-                                method: 'POST',
-                                data: {
-                                    "id_vote": response.data.id,
-                                    "name": team,
-                                },
-                                success:function(response){
-                                    var candidate = $('#teamVote select')[loopCount];
-                                    var elementId = $(candidate).attr('id');
-                                    var user_id = $(candidate).val(); 
-                                    if (user_id.length == 0) {
-                                        return;
-                                    }
-                                    if (elementId != undefined) {
-                                        user_id.forEach(function(item){
-                                            $.ajax({
-                                                url: "/api/candidate",
-                                                method: 'POST',
-                                                data: {
-                                                    "id_team": response.data.id,
-                                                    "user_id": item,
-                                                }
-                                            });
-                                        })
-                                    }
-                                    loopCount++;
+                    var loop = 1;
+                    $('#teamVote div').each(function(ea) {
+                        var dataArray = new FormData();
+                        var dataTeam = $(this).attr('id');
+                        dataArray.append('id_vote',response.data.id)
+                        $('#'+dataTeam+' input').each(function(index) {
+                            var alter = ['name','','visi','misi','banner']
+                            var data = $(this).val();
+                            if (index!=1) {
+                                dataArray.append(alter[index],data)
+                            }
+                            if (index==4) {
+                                dataArray.append(alter[index],$(this).prop('files')[0]) ;
+                            }
+                        });
+                        var bool = false; 
+                        $.ajax({
+                            url: "/api/team",
+                            method: 'POST',
+                            data: dataArray,
+                            processData: false,
+                            contentType: false,
+                            success:function(response){
+                                var datax = response.data;
+                                var candidate = $('#teamVote select')[ea];
+                                var elementId = $(candidate).attr('id');
+                                var user_id = $(candidate).val(); 
+                                if (user_id.length == 0) {
+                                    return;
                                 }
-                            });
-                        }
+                                if (elementId != undefined) {
+                                    user_id.forEach(function(item){
+                                        $.ajax({
+                                            url: "/api/candidate",
+                                            method: 'POST',
+                                            data: {
+                                                "id_team": datax.id,
+                                                "user_id": item,
+                                            },
+                                            success:function(response){
+                                                if($('#teamVote select').length==loop){
+                                                    window.location.reload();
+                                                }
+                                                loop++;
+                                            }
+                                        });
+                                    })
+                                }
+                            }
+                        });
                     });
                 }
-                // alert('success save data vote');
             });
         });
         $.ajax({
@@ -236,68 +238,55 @@
                             '</div>'+
                         '</div>'
                     );
-                    var team = vote.data_team.length;                  
+                    // var team = vote.data_team.length;                  
+                    var team = vote.data_team;     
                     $('#edit-vote-'+vote.id).on('click',function(event){
-                        // event.preventDefault();
-                        var loopCount = 0;
-                        var vote_name = $('#voteName-'+vote.id).val();
-                        var array_candidate = [];
-                        // console.log(vote_name);
-                        $('#teamCandidate-'+vote.id+' input').each(function(item) {
-                            var value = $(this).val();
-                            var elementId = $(this).attr('id');
-                            if (elementId != undefined) {
-                                var candidate = $('#teamCandidate-'+vote.id+' select')[loopCount];
-                                var user_id = $(candidate).val();
-                                
-                                var object = {};
-                                object.team = value;
-                                object.user_id = user_id;
-                                array_candidate.push(object)
-                                loopCount++;
-                            }
-                        });
-                        $.ajax({
-                            url: "/api/vote/"+vote.id,
-                            method: 'PUT',
-                            data: {
-                                "description": vote_name,
-                            },
-                            success:function(response){
-                                array_candidate.forEach((data,index)=>{
-                                    $.ajax({
-                                        url: "/api/team/"+vote.data_team[index].id,
-                                        method: 'PUT',
-                                        data: {
-                                            "id_vote": response.data.id,
-                                            "name":array_candidate[index].team,
-                                        },
-                                        success:function(response){
-                                            // vote.data_team[index].data_candidate.forEach((old,old_index)=>{
-                                                // $.ajax({
-                                                //     url: "/api/candidate/"+old.id,
-                                                //     method: 'PUT',
-                                                //     data: {
-                                                //         "id_team": response.data.id,
-                                                //         "user_id":array_candidate[index].user_id[old_index]
-                                                //     },
-                                                // });
-                                            // })
-                                            var candidate_old = [];
-                                            for (var i = 0; i < vote.data_team[index].data_candidate.length; i++) {
-                                                candidate_old.push(vote.data_team[index].data_candidate[i].user_id);
+                        event.preventDefault();
+                        var loop = 1;
+                        $('#teamCandidate-'+vote.id+' div').each(function(item) {
+                            var editArray = new FormData();
+                            var editTeam = $(this).attr('id');
+                            $('#'+editTeam+' input').each(function(index){
+                                var keys = ['name', '', 'visi', 'misi', 'banner_image'];
+                                var data = $(this).val();
+                                // Append data to FormData based on index
+                                if (index !== 1) {
+                                    editArray.append(keys[index], data);
+                                }
+                                // Handle file input
+                                if (index === 4) {
+                                    var file = $(this).prop('files')[0];
+                                    if (file) {
+                                        editArray.append(keys[index], file);
+                                    }
+                                }
+                            });
+                            $.ajax({
+                                url: "/api/team/" + vote.data_team[item].id,
+                                data: editArray,
+                                method: 'POST',
+                                processData: false,
+                                contentType: false,
+                                success:function(response){
+                                    var id = response.data.id;
+                                    $('#'+editTeam+' select').each(function(index){
+                                        var tim_value = $(this).val();
+                                        $.ajax({
+                                            url: "/api/candidate/"+id,
+                                            data: {
+                                                'user_id':tim_value
+                                            },
+                                            method: 'PUT',
+                                            success:function(response){
+                                                if ($('#teamCandidate-'+vote.id+' div').length == loop) {
+                                                    window.location.reload();
+                                                }
+                                                loop++;
                                             }
-                                            var result = array_candidate[index].user_id.filter(function(item) {
-                                                return candidate_old.includes(item);
-                                            });
-
-                                            console.log(result);
-                                            // console.log(array_candidate[index].user_id);
-                                            // console.log(candidate_old);
-                                        }
+                                        });
                                     });
-                                })
-                            }
+                                }
+                            });
                         });
                     });
 
@@ -308,8 +297,19 @@
                         }
                         else{
                             $('#teamCandidate-'+vote.id).append(
-                                '<input type="text" class="form-control" id="teamName-'+team+'" name="team_name" placeholder="Team Name" style="border:none">' +
-                                '<select multiple class="form-control" id="new-candidate-'+team+'"></select>' 
+                                '<div class="form-group" id="dataTeam-'+team+'">'+
+                                    '<input type="text" class="form-control" id="teamName-'+team+'" name="team_name" placeholder="Team Name" style="border:none">' +
+                                    '<select multiple class="form-control" id="vote-candidate-'+team+'"></select>' +
+                
+                                    '<input type="text" class="form-control mt-1" id="visi-'+team+'" name="team_name" placeholder="Visi Team">' +
+                                    '<input type="text" class="form-control mt-1" id="misi-'+team+'" name="team_name" placeholder="Misi Team">' +
+                
+                                    '<button class="btn btn-success mt-2" id="banner-upload-'+team+'"><i class="fas fa-solid fa-file-import"></i>  upload image banner</button>'+
+                                    '<input type="file" id="banner-file-'+team+'" class="form-control d-none" id="teamBanner-'+team+'" name="team_banner">' +
+                                '</div>'
+
+                                // '<input type="text" class="form-control" id="teamName-'+team+'" name="team_name" placeholder="Team Name" style="border:none">' +
+                                // '<select multiple class="form-control" id="new-candidate-'+team+'"></select>' 
                             )
 
                             $('#new-candidate-'+team+'').select2({
@@ -339,16 +339,32 @@
                             url: "/api/vote/"+vote.id,
                             method: "DELETE",
                             success:function(response){
-                                alert('vote delete successfully')
+                                window.location.reload();
                             }
                         });
                     })
                     vote.data_team.forEach(team => {
                         $('#teamCandidate-'+vote.id+'').append(
-                            '<input type="text" class="form-control" id="teamName" name="team_name" value="'+team.name+'"style="border:none">'+
-                            '<select multiple class="form-control" id="modalEdit-candidate-'+team.id+'" name="members[]">' +
-                            '</select>' 
+                            '<div class="form-group" id="dataTeam-'+team.id+'">'+
+                                '<input type="text" class="form-control" id="teamNameEdit-'+team.id+'" name="team_name" placeholder="Team Name" value="'+team.name+'" style="border:none">' +
+                                '<select multiple class="form-control" id="modalEdit-candidate-'+team.id+'" name="members[]"></select>'+
+
+                                '<input type="text" class="form-control mt-1" id="visiEdit-'+team.id+'" name="team_name" value="'+team.visi+'">' +
+                                '<input type="text" class="form-control mt-1" id="misiEdit-'+team.id+'" name="team_name" value="'+team.misi+'">' +
+            
+                                '<button class="btn btn-success mt-2" id="banner-edit-'+team.id+'"><i class="fas fa-solid fa-file-import"></i>  upload image banner</button>'+
+                                '<input type="file" id="edit-banner-file-'+team.id+'" class="form-control d-none" id="teamBanner-edit-'+team.id+'" name="team_banner">' +
+                            '</div>'
+
+                            // '<input type="text" class="form-control" id="teamName" name="team_name" value="'+team.name+'" style="border:none">'+
+                            // '<select multiple class="form-control" id="modalEdit-candidate-'+team.id+'" name="members[]">' +
+                            // '</select>' 
                         );
+                        $('#banner-edit-'+team.id+'').click(function(event){
+                                event.preventDefault();
+                                var id = team.id;
+                                $('#edit-banner-file-'+id+'').click();
+                            })
                         $('#modalEdit-candidate-'+team.id+'').select2({
                             placeholder: 'Select candidate', // Teks placeholder
                             allowClear: true, // Memungkinkan pengguna menghapus pilihan

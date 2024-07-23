@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Models\Anggota;
+use App\Models\Divisi;
+use App\Models\Program;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 

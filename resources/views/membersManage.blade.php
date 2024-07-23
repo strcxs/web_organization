@@ -123,7 +123,7 @@
             });
         })
         $('#memberForm').submit(function(event) {
-            // event.preventDefault();
+            event.preventDefault();
             var origin = window.location.origin;
 
             $.ajax({
@@ -135,6 +135,9 @@
                     'id': $('#studentId').val(),
                     'tahun_akt': $('#batchYear').val()
                 },
+                success: function(response) {
+                    window.location.reload();
+                }
             });
         });
         $.ajax({
@@ -331,7 +334,7 @@
                     }
                     // end modal edit 
                     $('#edit_memberForm-'+element.id).submit(function(event) {
-                        // event.preventDefault();
+                        event.preventDefault();
                         $.ajax({
                             url: origin+"/api/member/"+element.id,
                             method: 'PUT',
@@ -340,6 +343,8 @@
                                 'gender': $('#edit_gender-'+element.id+'').val()||null,
                                 'nama': $('#edit_memberName-'+element.id+'').val().toUpperCase()||null,
                                 'tahun_akt': $('#edit_batchYear-'+element.id+'').val()||null,
+                            },success: function (response) {
+                                window.location.reload()
                             }
                         });
                     })

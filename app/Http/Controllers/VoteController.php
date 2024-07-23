@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Vote;
 use Illuminate\Http\Request;
 use App\Http\Resources\AngResource;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class VoteController extends Controller
@@ -35,9 +36,12 @@ class VoteController extends Controller
         return new AngResource(true,"create new vote successfully", $data);
     }
     public function destroy($id){
-        $data = Vote::find($id);
+        $data = Vote::with('dataTeam')->find($id);
+        foreach ($data->dataTeam as $tim) {
+            Storage::delete('public/images/banner/'.$tim->banner_image);
+        }
         $data-> delete();
-        
+
         return new AngResource(true,'vote delete successfully', $data);
     }
     public function update(Request $request, $id){

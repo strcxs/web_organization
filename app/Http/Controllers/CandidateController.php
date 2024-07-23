@@ -43,17 +43,17 @@ class CandidateController extends Controller
     }
     public function update(Request $request, $id){
         $key = collect($request->all())->keys();
-        $data = Candidate::find($id);
-
-        foreach ($key as $value) {
-            if ($request->$value != $data->$value) {
-                $data->update([
-                    $value => $request->$value
-                ]);
+        $data = Candidate::where('id_team','=',$id)->get();
+        foreach ($data as $index => $datax) {  
+            foreach ($key as $value) {
+                if ($request->$value[$index] != $datax->$value) {
+                    $datax->update([
+                        $value => $request->$value[$index]
+                    ]);
+                }
             }
         }
 
-        $data = Candidate::find($id);
-        return new AngResource(true,'success update vote', $data);
+        return new AngResource(true,'success update candidate', $data);
     }
 }
