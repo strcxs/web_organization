@@ -184,6 +184,7 @@
           $("#telp-profile").text(data.data_anggota.no_telp);
 
           if (data.avatar!=null) {
+              console.log(data.avatar);
             $('#user_image').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
             $('#profile-avatar').attr('src', `{{asset('storage/images/users-images/${data.avatar}')}}`);
           }
@@ -236,6 +237,7 @@
         var tanggal = $("#tanggal_lahir").val();
         var tempat = $("#tempat_lahir").val();
         var telp = $("#telepon").val();
+        event.preventDefault();
         $.ajax({
           url: "/api/data/"+sessionStorage.getItem('id'),
           method: "POST", // First change type to method here    
@@ -247,6 +249,7 @@
           },
           success: function(response) {
             alert(response.message);
+            window.location.reload();
           }
         });    
       });

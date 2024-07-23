@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Comment;
+use App\Models\comment;
 use App\Models\Users;
 use Carbon\Carbon;
 use App\Models\Forum;

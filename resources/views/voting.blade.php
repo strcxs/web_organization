@@ -14,10 +14,18 @@
   <div class="content-wrapper">
     <section class="content">
         <div class="container-fluid">
-            <div class="text-right container pt-2 pb-3">
+            <div class="row justify-content-end text-right container pt-2 pb-3">
                 <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#resultVoting">
                     Voting Result
                 </button>
+                <div class="dropdown pl-1">
+                    <button class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Choose Voting
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <!--dropdown item-->
+                    </div>
+                </div>
             </div>
             <div class="row" id="voting-content">
                 {{-- voting-content --}}
@@ -98,7 +106,15 @@
         }
         sessionCheck(sessionStorage.getItem('id'));
         loginCheck(sessionStorage.getItem('id'));
-        var data_vote = 1;
+        
+        var queryString = window.location.search;
+        var urlParams = new URLSearchParams(queryString);
+        if(urlParams.get('vote')!=null){
+            var data_vote = urlParams.get('vote');
+        }else{
+            var data_vote = 1;
+        }
+        
 
         var pusher = new Pusher("{{ env('PUSHER_APP_KEY') }}", {
             cluster: "{{ env('PUSHER_APP_CLUSTER') }}"
@@ -119,6 +135,24 @@
             }
             myChart.update();
         });
+        
+        $.ajax({
+            url: "/api/vote/",
+            method: "GET", // First change type to method here
+            success: function(response) {
+                var data = response.data;
+                data.forEach(vote =>{
+                    $('.dropdown-menu').append(
+                        '<a id=item-'+vote.id+' class="dropdown-item"data-value='+vote.id+'>'+vote.description+'</a>'
+                    );
+                    $('#item-'+vote.id).on('click', function() {
+                        data_vote = vote.id;
+                        var url = window.location.href.split('?')[0];
+                        return window.location = url+'?vote='+vote.id;
+                    });
+                })
+            }
+        });
 
         $.ajax({
             url: "/api/team/"+data_vote,
@@ -138,7 +172,7 @@
                             '<div class="col-12 col-md-'+col+'">'+
                                 '<div>'+
                                     '<div class="text-center">'+
-                                        '<img id="banner-'+element.id+'" class="img-fluid rounded" src='+element.banner_image+' alt="" width="70%">'+
+                                        '<img id="banner-'+element.id+'" class="img-fluid rounded" src='+element.banner_image+' alt="" style="height: '+col*67+'px;">'+
                                     '</div>'+
                                 '</div>'+
                                 '<div>'+
@@ -229,10 +263,8 @@
                                     ballotCount[vote.data_team.name] = 0;
                                 }
                                 ballotCount[vote.data_team.name] += 1;
-                                // updateDataForLabel(vote.data_team.name,ballotCount[vote.data_team.name]);
+                                updateDataForLabel(vote.data_team.name,ballotCount[vote.data_team.name]);
                             });
-                            updateDataForLabel('01',2);
-                            updateDataForLabel('02',4);
                         }
                     });
                 });

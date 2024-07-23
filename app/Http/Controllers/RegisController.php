@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\AngResource;
-use App\Models\anggota;
+use App\Models\Anggota;
 use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;

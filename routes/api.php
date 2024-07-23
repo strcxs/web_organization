@@ -23,7 +23,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
         '/login' => 'LoginController',
         '/regis' => 'RegisController',
         '/data' => 'AngController',
-        '/forum' => 'ForumController',
+        '/forum' => 'forumController',
         '/announcement' => 'AnnController',
         '/connection' => 'ConnectionController',
         '/program' => 'ProgramController',
@@ -39,18 +39,16 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
         '/dateFilter' => 'DateFilter',
     ]);
 
+    Route::post('/team/{id}', 'TeamController@updateNih');
+
     Route::post('/data/{id}', 'AngController@update');
     Route::delete('/data/{id}', 'AngController@destroy');
-    Route::delete('/forum/{id}', 'ForumController@destroy');
+    Route::delete('/forum/{id}', 'forumController@destroy');
     Route::post('/announcement', 'AnnController@store');
     Route::delete('/announcement/{id}', 'AnnController@destroy');
-    Route::get('/comment/{id}', 'ComController@show');
-    Route::post('/comment', 'ComController@store');
-    Route::delete('/comment/{id}', 'ComController@destroy');
-    Route::get('/topic', 'TopicController@index');
-    Route::delete('/topic/{id}', 'TopicController@destroy');
-    Route::post('/topic', 'TopicController@store');
-    Route::post('/topic/{id}', 'TopicController@update');
+    Route::get('/comment/{id}', 'comController@show');
+    Route::post('/comment', 'comController@store');
+    Route::delete('/comment/{id}', 'comController@destroy');
 });
 
 Route::apiResource("/csv","App\Http\Controllers\\CsvController");

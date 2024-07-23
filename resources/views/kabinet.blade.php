@@ -268,6 +268,9 @@
                 url: url,
                 method: "POST",
                 data: formData,
+                success:function(response){
+                    console.log(response);
+                }
             });
         }
 
@@ -279,43 +282,59 @@
                     url: "/api/"+program+"/"+program_id,
                     method: "DELETE"
                 });
-            });
-            $.ajax({
-                url: "/api/data/",
-                method: "GET",
-                success:function(response){
-                    if (response.data.program_id == program_id) {
-                        $.ajax({
-                            url: "/api/data/"+response.data.id,
-                            method: "POST",
-                            data:{
-                                "program_id":1
-                            }
-                        });
+                $.ajax({
+                    url: "/api/data/",
+                    method: "GET",
+                    success:function(response){
+                        if (response.data.program_id == program_id) {
+                            $.ajax({
+                                url: "/api/data/"+response.data.id,
+                                method: "POST",
+                                data:{
+                                    "program_id":1
+                                }
+                            });
+                        }
                     }
-                }
+                });
             });
         }
 
         $('#programForm').submit(function(event) {
-            // event.preventDefault();
+            event.preventDefault();
             var formData = {
                 'program': $('#programName').val(),
                 'leader_id': $('#leader').val()
             };
-            submitAjax("/api/program/", formData);
-            submitAjax("/api/connection", {'program_id': data.id});
+            $.ajax({
+                url: '/api/program',
+                method: "POST",
+                data: formData,
+                success:function(response){
+                    console.log(response);
+                    submitAjax("/api/connection", {'program_id': data.id});
+                }
+            });
+            // submitAjax("/api/program/", formData);
 
         });
 
         $('#divisiForm').submit(function(event) {
-            // event.preventDefault();
+            event.preventDefault();
             var formData = {
                 'divisi': $('#divisiName').val(),
                 'leader_id': $('#divisi_leader').val()
             };
-            submitAjax("/api/divisi/", formData);
-            submitAjax("/api/connection", {'divisi_id': data.id});
+            $.ajax({
+                url: '/api/divisi/',
+                method: "POST",
+                data: formData,
+                success:function(response){
+                    console.log(response.data);
+                    // submitAjax("/api/connection", {'divisi_id': data.id});
+                }
+            });
+            // submitAjax("/api/divisi/", formData);
         });
 
         // create modal 
