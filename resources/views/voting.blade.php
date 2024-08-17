@@ -27,6 +27,14 @@
                     </div>
                 </div>
             </div>
+            <div class="row justify-content-center text-center container">
+                <h4 id="time-label" class="mr-1">
+                    Voting Ends In
+                </h4>
+                <h4 id="time-count">
+                    00:00:00
+                </h4>
+            </div>
             <div class="row" id="voting-content">
                 {{-- voting-content --}}
             </div>
@@ -114,28 +122,7 @@
         }else{
             var data_vote = 1;
         }
-        
 
-        var pusher = new Pusher("{{ env('PUSHER_APP_KEY') }}", {
-            cluster: "{{ env('PUSHER_APP_CLUSTER') }}"
-        });
-
-        var channel = pusher.subscribe('vote');
-
-        channel.bind('vote-success', function(data) {
-            var data = data.data;
-            for (let index = 0; index < myChart.data.labels.length; index++) {
-                if (myChart.data.labels[index]==data.data_team.name) {
-                    if (myChart.data.datasets[0].data[index]==undefined) {
-                        myChart.data.datasets[0].data[index] = 0;
-                    }
-                    myChart.data.datasets[0].data[index] = myChart.data.datasets[0].data[index]+1     
-                    break;  
-                }
-            }
-            myChart.update();
-        });
-        
         $.ajax({
             url: "/api/vote/",
             method: "GET", // First change type to method here
@@ -223,19 +210,22 @@
                         myChart.data.labels.push(element.name);
     
                         $('#vote-'+element.id+'').on('click', function() {
-                            $.ajax({
-                                url: "/api/ballot",
-                                method: "POST",
-                                data: {
-                                    'user_id': sessionStorage.getItem('id'),
-                                    'id_team':element.id,
-                                    'id_vote':data_vote
-                                },
-                                success: function(response) {
-                                    $('button[name="vote"]').attr('disabled',true) 
-                                    $('button[name="vote"]').text("you've already voted") 
-                                }
-                            });
+                            var userConfirmed = window.confirm("Apakah Anda yakin ingin memilih "+element.name+" ?");
+                            if (userConfirmed) {
+                                $.ajax({
+                                    url: "/api/ballot",
+                                    method: "POST",
+                                    data: {
+                                        'user_id': sessionStorage.getItem('id'),
+                                        'id_team':element.id,
+                                        'id_vote':data_vote
+                                    },
+                                    success: function(response) {
+                                        $('button[name="vote"]').attr('disabled',true) 
+                                        $('button[name="vote"]').text("you've already voted") 
+                                    }
+                                });
+                            }
                         });
                         $.ajax({
                             url: "/api/ballot",
@@ -252,12 +242,76 @@
                             }
                         });
                     }
+                });
+            }
+        });
+        
+        $.ajax({
+            url: "/api/vote/"+data_vote,
+            success: function(response) {
+                var data = response.data;
+                var countDownEnds = data.voteEnds;
+                var countDownStart = data.voteStart;
+
+                
+                if (new Date().getTime()<data.voteStart) {
+                    countStart(countDownStart);
+                    $('button[name="vote"]').attr('disabled',true) 
+                    $('button[name="vote"]').text("voting hasn't started") 
+                }else{
+                    countEnd(countDownEnds);
+                }
+                if (new Date().getTime()>data.voteEnds) {
+                    $('button[name="vote"]').attr('disabled',true) 
+                    $('button[name="vote"]').text("voting has ended") 
+                }
+            }
+        });
+        function countEnd(countDownDate){;
+            var x = setInterval(function() {
+                
+                // Get today's date and time
+                var now = new Date().getTime();
+                    
+                // Find the distance between now and the count down date
+                var distance = countDownDate - now;
+                    
+                // Time calculations for days, hours, minutes and seconds
+                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                
+                // Add leading zeros to hours, minutes, and seconds
+                hours = String(hours).padStart(2, '0');
+                minutes = String(minutes).padStart(2, '0');
+                seconds = String(seconds).padStart(2, '0');
+                
+                // Format output
+                var formattedOutput = `${days} days ${hours}:${minutes}:${seconds}`;
+                if (days == 0) {
+                    var formattedOutput = `${hours}:${minutes}:${seconds}`;
+                }
+                
+                // Output the result in an element with id="time-count"
+                document.getElementById("time-count").innerHTML = formattedOutput;
+                    
+                // If the count down is over, write some text 
+                if (distance < 0) {
+                    clearInterval(x);
+                    document.getElementById("time-count").innerHTML = "";
+                    document.getElementById("time-label").innerHTML = "Voting has Ended";
+
+                    $('button[name="vote"]').attr('disabled',true) 
+                    $('button[name="vote"]').text("voting has ended") 
+
                     $.ajax({
                         url: "/api/ballot/"+data_vote,
                         method: "GET", // First change type to method here
                         success: function(response) {
                             var data = response.data;
                             var ballotCount = {};
+                            
                             data.forEach(vote => {
                                 if (isNaN(ballotCount[vote.data_team.name])) {
                                     ballotCount[vote.data_team.name] = 0;
@@ -267,9 +321,50 @@
                             });
                         }
                     });
-                });
-            }
-        });
+                }
+            }, 1000);
+        }
+        
+        function countStart(countDownDate){;
+            var x = setInterval(function() {
+                document.getElementById("time-label").innerHTML = "Voting Start In";
+                
+                // Get today's date and time
+                var now = new Date().getTime();
+                    
+                // Find the distance between now and the count down date
+                var distance = countDownDate - now;
+                    
+                // Time calculations for days, hours, minutes and seconds
+                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                
+                // Add leading zeros to hours, minutes, and seconds
+                hours = String(hours).padStart(2, '0');
+                minutes = String(minutes).padStart(2, '0');
+                seconds = String(seconds).padStart(2, '0');
+                
+                // Format output
+                var formattedOutput = `${days} days ${hours}:${minutes}:${seconds}`;
+                if (days == 0) {
+                    var formattedOutput = `${hours}:${minutes}:${seconds}`;
+                }
+                
+                // Output the result in an element with id="time-count"
+                document.getElementById("time-count").innerHTML = formattedOutput;
+                    
+                // If the count down is over, write some text 
+                if (distance < 0) {
+                    clearInterval(x);
+                    window.location.reload();
+
+                    $('button[name="vote"]').attr('disabled',false) 
+                    $('button[name="vote"]').text("VOTE") 
+                }
+            }, 1000);
+        }
     });
 </script>
 </body>

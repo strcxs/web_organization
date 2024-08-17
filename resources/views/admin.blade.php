@@ -15,6 +15,18 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col">
+            
+            <div class="card">
+              <div class="card-header bg-primary">
+                <h5>Landing Page</h5>
+              </div>
+              <div class="card-header"> 
+                <p>about</p>
+                <textarea id="aboutText" rows="5" cols="100"></textarea>
+                <button class="button bg-warning" id="aboutSubmit">SAVE</button>
+              </div>
+            </div>
+
             <div class="card">
               <div class="card-header bg-primary">
                 <h5>Contribution Chart</h5>
@@ -175,6 +187,18 @@
               }
             });
           }
+        });
+        $('#aboutSubmit').on('click',function(){
+          $.ajax({
+                url: origin+'/api/page',
+                method: "POST",
+                data:{
+                  about_text:$('#aboutText').val()
+                },
+                success: function(response) {
+                  window.location.reload();
+                }
+            });
         });
     });
 </script>

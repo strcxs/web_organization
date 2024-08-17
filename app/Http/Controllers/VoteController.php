@@ -23,14 +23,18 @@ class VoteController extends Controller
     }
     public function store(Request $request){
         $validator = Validator::make($request->all(), [
-            'description' => 'required'
+            'description' => 'required',
+            'voteStart' => 'required',
+            'voteEnds' => 'required'
         ]);
         if ($validator->fails()) {
             return new AngResource(false,"input is missing", null);
         }
 
         $data = Vote::create([
-            'description'=> $request->description
+            'description'=> $request->description,
+            'voteStart'=>$request->voteStart,
+            'voteEnds'=>$request->voteEnds
         ]);
 
         return new AngResource(true,"create new vote successfully", $data);
