@@ -49,12 +49,16 @@
                                     <div class="form-group">
                                         <label for="voteName">Vote Name</label>
                                         <input type="text" class="form-control" id="voteName" name="vote_name">
+                                        <label for="voteName">Vote Start</label>
+                                        <input type="datetime-local" class="form-control" id="voteStart">
+                                        <label for="voteName">Vote Ends</label>
+                                        <input type="datetime-local" class="form-control" id="voteEnds">
                                     </div>
                 
                                     <div class="form-group" id="teamVote">
 
                                     </div>
-                
+                                    
                                     <label for="topicInfo">add team</label>
                                     <div>
                                         <div id="form-add-team" class="btn btn-success rounded-circle btn-sm float-left mb-2"><i class="fas fa-solid fa-plus"></i></div>
@@ -130,11 +134,16 @@
         $('#saveVote').on('click',function(event){
             event.preventDefault();
             var vote_name = $('#voteName').val(); 
+            var voteStart = new Date($('#voteStart').val()).getTime();
+            var voteEnds = new Date($('#voteEnds').val()).getTime();
+            
             $.ajax({
                 url: "/api/vote",
                 method: 'POST',
                 data: {
                     "description": vote_name,
+                    "voteStart":voteStart,
+                    "voteEnds":voteEnds
                 },
                 success:function(response){
                     var loop = 1;
@@ -196,7 +205,22 @@
             method: "GET", // First change type to method here
             success: function(response) {
                 var data = response.data
+
                 data.forEach(vote => {
+                    var dateStart = new Date(vote.voteStart);
+                    var dateEnd = new Date(vote.voteEnds);
+                    function convert(time) {  
+                        var year = time.getFullYear();
+                        var month = ('0' + (time.getMonth() + 1)).slice(-2); // Bulan dimulai dari 0
+                        var day = ('0' + time.getDate()).slice(-2);
+                        var hours = ('0' + time.getHours()).slice(-2);
+                        var minutes = ('0' + time.getMinutes()).slice(-2);
+    
+                        return `${year}-${month}-${day}T${hours}:${minutes}`;
+                    }
+                    vote.voteEnds = convert(dateEnd);
+                    vote.voteStart = convert(dateStart);
+                    
                     $('#table-content').append(
                         '<tr id="tr-del-'+vote.id+'">'+
                             '<td class="text-primary">'+vote.description+'</td>'+
@@ -221,6 +245,10 @@
                                             '<div class="form-group">'+
                                                 '<label for="topicName">Topic Name</label>'+
                                                 '<input type="text" class="form-control" id="voteName-'+vote.id+'" name="topic_name" value="'+vote.description+'"">'+
+                                                '<label for="voteName">Vote Start</label>'+
+                                                '<input type="datetime-local" class="form-control" id="voteStart-'+vote.id+'" value ="'+vote.voteStart+'">'+
+                                                '<label for="voteName">Vote Ends</label>'+
+                                                '<input type="datetime-local" class="form-control" id="voteEnds-'+vote.id+'" value="'+vote.voteEnds+'"">'+
                                             '</div>'+
 
                                             '<div class="form-group" id="teamCandidate-'+vote.id+'">' +
@@ -238,10 +266,26 @@
                             '</div>'+
                         '</div>'
                     );
-                    // var team = vote.data_team.length;                  
-                    var team = vote.data_team;     
+                    
                     $('#edit-vote-'+vote.id).on('click',function(event){
+                        // var team = vote.data_team.length;                  
+                        var team = vote.data_team;     
+                        var timeStart = $('#voteStart-'+vote.id+'').val();
+                        var timeEnds = $('#voteEnds-'+vote.id+'').val();
+
+                        var start = new Date(timeStart);
+                        var ends = new Date(timeEnds);
+
                         event.preventDefault();
+                        $.ajax({
+                            url: "/api/vote/"+vote.id,
+                            method: 'PUT',
+                            data: {
+                                "description": $('#voteName-'+vote.id+'').val(),
+                                "voteStart": start.getTime(),
+                                "voteEnds": ends.getTime()
+                            },
+                        });
                         var loop = 1;
                         $('#teamCandidate-'+vote.id+' div').each(function(item) {
                             var editArray = new FormData();

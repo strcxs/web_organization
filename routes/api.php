@@ -37,6 +37,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
         '/team' => 'TeamController',
         '/detail' => 'DetailController',
         '/dateFilter' => 'DateFilter',
+        '/page' => 'PageController',
     ]);
 
     Route::post('/team/{id}', 'TeamController@updateNih');
@@ -59,6 +60,6 @@ Route::apiResource("/username","App\Http\Controllers\\UserController");
 
 Route::apiResource("/candidate","App\Http\Controllers\\CandidateController");
 
-Route::apiResource("/vote","App\Http\Controllers\\VoteController");
+// Route::apiResource("/vote","App\Http\Controllers\\VoteController");
 
 Route::apiResource("/ballot","App\Http\Controllers\\BallotController");

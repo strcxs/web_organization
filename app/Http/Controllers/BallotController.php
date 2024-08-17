@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ballot;
+use App\Models\Vote;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Resources\AngResource;
 use Illuminate\Support\Facades\Validator;
@@ -45,6 +47,22 @@ class BallotController extends Controller
         })
         ->first();
 
+        $voteEnd = Vote::select('voteEnds','voteStart')
+        ->where('id','=',$request->id_vote)
+        ->first();
+        
+        $carbonTime = Carbon::now();
+        $timeNow =  $carbonTime->timestamp * 1000;
+        $votingStart = $voteEnd->voteStart;
+        $votingEnds = $voteEnd->voteEnds;
+
+        if($timeNow<$votingStart){
+            return new AngResource(false,"voting hasn't started!", $voteEnd);
+        }
+
+        if($timeNow>$votingEnds){
+            return new AngResource(false,"voting has ended!", $voteEnd);
+        }
 
         if($check){
             return new AngResource(false,"you already vote!", $check);

@@ -83,7 +83,7 @@
 
                         '<img class="img-circle img-bordered-sm" src='+img+' alt="user image">'+
                         '<span class="username">'+
-                            '<a href="#">'+lower+'</a>'+
+                            '<a href="'+window.location.origin+'/dashboard/profile/detail?id='+announcement.data_users.data_anggota['id']+'">'+lower+'</a>'+
                         '</span>'+
                         '<span class="description">'+data.data['formatted_created_at']+'</span>'+
                     '</div>'+
@@ -148,7 +148,7 @@
                       '</div>'+
                       '<img class="img-circle img-bordered-sm" src='+img+' alt="user image">'+
                       '<span class="username">'+
-                        '<a href="#">'+announcement.data_users.data_anggota['nama']+'</a>'+
+                        '<a href="'+window.location.origin+'/dashboard/profile/detail?id='+announcement.data_users.data_anggota['id']+'">'+announcement.data_users.data_anggota['nama']+'</a>'+
                       '</span>'+
                       '<span class="description">'+announcement['formatted_created_at']+'</span>'+
                     '</div>'+

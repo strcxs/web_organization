@@ -166,7 +166,7 @@
                                         '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">' +
                                             '<button class="dropdown-item" id ="member-delete-'+ element.id +'">Delete</button>' +
                                             '<button class="dropdown-item" data-toggle="modal" data-target="#editMember-'+element.id+'">Edit</button>' +
-                                            '<button class="dropdown-item" id ="member-deactived-'+ element.id +'">Deactived</button>' +
+                                            // '<button class="dropdown-item" id ="member-deactived-'+ element.id +'">Deactived</button>' +
                                         '</div>' +
                                         '<a class="text-dark">'+
                                             element.nama + 
@@ -197,7 +197,7 @@
                                             '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="dropdown-'+element.id+'">' +
                                                 '<button class="dropdown-item" id ="member-delete-'+ element.id +'">Delete</button>' +
                                                 '<button class="dropdown-item" data-toggle="modal" data-target="#editMember-'+element.id+'">Edit</button>' +
-                                                '<button class="dropdown-item" id ="member-deactived-'+ element.id +'">Deactived</button>' +
+                                                // '<button class="dropdown-item" id ="member-deactived-'+ element.id +'">Deactived</button>' +
                                                 (element.data_users.role_id == 1 ?
                                                     '<button class="dropdown-item" id="member-demote-'+ element.id +'" style ="display:block">Demote</button>' +
                                                     '<button class="dropdown-item" id="member-promote-'+ element.id +'" style ="display:none">Promote</button>' :
@@ -230,25 +230,70 @@
                         });
                     })
                     $('#member-promote-'+element.id).on('click',function(){
-                        if (confirm("Jadikan "+element.nama+" Admin ?")) {
+                        if (confirm("Jadikan "+element.nama+" Leader ?")) {
                             $.ajax({
-                                url: origin+"/api/data/"+element.data_users.id,
-                                method: 'POST',
-                                data:{
-                                    'role_id':1
-                                },
+                                url: origin+"/api/data/",
+                                method: 'GET',
                                 success: function (response) {
-                                    // $('#dropdown-'+element.id+'').append(
-                                    //     '<button class="dropdown-item" id ="member-demote-'+ element.id +'">Demote</button>'
-                                    // );
-                                    $('#member-demote-'+element.id+'').show();
-                                    $('#member-promote-'+element.id+'').hide();
+                                    var all_data = response.data;
+                                    var number = null;
+                                    all_data.forEach(id_role => {
+                                        if (id_role.role_id == 1) {
+                                            if (id_role.id != 64) {
+                                                if (id_role.data_divisi.id != 1) {
+                                                    if (id_role.data_divisi.leader_id == id_role.id) {
+                                                        number = 3
+                                                        $.ajax({
+                                                            url: origin+"/api/data/"+id_role.id,
+                                                            method: 'POST',
+                                                            data:{
+                                                                'role_id':number
+                                                            },
+                                                        })
+                                                    }else{
+                                                        number = 4
+                                                        $.ajax({
+                                                            url: origin+"/api/data/"+id_role.id,
+                                                            method: 'POST',
+                                                            data:{
+                                                                'role_id':number
+                                                            },
+                                                        })
+                                                    }   
+                                                }else{
+                                                    number = 2
+                                                    $.ajax({
+                                                        url: origin+"/api/data/"+id_role.id,
+                                                        method: 'POST',
+                                                        data:{
+                                                            'role_id':number
+                                                        },
+                                                    })
+                                                }
+                                            }
+                                        }
+                                    });
+                                    $.ajax({
+                                        url: origin+"/api/data/"+element.data_users.id,
+                                        method: 'POST',
+                                        data:{
+                                            'role_id':1
+                                        },
+                                        success: function (response) {
+                                            // $('#dropdown-'+element.id+'').append(
+                                            //     '<button class="dropdown-item" id ="member-demote-'+ element.id +'">Demote</button>'
+                                            // );
+                                            $('#member-demote-'+element.id+'').show();
+                                            $('#member-promote-'+element.id+'').hide();
+                                            window.location.reload();
+                                        }
+                                    });
                                 }
                             });
                         }
                     })
                     $('#member-demote-'+element.id).on('click',function(){
-                        if (confirm("Menghapus "+element.nama+" dari Admin ?")) {
+                        if (confirm("Menghapus "+element.nama+" dari Leader ?")) {
                             var role = 2;
                             if (element.data_users.divisi_id!=1) {
                                 if (element.data_users.data_divisi.leader_id == element.data_users.id) {
@@ -277,6 +322,7 @@
                                     // );
                                     $('#member-promote-'+element.id+'').show();
                                     $('#member-demote-'+element.id+'').hide();
+                                    window.location.reload();
                                 }
                             });
                         }

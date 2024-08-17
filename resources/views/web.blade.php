@@ -118,7 +118,7 @@
 								<h3>
 									Himpunan Mahasiswa Teknik Informatika 2021/2022	
 								</h3>
-								<p>
+								<p id="aboutText">
 									Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspi unde omnis iste natus error sit voluptatem accusantium doloremque lauda ntium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam vo luptatem quia voluptas sit aspernatur aut odit aut fugit,
 								</p>
 								<div class="row">
@@ -365,5 +365,14 @@
         
         <!--Custom JS-->
         <script src="{{asset('/js//custom.js')}}"></script>
+		<script>
+			$.ajax({
+                url: origin+'/api/page',
+                method: "GET",
+                success: function(response) {
+					$('#aboutText').text(response.data.about_text);
+                }
+            });
+		</script>
     </body>
 </html>
